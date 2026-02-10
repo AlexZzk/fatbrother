@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>胖兄弟外卖 - 可交互UI原型</title>
+  <link rel="stylesheet" href="css/design-system.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+
+<div class="phone-frame">
+
+  <!-- ====== C-01: 首页 ====== -->
+  <div class="page active" id="page-home">
+    <div class="status-bar">
+      <span class="status-bar-time">9:41</span>
+      <div class="status-bar-icons"><span>&#9679;&#9679;&#9679;&#9679;</span> <span>&#128267;</span></div>
+    </div>
+
+    <div class="home-location" onclick="App.showToast('定位已刷新','success')">
+      <span class="loc-icon">&#128205;</span>
+      <span>广州天河区</span>
+      <span class="loc-arrow">&#9660;</span>
+    </div>
+
+    <div class="search-bar">
+      <div class="search-input-fake" onclick="App.navigateTo('search')">
+        <span class="search-icon">&#128269;</span>
+        搜索商家、美食
+      </div>
+    </div>
+
+    <div class="page-body">
+      <div class="banner-wrap">
+        <div class="banner" style="background:linear-gradient(135deg,#FF6B35,#FF8F5E);">
+          <div class="banner-slide">新用户首单立减5元</div>
+          <div class="banner-dots">
+            <div class="banner-dot active"></div>
+            <div class="banner-dot"></div>
+            <div class="banner-dot"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">附近商家</div>
+
+      <div class="shop-card" onclick="App.navigateTo('shop-detail')">
+        <div class="shop-avatar" style="background:linear-gradient(135deg,#FF6B35,#FFAB76);">&#127858;</div>
+        <div class="shop-info">
+          <div class="shop-name">胖子炒饭</div>
+          <div class="shop-meta">
+            <span><span class="star">&#9733;</span> 4.8</span>
+            <span>月售 236单</span>
+            <span>&#128205; 356m</span>
+          </div>
+          <div class="shop-notice"><span class="notice-icon">&#128227;</span> 今日新品蛋炒饭，买一送一</div>
+        </div>
+      </div>
+
+      <div class="shop-card" onclick="App.navigateTo('shop-detail')">
+        <div class="shop-avatar" style="background:linear-gradient(135deg,#8B5CF6,#A78BFA);">&#129380;</div>
+        <div class="shop-info">
+          <div class="shop-name">奶茶小站</div>
+          <div class="shop-meta">
+            <span><span class="star">&#9733;</span> 4.6</span>
+            <span>月售 128单</span>
+            <span>&#128205; 520m</span>
+          </div>
+          <div class="shop-notice"><span class="notice-icon">&#128227;</span> 全场第二杯半价</div>
+        </div>
+      </div>
+
+      <div class="shop-card" onclick="App.navigateTo('shop-detail')">
+        <div class="shop-avatar" style="background:linear-gradient(135deg,#EF4444,#F87171);">&#127846;</div>
+        <div class="shop-info">
+          <div class="shop-name">烧烤大排档</div>
+          <div class="shop-meta">
+            <span><span class="star">&#9733;</span> 4.5</span>
+            <span>月售 89单</span>
+            <span>&#128205; 780m</span>
+          </div>
+          <div class="shop-notice"><span class="notice-icon">&#128227;</span> 周末烤串特惠</div>
+        </div>
+      </div>
+
+      <div class="shop-card" onclick="App.navigateTo('shop-detail')">
+        <div class="shop-avatar" style="background:linear-gradient(135deg,#F59E0B,#FBBF24);">&#127836;</div>
+        <div class="shop-info">
+          <div class="shop-name">兰州拉面</div>
+          <div class="shop-meta">
+            <span><span class="star">&#9733;</span> 4.3</span>
+            <span>月售 67单</span>
+            <span>&#128205; 1.2km</span>
+          </div>
+          <div class="shop-notice"><span class="notice-icon">&#128227;</span> 新鲜手工拉面</div>
+        </div>
+      </div>
+
+      <div style="text-align:center;padding:16px;font-size:12px;color:var(--text-hint);">
+        &#8212; 已经到底了 &#8212;
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <div class="tab-item active" data-page="home">
+        <span class="tab-icon">&#127968;</span>
+        <span class="tab-label">首页</span>
+      </div>
+      <div class="tab-item" data-page="orders">
+        <span class="tab-icon">&#128203;</span>
+        <span class="tab-label">订单</span>
+      </div>
+      <div class="tab-item" data-page="mine">
+        <span class="tab-icon">&#128100;</span>
+        <span class="tab-label">我的</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== C-02: 搜索页 ====== -->
+  <div class="page" id="page-search">
+    <div class="status-bar">
+      <span class="status-bar-time">9:41</span>
+      <div class="status-bar-icons"><span>&#9679;&#9679;&#9679;&#9679;</span> <span>&#128267;</span></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;background:var(--bg-card);">
+      <div style="flex:1;display:flex;align-items:center;height:36px;padding:0 12px;background:var(--bg-page);border-radius:var(--radius-full);">
+        <span style="font-size:14px;margin-right:8px;color:var(--text-hint);">&#128269;</span>
+        <input type="text" placeholder="搜索商家、美食" style="border:none;outline:none;background:transparent;flex:1;font-size:13px;font-family:inherit;">
+      </div>
+      <span style="font-size:14px;color:var(--text-secondary);cursor:pointer;" onclick="App.navigateBack()">取消</span>
+    </div>
+    <div class="page-body">
+      <div style="padding:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <span style="font-size:14px;font-weight:600;color:var(--text-primary);">搜索历史</span>
+          <span style="font-size:12px;color:var(--text-hint);cursor:pointer;">清空</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <span class="tag tag-default" style="padding:6px 14px;cursor:pointer;border-radius:var(--radius-full);">奶茶</span>
+          <span class="tag tag-default" style="padding:6px 14px;cursor:pointer;border-radius:var(--radius-full);">炒饭</span>
+          <span class="tag tag-default" style="padding:6px 14px;cursor:pointer;border-radius:var(--radius-full);">烧烤</span>
+          <span class="tag tag-default" style="padding:6px 14px;cursor:pointer;border-radius:var(--radius-full);">拉面</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== C-03: 商家详情页 ====== -->
+  <div class="page" id="page-shop-detail">
+    <div class="status-bar" style="background:transparent;position:absolute;top:0;left:0;right:0;z-index:50;">
+      <span class="status-bar-time" style="color:#fff;">9:41</span>
+      <div class="status-bar-icons" style="color:#fff;"><span>&#9679;&#9679;&#9679;&#9679;</span></div>
+    </div>
+    <div class="nav-bar" style="background:transparent;position:absolute;top:44px;left:0;right:0;z-index:50;">
+      <button class="nav-back" onclick="App.navigateBack()" style="color:#fff;background:rgba(0,0,0,0.3);border-radius:50%;width:30px;height:30px;font-size:14px;">&#8592;</button>
+    </div>
+
+    <div class="page-body" style="padding-top:0;">
+      <div class="shop-detail-header">
+        <div class="shop-header-bg" style="background:linear-gradient(135deg,#FF6B35,#FFAB76);">&#127858;</div>
+        <div class="shop-header-info">
+          <div class="shop-header-avatar" style="background:linear-gradient(135deg,#FF6B35,#FFAB76);">&#127858;</div>
+          <div class="shop-header-name">胖子炒饭</div>
+          <div class="shop-header-meta">
+            <span><span style="color:var(--color-warning);">&#9733;</span> 4.8</span>
+            <span>(236条评价)</span>
+            <span>&#128205; 356m</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="shop-announcement">
+        <span>&#128227;</span> 今日新品蛋炒饭，买一送一
+      </div>
+
+      <div class="menu-container" style="height:380px;">
+        <div class="menu-sidebar">
+          <div class="menu-category-item active" onclick="App.initMenuScroll()">热销</div>
+          <div class="menu-category-item">主食</div>
+          <div class="menu-category-item">饮品</div>
+          <div class="menu-category-item">小食</div>
+        </div>
+        <div class="menu-content">
+          <div class="menu-section">
+            <div class="menu-section-title">热销</div>
+
+            <div class="product-item">
+              <div class="product-img" style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2);">&#127858;</div>
+              <div class="product-info">
+                <div>
+                  <div class="product-name">招牌蛋炒饭</div>
+                  <div class="product-desc">好吃不贵的蛋炒饭</div>
+                </div>
+                <div class="product-bottom">
+                  <div class="product-price"><span class="price-unit">¥</span>12</div>
+                  <button class="add-btn" onclick="App.openSpecPopup({id:'p1',name:'招牌蛋炒饭',basePrice:1200,specGroups:[{name:'份量',required:true,multiSelect:false,items:[{name:'大份',priceDelta:300},{name:'中份',priceDelta:0},{name:'小份',priceDelta:-200}]},{name:'辣度',required:true,multiSelect:false,items:[{name:'微辣',priceDelta:0},{name:'中辣',priceDelta:0},{name:'特辣',priceDelta:0}]},{name:'加料',required:false,multiSelect:true,items:[{name:'火腿肠',priceDelta:200},{name:'煎蛋',priceDelta:300},{name:'培根',priceDelta:400}]},{name:'做法',required:false,multiSelect:true,items:[{name:'不要葱',priceDelta:0},{name:'不要蒜',priceDelta:0},{name:'不要香菜',priceDelta:0}]}]})">+</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="product-item">
+              <div class="product-img" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);">&#127834;</div>
+              <div class="product-info">
+                <div>
+                  <div class="product-name">扬州炒饭</div>
+                  <div class="product-desc">经典扬州味</div>
+                </div>
+                <div class="product-bottom">
+                  <div class="product-price"><span class="price-unit">¥</span>15</div>
+                  <button class="add-btn" onclick="App.openSpecPopup({id:'p2',name:'扬州炒饭',basePrice:1500,specGroups:[{name:'份量',required:true,multiSelect:false,items:[{name:'大份',priceDelta:300},{name:'中份',priceDelta:0},{name:'小份',priceDelta:-200}]},{name:'辣度',required:true,multiSelect:false,items:[{name:'微辣',priceDelta:0},{name:'中辣',priceDelta:0},{name:'特辣',priceDelta:0}]}]})">+</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="product-item">
+              <div class="product-img" style="background:linear-gradient(135deg,#FBE9E7,#FFCCBC);">&#127830;</div>
+              <div class="product-info">
+                <div>
+                  <div class="product-name">牛肉炒饭</div>
+                  <div class="product-desc">大块牛肉超满足</div>
+                </div>
+                <div class="product-bottom">
+                  <div class="product-price"><span class="price-unit">¥</span>18</div>
+                  <button class="add-btn" onclick="App.openSpecPopup({id:'p3',name:'牛肉炒饭',basePrice:1800,specGroups:[{name:'份量',required:true,multiSelect:false,items:[{name:'大份',priceDelta:300},{name:'中份',priceDelta:0},{name:'小份',priceDelta:-200}]},{name:'辣度',required:true,multiSelect:false,items:[{name:'微辣',priceDelta:0},{name:'中辣',priceDelta:0},{name:'特辣',priceDelta:0}]}]})">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-section">
+            <div class="menu-section-title">饮品</div>
+            <div class="product-item">
+              <div class="product-img" style="background:linear-gradient(135deg,#F3E5F5,#E1BEE7);">&#129380;</div>
+              <div class="product-info">
+                <div>
+                  <div class="product-name">珍珠奶茶</div>
+                  <div class="product-desc">香浓丝滑</div>
+                </div>
+                <div class="product-bottom">
+                  <div class="product-price"><span class="price-unit">¥</span>12</div>
+                  <button class="add-btn" onclick="App.openSpecPopup({id:'p4',name:'珍珠奶茶',basePrice:1200,specGroups:[{name:'杯型',required:true,multiSelect:false,items:[{name:'大杯',priceDelta:300},{name:'中杯',priceDelta:0},{name:'小杯',priceDelta:-200}]},{name:'糖度',required:true,multiSelect:false,items:[{name:'全糖',priceDelta:0},{name:'七分糖',priceDelta:0},{name:'半糖',priceDelta:0},{name:'无糖',priceDelta:0}]},{name:'温度',required:true,multiSelect:false,items:[{name:'热',priceDelta:0},{name:'常温',priceDelta:0},{name:'加冰',priceDelta:0}]},{name:'加料',required:false,multiSelect:true,items:[{name:'珍珠',priceDelta:100},{name:'椰果',priceDelta:200},{name:'布丁',priceDelta:150}]}]})">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="product-item">
+              <div class="product-img" style="background:linear-gradient(135deg,#FFFDE7,#FFF9C4);">&#127819;</div>
+              <div class="product-info">
+                <div>
+                  <div class="product-name">柠檬茶</div>
+                  <div class="product-desc">鲜榨柠檬</div>
+                </div>
+                <div class="product-bottom">
+                  <div class="product-price"><span class="price-unit">¥</span>10</div>
+                  <button class="add-btn" onclick="App.simpleAdd({id:'p5',name:'柠檬茶',basePrice:1000})">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-section">
+            <div class="menu-section-title">小食</div>
+            <div class="product-item">
+              <div class="product-img" style="background:linear-gradient(135deg,#FFF8E1,#FFECB3);">&#127839;</div>
+              <div class="product-info">
+                <div>
+                  <div class="product-name">薯条</div>
+                  <div class="product-desc">现炸香脆</div>
+                </div>
+                <div class="product-bottom">
+                  <div class="product-price"><span class="price-unit">¥</span>8</div>
+                  <button class="add-btn" onclick="App.simpleAdd({id:'p6',name:'薯条',basePrice:800})">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cart Bar -->
+    <div class="cart-bar" id="cart-bar">
+      <div class="cart-icon-wrap" onclick="App.openCartPopup()">
+        &#128722;
+        <span class="cart-badge" style="display:none;">0</span>
+      </div>
+      <div class="cart-info-wrap">
+        <div class="cart-info">购物车是空的</div>
+        <div class="cart-total" style="display:none;">¥0</div>
+      </div>
+      <button class="cart-checkout-btn btn-disabled" onclick="App.goToOrderConfirm()">去结算</button>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Spec Popup -->
+    <div class="popup-bottom" id="spec-popup">
+      <div class="popup-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:48px;height:48px;border-radius:var(--radius-md);background:linear-gradient(135deg,#FFF3E0,#FFE0B2);display:flex;align-items:center;justify-content:center;font-size:24px;">&#127858;</div>
+          <div>
+            <div class="spec-product-name" style="font-size:15px;font-weight:600;"></div>
+            <div class="spec-product-price" style="font-size:13px;color:var(--c-primary);margin-top:2px;"></div>
+          </div>
+        </div>
+        <button class="popup-close" onclick="App.closePopup('spec-popup')">&#10005;</button>
+      </div>
+      <div class="popup-body">
+        <div class="spec-groups"></div>
+      </div>
+      <div class="popup-footer" style="display:flex;align-items:center;gap:12px;">
+        <div class="stepper">
+          <button class="stepper-btn stepper-minus" onclick="App.changeSpecQty(-1)">-</button>
+          <span class="stepper-value spec-qty-value">1</span>
+          <button class="stepper-btn stepper-plus" onclick="App.changeSpecQty(1)">+</button>
+        </div>
+        <button class="btn btn-primary-lg spec-add-btn btn-disabled" onclick="App.confirmAddToCart()" style="flex:1;">
+          请选择规格
+        </button>
+        <span class="spec-total" style="font-size:16px;font-weight:700;color:var(--c-primary);min-width:60px;text-align:right;">¥0</span>
+      </div>
+    </div>
+
+    <!-- Cart Popup -->
+    <div class="popup-bottom" id="cart-popup">
+      <div class="popup-header">
+        <span class="popup-header-title">购物车</span>
+        <span style="font-size:13px;color:var(--text-hint);cursor:pointer;" onclick="App.clearCart('merchant_demo')">&#128465; 清空</span>
+      </div>
+      <div class="popup-body">
+        <div class="cart-popup-list"></div>
+        <div class="cart-popup-total">
+          <span>合计</span>
+          <span class="cart-popup-total-price">¥0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== C-06: 订单确认页 ====== -->
+  <div class="page" id="page-order-confirm">
+    <div class="status-bar">
+      <span class="status-bar-time">9:41</span>
+      <div class="status-bar-icons"><span>&#9679;&#9679;&#9679;&#9679;</span></div>
+    </div>
+    <div class="nav-bar">
+      <button class="nav-back" onclick="App.navigateBack()">&#8592;</button>
+      <div class="nav-title">确认订单</div>
+    </div>
+    <div class="page-body">
+      <div class="confirm-section">
+        <div class="confirm-section-title">取餐方式</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:18px;">&#127978;</span>
+          <div>
+            <div style="font-size:14px;font-weight:600;">到店自取</div>
+            <div style="font-size:12px;color:var(--text-hint);margin-top:2px;">&#128205; 天河区体育西路xx号 · 距您约356m</div>
+          </div>
+        </div>
+      </div>
+      <div class="confirm-section">
+        <div class="confirm-section-title">商品清单</div>
+        <div id="confirm-items"></div>
+      </div>
+      <div class="confirm-section">
+        <div class="confirm-section-title">价格明细</div>
+        <div class="confirm-row"><span>商品合计</span><span id="confirm-subtotal">¥0</span></div>
+        <div class="confirm-row"><span>包装费</span><span>¥0.00</span></div>
+        <div class="confirm-row"><span>配送费</span><span>¥0.00</span></div>
+        <div class="confirm-total-row"><span>合计</span><span id="confirm-total">¥0</span></div>
+      </div>
+      <div class="confirm-section">
+        <div class="confirm-section-title">备注</div>
+        <textarea class="textarea-field" placeholder="选填，如口味偏好、取餐时间等" style="min-height:60px;"></textarea>
+      </div>
+      <div style="height:60px;"></div>
+    </div>
+    <div class="confirm-bottom-bar">
+      <div>
+        <div class="confirm-bottom-total">合计</div>
+        <div class="confirm-bottom-price" id="confirm-total-btn">¥0</div>
+      </div>
+      <button class="btn btn-primary-lg" style="width:auto;padding:0 32px;" onclick="App.submitOrder()">提交订单</button>
+    </div>
+  </div>
+
+  <!-- ====== C-07: 支付结果页 ====== -->
+  <div class="page" id="page-order-result">
+    <div class="status-bar">
+      <span class="status-bar-time">9:41</span>
+      <div class="status-bar-icons"><span>&#9679;&#9679;&#9679;&#9679;</span></div>
+    </div>
+    <div class="nav-bar">
+      <button class="nav-back" onclick="App.navigateTo('home')">&#8592;</button>
+      <div class="nav-title"></div>
+    </div>
+    <div class="page-body">
+      <div class="result-page">
+        <div class="result-icon">&#10003;</div>
+        <div class="result-title">下单成功</div>
+        <div class="result-desc">商家确认中，请耐心等待</div>
+        <button class="btn btn-primary" onclick="App.navigateTo('order-detail')" style="width:200px;margin-bottom:12px;">查看订单详情</button>
+        <button class="btn btn-outline primary" onclick="App.pageHistory=[];App.navigateTo('home')" style="width:200px;">返回首页</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== C-08: 订单列表页 ====== -->
+  <div class="page" id="page-orders">
+    <div class="status-bar">
+      <span class="status-bar-time">9:41</span>
+      <div class="status-bar-icons"><span>&#9679;&#9679;&#9679;&#9679;</span></div>
+    </div>
+    <div class="nav-bar">
+      <div class="nav-title" style="margin-right:0;">我的订单</div>
+    </div>
+    <div class="filter-tabs">
+      <div class="filter-tab active" data-group="c-order" data-tab="all" onclick="App.switchFilterTab('c-order','all')">全部</div>
+      <div class="filter-tab" data-group="c-order" data-tab="pending" onclick="App.switchFilterTab('c-order','pending')">待接单</div>
+      <div class="filter-tab" data-group="c-order" data-tab="making" onclick="App.switchFilterTab('c-order','making')">制作中</div>
+      <div class="filter-tab" data-group="c-order" data-tab="ready" onclick="App.switchFilterTab('c-order','ready')">待取餐</div>
+      <div class="filter-tab" data-group="c-order" data-tab="done" onclick="App.switchFilterTab('c-order','done')">已完成</div>
+    </div>
+    <div class="page-body">
+      <div class="order-card" onclick="App.navigateTo('order-detail')">
+        <div class="order-card-header">
+          <span class="order-card-shop">胖子炒饭</span>
+          <span class="tag tag-warning">待接单</span>
+        </div>
+        <div class="order-card-body">
+          <div class="order-card-items">招牌蛋炒饭(大份/中辣) x1<br>珍珠奶茶(大杯) x2<br>共3件</div>
+        </div>
+        <div class="order-card-footer">
+          <div>
+            <div class="order-card-price">实付 ¥53.00</div>
+            <div class="order-card-time">2026-02-10 12:30</div>
+          </div>
+          <div class="order-card-actions">
+            <button class="btn btn-outline btn-sm">取消订单</button>
+            <button class="btn btn-outline primary btn-sm">查看详情</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="order-card">
+        <div class="order-card-header">
+          <span class="order-card-shop">奶茶小站</span>
+          <span class="tag tag-success">待取餐</span>
+        </div>
+        <div class="order-card-body">
+          <div class="order-card-items">柠檬茶(大杯/加冰) x1<br>共1件</div>
+        </div>
+        <div class="order-card-footer">
+          <div>
+            <div class="order-card-price">实付 ¥15.00</div>
+            <div class="order-card-time">2026-02-10 11:20</div>
+          </div>
+          <div class="order-card-actions">
+            <button class="btn btn-primary btn-sm" style="background:var(--color-success);">确认取餐</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="order-card">
+        <div class="order-card-header">
+          <span class="order-card-shop">烧烤大排档</span>
+          <span class="tag tag-default">已完成</span>
+        </div>
+        <div class="order-card-body">
+          <div class="order-card-items">烤羊肉串x5 烤鸡翅x3<br>共8件</div>
+        </div>
+        <div class="order-card-footer">
+          <div>
+            <div class="order-card-price">实付 ¥86.00</div>
+            <div class="order-card-time">2026-02-09 20:15</div>
+          </div>
+          <div class="order-card-actions">
+            <button class="btn btn-outline primary btn-sm" onclick="App.navigateTo('review')">去评价</button>
+            <button class="btn btn-outline btn-sm">再来一单</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab-item" data-page="home"><span class="tab-icon">&#127968;</span><span class="tab-label">首页</span></div>
+      <div class="tab-item active" data-page="orders"><span class="tab-icon">&#128203;</span><span class="tab-label">订单</span></div>
+      <div class="tab-item" data-page="mine"><span class="tab-icon">&#128100;</span><span class="tab-label">我的</span></div>
+    </div>
+  </div>
+
+  <!-- ====== C-09: 订单详情页 ====== -->
+  <div class="page" id="page-order-detail">
+    <div class="status-bar"><span class="status-bar-time">9:41</span><div class="status-bar-icons"><span>&#9679;&#9679;&#9679;&#9679;</span></div></div>
+    <div class="nav-bar">
+      <button class="nav-back" onclick="App.navigateBack()">&#8592;</button>
+      <div class="nav-title">订单详情</div>
+    </div>
+    <div class="page-body">
+      <div style="padding:20px;text-align:center;background:linear-gradient(135deg,#FFF3E0,#FFE0B2);">
+        <div style="font-size:28px;">&#128992;</div>
+        <div style="font-size:17px;font-weight:700;color:var(--text-primary);margin-top:4px;">商家确认中</div>
+        <div style="font-size:13px;color:var(--text-secondary);margin-top:4px;">您的订单已提交，等待商家接单</div>
+      </div>
+      <div class="confirm-section" style="cursor:pointer;" onclick="App.navigateTo('shop-detail')">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:18px;">&#127978;</span>
+          <span style="font-size:14px;font-weight:600;">胖子炒饭</span>
+          <span style="margin-left:auto;font-size:12px;color:var(--text-hint);">&#128205; 356m ></span>
+        </div>
+      </div>
+      <div class="confirm-section">
+        <div class="confirm-section-title">商品信息</div>
+        <div class="confirm-item"><div class="confirm-item-name">招牌蛋炒饭 (大份/中辣/火腿肠)</div><div class="confirm-item-right"><span class="confirm-item-qty">x1</span><span class="confirm-item-price">¥17.00</span></div></div>
+        <div class="confirm-item"><div class="confirm-item-name">珍珠奶茶 (大杯/珍珠/椰果)</div><div class="confirm-item-right"><span class="confirm-item-qty">x2</span><span class="confirm-item-price">¥36.00</span></div></div>
+        <div style="border-top:1px solid var(--divider-color);margin-top:8px;padding-top:8px;">
+          <div class="confirm-row"><span>商品合计</span><span>¥53.00</span></div>
+          <div class="confirm-row"><span>包装费</span><span>¥0.00</span></div>
+          <div class="confirm-row"><span>配送费</span><span>¥0.00</span></div>
+          <div class="confirm-total-row"><span>实付金额</span><span>¥53.00</span></div>
+        </div>
+      </div>
+      <div class="confirm-section">
+        <div class="confirm-section-title">订单信息</div>
+        <div class="confirm-row"><span>订单编号</span><span style="color:var(--text-body);">202602101230001 <span style="color:var(--b-primary);cursor:pointer;">复制</span></span></div>
+        <div class="confirm-row"><span>下单时间</span><span>2026-02-10 12:30</span></div>
+        <div class="confirm-row"><span>支付方式</span><span>微信支付</span></div>
+        <div class="confirm-row"><span>备注</span><span>不要香菜</span></div>
+      </div>
+      <div style="height:60px;"></div>
+    </div>
+    <div class="bottom-bar bottom-bar-safe" style="justify-content:flex-end;gap:8px;">
+      <button class="btn btn-outline btn-sm">联系商家</button>
+      <button class="btn btn-outline danger btn-sm">取消订单</button>
+    </div>
+  </div>
+
+  <!-- ====== C-10: 评价页 ====== -->
+  <div class="page" id="page-review">
+    <div class="status-bar"><span class="status-bar-time">9:41</span><div class="status-bar-icons"><span>&#9679;&#9679;&#9679;&#9679;</span></div></div>
+    <div class="nav-bar">
+      <button class="nav-back" onclick="App.navigateBack()">&#8592;</button>
+      <div class="nav-title">评价订单</div>
+    </div>
+    <div class="page-body">
+      <div class="card" style="text-align:center;">
+        <div style="font-size:15px;font-weight:600;margin-bottom:12px;">&#127978; 烧烤大排档</div>
+        <div style="font-size:13px;color:var(--text-hint);margin-bottom:8px;">综合评分</div>
+        <div style="font-size:32px;letter-spacing:8px;cursor:pointer;" id="star-rating" onclick="this.dataset.rated='true'">
+          <span onclick="document.querySelectorAll('#star-rating span').forEach((s,i)=>s.style.color=i<=0?'var(--color-warning)':'#ddd')">&#9733;</span>
+          <span onclick="document.querySelectorAll('#star-rating span').forEach((s,i)=>s.style.color=i<=1?'var(--color-warning)':'#ddd')">&#9733;</span>
+          <span onclick="document.querySelectorAll('#star-rating span').forEach((s,i)=>s.style.color=i<=2?'var(--color-warning)':'#ddd')">&#9733;</span>
+          <span onclick="document.querySelectorAll('#star-rating span').forEach((s,i)=>s.style.color=i<=3?'var(--color-warning)':'#ddd')">&#9733;</span>
+          <span onclick="document.querySelectorAll('#star-rating span').forEach((s,i)=>s.style.color=i<=4?'var(--color-warning)':'#ddd')" style="color:var(--color-warning);">&#9733;</span>
+        </div>
+        <textarea class="textarea-field mt-md" placeholder="说说你的用餐感受吧..."></textarea>
+        <div style="text-align:right;font-size:11px;color:var(--text-hint);margin-top:4px;">0/200</div>
+      </div>
+      <div style="padding:16px;">
+        <button class="btn btn-primary-lg" onclick="App.showToast('评价成功');setTimeout(()=>App.navigateBack(),800)">提交评价</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== C-11: 我的页面 ====== -->
+  <div class="page" id="page-mine">
+    <div class="status-bar" style="background:transparent;position:absolute;top:0;left:0;right:0;z-index:50;">
+      <span class="status-bar-time" style="color:#fff;">9:41</span>
+      <div class="status-bar-icons" style="color:#fff;"><span>&#9679;&#9679;&#9679;&#9679;</span></div>
+    </div>
+    <div class="page-body" style="padding-top:0;">
+      <div style="background:var(--c-primary-gradient);padding-top:44px;">
+        <div class="mine-header" onclick="App.navigateTo('profile')">
+          <div class="mine-avatar" style="background:rgba(255,255,255,0.2);">&#128100;</div>
+          <div>
+            <div class="mine-name">小明同学</div>
+            <div class="mine-phone">&#128241; 138****8888</div>
+          </div>
+          <span style="margin-left:auto;color:rgba(255,255,255,0.6);">></span>
+        </div>
+      </div>
+
+      <div class="section-label">我的服务</div>
+      <div class="cell-group">
+        <div class="cell" onclick="App.navigateTo('orders')">
+          <span class="cell-icon">&#128203;</span>
+          <span class="cell-title">我的订单</span>
+          <span class="cell-arrow">></span>
+        </div>
+        <div class="cell" onclick="App.navigateTo('c-bill')">
+          <span class="cell-icon">&#128202;</span>
+          <span class="cell-title">账单统计</span>
+          <span class="cell-arrow">></span>
+        </div>
+        <div class="cell">
+          <span class="cell-icon">&#128205;</span>
+          <span class="cell-title">收货地址</span>
+          <span class="cell-value" style="font-size:11px;color:var(--text-hint);">敬请期待</span>
+          <span class="cell-arrow">></span>
+        </div>
+      </div>
+
+      <div class="section-label">商户中心</div>
+      <div class="cell-group">
+        <div class="cell" onclick="App.navigateTo('b-dashboard')">
+          <span class="cell-icon">&#127978;</span>
+          <span class="cell-title">商户管理</span>
+          <span class="cell-value">胖子炒饭</span>
+          <span class="cell-arrow">></span>
+        </div>
+      </div>
+
+      <div class="section-label">其他</div>
+      <div class="cell-group">
+        <div class="cell">
+          <span class="cell-icon">&#128222;</span>
+          <span class="cell-title">联系客服</span>
+          <span class="cell-arrow">></span>
+        </div>
+        <div class="cell">
+          <span class="cell-icon">&#8505;</span>
+          <span class="cell-title">关于我们</span>
+          <span class="cell-arrow">></span>
+        </div>
+      </div>
+      <div style="height:20px;"></div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab-item" data-page="home"><span class="tab-icon">&#127968;</span><span class="tab-label">首页</span></div>
+      <div class="tab-item" data-page="orders"><span class="tab-icon">&#128203;</span><span class="tab-label">订单</span></div>
+      <div class="tab-item active" data-page="mine"><span class="tab-icon">&#128100;</span><span class="tab-label">我的</span></div>
+    </div>
+  </div>
+
+  <!-- ====== C-12: 个人信息 ====== -->
+  <div class="page" id="page-profile">
+    <div class="status-bar"><span class="status-bar-time">9:41</span><div class="status-bar-icons"><span>&#9679;&#9679;&#9679;&#9679;</span></div></div>
+    <div class="nav-bar">
+      <button class="nav-back" onclick="App.navigateBack()">&#8592;</button>
+      <div class="nav-title">个人信息</div>
+    </div>
+    <div class="page-body">
+      <div style="background:var(--bg-card);margin-top:10px;">
+        <div class="profile-item">
+          <span class="profile-label">头像</span>
+          <div class="profile-avatar-preview" style="background:var(--c-primary-bg);color:var(--c-primary);">&#128100;</div>
+          <span class="cell-arrow">></span>
+        </div>
+        <div class="profile-item">
+          <span class="profile-label">昵称</span>
+          <span class="profile-value">小明同学</span>
+          <span class="cell-arrow">></span>
+        </div>
+        <div class="profile-item">
+          <span class="profile-label">手机号</span>
+          <span class="profile-value">138****8888</span>
+          <span class="cell-arrow">></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== C-13: 账单统计 ====== -->
+  <div class="page" id="page-c-bill">
+    <div class="status-bar"><span class="status-bar-time">9:41</span><div class="status-bar-icons"><span>&#9679;&#9679;&#9679;&#9679;</span></div></div>
+    <div class="nav-bar">
+      <button class="nav-back" onclick="App.navigateBack()">&#8592;</button>
+      <div class="nav-title">账单统计</div>
+    </div>
+    <div class="page-body">
+      <div class="c-bill-header">
+        <div class="c-bill-month"><span class="arrow">&lt;</span> 2026年2月 <span class="arrow">&gt;</span></div>
+        <div class="c-bill-stats">
+          <div class="c-bill-stat-item"><div class="c-bill-stat-value">¥358</div><div class="c-bill-stat-label">消费</div></div>
+          <div class="c-bill-stat-item"><div class="c-bill-stat-value">12</div><div class="c-bill-stat-label">订单</div></div>
+          <div class="c-bill-stat-item"><div class="c-bill-stat-value">¥29.8</div><div class="c-bill-stat-label">均单价</div></div>
+        </div>
+      </div>
+      <div class="c-bill-date">02-10</div>
+      <div class="c-bill-item"><div><div class="c-bill-item-name">胖子炒饭</div><div class="c-bill-item-time">12:30</div></div><div class="c-bill-item-amount">-¥53.00</div></div>
+      <div class="c-bill-item"><div><div class="c-bill-item-name">奶茶小站</div><div class="c-bill-item-time">11:20</div></div><div class="c-bill-item-amount">-¥15.00</div></div>
+      <div class="c-bill-date">02-09</div>
+      <div class="c-bill-item"><div><div class="c-bill-item-name">烧烤大排档</div><div class="c-bill-item-time">20:15</div></div><div class="c-bill-item-amount">-¥86.00</div></div>
+    </div>
+  </div>
+
+  <!-- ====== B-01: 商户入驻引导 ====== -->
+  <div class="page" id="page-b-guide">
+    <div class="status-bar"><span class="status-bar-time">9:41</span><div class="status-bar-icons"><span>&#9679;&#9679;&#9679;&#9679;</span></div></div>
+    <div class="nav-bar">
+      <button class="nav-back" onclick="App.navigateBack()">&#8592;</button>
+      <div class="nav-title">商户入驻</div>
+    </div>
+    <div class="page-body" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;">
+      <div style="font-size:64px;margin-bottom:16px;">&#127978;</div>
+      <div style="font-size:20px;font-weight:700;color:var(--text-primary);margin-bottom:20px;">入驻胖兄弟，开启您的生意</div>
+      <div style="font-size:14px;color:var(--text-secondary);line-height:2;">
+        &#183; 轻松管理菜单和订单<br>
+        &#183; 实时接收订单提醒<br>
+        &#183; 营业数据一目了然
+      </div>
+      <button class="btn btn-primary-lg b-end" style="margin-top:32px;" onclick="App.navigateTo('b-apply')">我要入驻开店</button>
+      <div style="margin-top:16px;font-size:13px;color:var(--b-primary);cursor:pointer;" onclick="App.navigateTo('b-pending')">已提交申请？查看审核进度 ></div>
+    </div>
+  </div>
+
+  <!-- ====== B-02: 入驻申请 ====== -->
+  <div class="page" id="page-b-apply">
+    <div class="status-bar"><span class="status-bar-time">9:41</span><div class="status-bar-icons"><span>&#9679;&#9679;&#9679;&#9679;</span></div></div>
+    <div class="nav-bar">
+      <button class="nav-back" onclick="App.navigateBack()">&#8592;</button>
+      <div class="nav-title">入驻申请</div>
+    </div>
+    <div class="page-body">
+      <div class="apply-form">
+        <div class="form-group">
+          <div class="form-label"><span class="required">*</span> 邀请码</div>
+          <input class="input-field b-end" placeholder="请输入6位邀请码" maxlength="6" style="text-transform:uppercase;letter-spacing:4px;font-size:16px;font-weight:600;">
+          <div class="form-hint">没有邀请码？请联系平台客服获取</div>
+        </div>
+        <div class="form-group">
+          <div class="form-label"><span class="required">*</span> 店铺名称</div>
+          <input class="input-field b-end" placeholder="请输入您的店铺名称">
+        </div>
+        <div class="form-group">
+          <div class="form-label"><span class="required">*</span> 联系人姓名</div>
+          <input class="input-field b-end" placeholder="请输入联系人姓名">
+        </div>
+        <div class="form-group">
+          <div class="form-label"><span class="required">*</span> 联系电话</div>
+          <input class="input-field b-end" placeholder="请输入联系电话" type="tel">
+        </div>
+        <div class="form-group">
+          <div class="form-label"><span class="required">*</span> 微信商户号 (MCH_ID)</div>
+          <input class="input-field b-end" placeholder="请输入您的微信商户号ID">
+          <div class="form-hint" style="color:var(--b-primary);cursor:pointer;">如何获取？查看指引 ></div>
+        </div>
+        <button class="btn btn-primary-lg b-end" style="margin-top:8px;" onclick="App.showToast('申请已提交');setTimeout(()=>App.navigateTo('b-pending'),800)">提交申请</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== B-03: 审核等待 ====== -->
+  <div class="page" id="page-b-pending">
+    <div class="status-bar"><span class="status-bar-time">9:41</span><div class="status-bar-icons"><span>&#9679;&#9679;&#9679;&#9679;</span></div></div>
+    <div class="nav-bar">
+      <button class="nav-back" onclick="App.navigateBack()">&#8592;</button>
+      <div class="nav-title">审核中</div>
+    </div>
+    <div class="page-body" style="display:flex;flex-direction:column;align-items:center;padding:40px;">
+      <div style="font-size:56px;margin-bottom:12px;">&#9203;</div>
+      <div style="font-size:17px;font-weight:700;color:var(--text-primary);">您的入驻申请已提交</div>
+      <div style="font-size:13px;color:var(--text-hint);margin-top:6px;">平台将在1-3个工作日内完成审核</div>
+      <div class="card" style="width:100%;margin-top:24px;">
+        <div class="confirm-row"><span>店铺名称</span><span style="color:var(--text-body);">胖子炒饭</span></div>
+        <div class="confirm-row"><span>联系人</span><span>张三</span></div>
+        <div class="confirm-row"><span>提交时间</span><span>2026-02-10 14:30</span></div>
+        <div class="confirm-row"><span>审核状态</span><span class="tag tag-warning">审核中</span></div>
+      </div>
+      <div style="margin-top:16px;font-size:13px;color:var(--text-hint);">如有疑问，请联系客服</div>
+    </div>
+  </div>
+
+  <!-- ====== B-04: 商户后台首页 ====== -->
+  <div class="page" id="page-b-dashboard">
+    <div class="status-bar"><span class="status-bar-time">9:41</span><div class="status-bar-icons"><span>&#9679;&#9679;&#9679;&#9679;</span></div></div>
+    <div class="nav-bar b-end">
+      <button class="nav-back" onclick="App.navigateBack()">&#8592;</button>
+      <div class="nav-title">胖兄弟商户后台</div>
+      <span class="nav-right" onclick="App.navigateTo('home')">返回C端</span>
+    </div>
+    <div class="page-body">
+      <div class="b-status-card open" id="b-status-indicator">
+        <div><span class="b-status-dot"></span><span class="b-status-text" id="b-status-text">营业中</span></div>
+        <div class="b-status-duration" id="b-status-duration">已营业 2小时30分</div>
+        <button class="btn btn-primary-lg" id="b-status-btn" style="margin-top:12px;background:var(--color-danger);" onclick="App.toggleBusinessStatus()">结束营业</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">今日数据</div>
+        <div class="data-grid">
+          <div class="data-item"><div class="data-value">12</div><div class="data-label">订单数</div></div>
+          <div class="data-item"><div class="data-value" style="color:var(--c-primary);">¥358</div><div class="data-label">营业额</div></div>
+          <div class="data-item"><div class="data-value">¥0</div><div class="data-label">退款</div></div>
+        </div>
+      </div>
+
+      <div class="b-pending-card" onclick="App.navigateTo('b-orders')">
+        <div>
+          <div class="b-pending-title">&#9889; 待处理订单</div>
+          <div class="b-pending-counts">待接单: <span class="count-num">3</span>单 &nbsp; 待出餐: <span class="count-num">2</span>单</div>
+        </div>
+        <span style="color:var(--text-hint);">></span>
+      </div>
+
+      <div class="section-header">管理功能</div>
+      <div class="b-quick-grid">
+        <div class="b-quick-item" onclick="App.navigateTo('b-orders')"><span class="b-quick-icon">&#128203;</span><span class="b-quick-label">订单管理</span></div>
+        <div class="b-quick-item" onclick="App.navigateTo('b-menu')"><span class="b-quick-icon">&#127860;</span><span class="b-quick-label">菜单管理</span></div>
+        <div class="b-quick-item" onclick="App.navigateTo('b-stats')"><span class="b-quick-icon">&#128202;</span><span class="b-quick-label">账单统计</span></div>
+        <div class="b-quick-item" onclick="App.navigateTo('b-settings')"><span class="b-quick-icon">&#9881;</span><span class="b-quick-label">店铺设置</span></div>
+      </div>
+      <div style="height:20px;"></div>
+    </div>
+
+    <!-- New Order Alert -->
+    <div class="new-order-alert" id="new-order-alert">
+      <div class="new-order-alert-content">
+        <div class="new-order-alert-icon">&#128276;</div>
+        <div class="new-order-alert-title">您有新的订单！</div>
+        <div class="new-order-alert-desc">招牌蛋炒饭x1 珍珠奶茶x2<br>合计 ¥53.00</div>
+        <div class="new-order-alert-actions">
+          <button class="btn btn-outline btn-sm" onclick="App.dismissOrderAlert()">稍后处理</button>
+          <button class="btn btn-primary btn-sm b-end" onclick="App.dismissOrderAlert();App.navigateTo('b-orders')">立即查看</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== B-05: 订单管理 ====== -->
+  <div class="page" id="page-b-orders">
+    <div class="status-bar"><span class="status-bar-time">9:41</span><div class="status-bar-icons"><span>&#9679;&#9679;&#9679;&#9679;</span></div></div>
+    <div class="nav-bar b-end">
+      <button class="nav-back" onclick="App.navigateBack()">&#8592;</button>
+      <div class="nav-title">订单管理</div>
+      <span class="nav-right">&#128276; 开启</span>
+    </div>
+    <div class="filter-tabs">
+      <div class="filter-tab b-active" data-group="b-order" data-tab="pending" onclick="App.switchFilterTab('b-order','pending')">待接单<span class="badge">3</span></div>
+      <div class="filter-tab" data-group="b-order" data-tab="making" onclick="App.switchFilterTab('b-order','making')">制作中<span class="badge" style="background:var(--b-primary);">2</span></div>
+      <div class="filter-tab" data-group="b-order" data-tab="ready" onclick="App.switchFilterTab('b-order','ready')">待取餐</div>
+      <div class="filter-tab" data-group="b-order" data-tab="all" onclick="App.switchFilterTab('b-order','all')">全部</div>
+    </div>
+    <div class="page-body">
+      <div class="b-order-card">
+        <div class="b-order-header">
+          <span class="b-order-number">#001</span>
+          <span class="b-order-timer">&#9200; 剩余 28:30</span>
+        </div>
+        <div class="b-order-body">
+          <div class="b-order-user">用户: 小明同学</div>
+          <div class="b-order-items">招牌蛋炒饭 (大份/中辣/火腿肠) x1<br>珍珠奶茶 (大杯/全糖/珍珠/椰果) x2</div>
+          <div class="b-order-remark">&#9888; 备注: 不要香菜，饭多一点</div>
+        </div>
+        <div class="b-order-footer">
+          <div><div class="b-order-price">¥53.00</div><div class="b-order-time">12:30 下单</div></div>
+          <div class="b-order-actions">
+            <button class="btn btn-outline danger btn-sm" onclick="App.rejectOrder()">拒单</button>
+            <button class="btn btn-primary btn-sm b-end" onclick="App.acceptOrder(this)">接单</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="b-order-card">
+        <div class="b-order-header">
+          <span class="b-order-number">#002</span>
+          <span class="b-order-timer" style="color:var(--color-danger);">&#9200; 剩余 08:20</span>
+        </div>
+        <div class="b-order-body">
+          <div class="b-order-user">用户: 吃货小王</div>
+          <div class="b-order-items">扬州炒饭 (大份/微辣) x2<br>柠檬茶 x1</div>
+        </div>
+        <div class="b-order-footer">
+          <div><div class="b-order-price">¥40.00</div><div class="b-order-time">12:12 下单</div></div>
+          <div class="b-order-actions">
+            <button class="btn btn-outline danger btn-sm" onclick="App.rejectOrder()">拒单</button>
+            <button class="btn btn-primary btn-sm b-end" onclick="App.acceptOrder(this)">接单</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="b-order-card">
+        <div class="b-order-header">
+          <span class="b-order-number">#003</span>
+          <span class="b-order-timer">&#9200; 剩余 25:10</span>
+        </div>
+        <div class="b-order-body">
+          <div class="b-order-user">用户: 匿名用户</div>
+          <div class="b-order-items">牛肉炒饭 (中份/特辣) x1<br>薯条 x1</div>
+          <div class="b-order-remark">&#9888; 备注: 多放辣椒</div>
+        </div>
+        <div class="b-order-footer">
+          <div><div class="b-order-price">¥26.00</div><div class="b-order-time">12:35 下单</div></div>
+          <div class="b-order-actions">
+            <button class="btn btn-outline danger btn-sm" onclick="App.rejectOrder()">拒单</button>
+            <button class="btn btn-primary btn-sm b-end" onclick="App.acceptOrder(this)">接单</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reject Popup -->
+    <div class="overlay" id="overlay-b-orders" onclick="App.closePopup('reject-popup');this.classList.remove('show');"></div>
+    <div class="popup-bottom" id="reject-popup">
+      <div class="popup-header">
+        <span class="popup-header-title">拒单原因</span>
+        <button class="popup-close" onclick="App.closePopup('reject-popup');document.getElementById('overlay-b-orders').classList.remove('show');">&#10005;</button>
+      </div>
+      <div class="popup-body">
+        <div class="reject-option selected" onclick="document.querySelectorAll('.reject-option').forEach(e=>e.classList.remove('selected'));this.classList.add('selected')"><div class="reject-radio"></div>材料不足</div>
+        <div class="reject-option" onclick="document.querySelectorAll('.reject-option').forEach(e=>e.classList.remove('selected'));this.classList.add('selected')"><div class="reject-radio"></div>太忙无法接单</div>
+        <div class="reject-option" onclick="document.querySelectorAll('.reject-option').forEach(e=>e.classList.remove('selected'));this.classList.add('selected')"><div class="reject-radio"></div>已打烊</div>
+        <div class="reject-option" onclick="document.querySelectorAll('.reject-option').forEach(e=>e.classList.remove('selected'));this.classList.add('selected')"><div class="reject-radio"></div>其他原因</div>
+      </div>
+      <div class="popup-footer" style="display:flex;gap:10px;">
+        <button class="btn btn-outline" style="flex:1;" onclick="App.closePopup('reject-popup');document.getElementById('overlay-b-orders').classList.remove('show');">取消</button>
+        <button class="btn btn-danger" style="flex:1;border-radius:var(--radius-full);" onclick="App.closePopup('reject-popup');document.getElementById('overlay-b-orders').classList.remove('show');App.showToast('已拒单')">确认拒单</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== B-06: 菜单管理 ====== -->
+  <div class="page" id="page-b-menu">
+    <div class="status-bar"><span class="status-bar-time">9:41</span><div class="status-bar-icons"><span>&#9679;&#9679;&#9679;&#9679;</span></div></div>
+    <div class="nav-bar b-end">
+      <button class="nav-back" onclick="App.navigateBack()">&#8592;</button>
+      <div class="nav-title">菜单管理</div>
+      <span class="nav-right" onclick="App.navigateTo('b-product-edit')">+ 添加</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:var(--bg-card);border-bottom:1px solid var(--divider-color);">
+      <div style="display:flex;gap:12px;overflow-x:auto;">
+        <span style="font-size:13px;color:var(--b-primary);font-weight:600;cursor:pointer;white-space:nowrap;border-bottom:2px solid var(--b-primary);padding-bottom:4px;">热销</span>
+        <span style="font-size:13px;color:var(--text-secondary);cursor:pointer;white-space:nowrap;">主食</span>
+        <span style="font-size:13px;color:var(--text-secondary);cursor:pointer;white-space:nowrap;">饮品</span>
+        <span style="font-size:13px;color:var(--text-secondary);cursor:pointer;white-space:nowrap;">小食</span>
+      </div>
+      <span style="font-size:12px;color:var(--b-primary);cursor:pointer;white-space:nowrap;margin-left:12px;" onclick="App.navigateTo('b-category')">编辑分类</span>
+    </div>
+    <div class="page-body">
+      <div class="b-product-card">
+        <div class="b-product-main">
+          <div class="b-product-img" style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2);">&#127858;</div>
+          <div class="b-product-info">
+            <div class="b-product-name">招牌蛋炒饭 <span class="tag tag-success product-status-tag">售卖中</span></div>
+            <div class="b-product-desc">好吃不贵的蛋炒饭</div>
+            <div class="b-product-price">¥12.00</div>
+          </div>
+        </div>
+        <div class="b-product-actions">
+          <button class="b-product-action text-b-primary" onclick="App.navigateTo('b-product-edit')">编辑</button>
+          <button class="b-product-action text-b-primary" onclick="App.navigateTo('b-spec-config')">规格</button>
+          <button class="b-product-action" onclick="App.toggleProductStatus(this)">下架</button>
+          <button class="b-product-action text-danger">删除</button>
+        </div>
+      </div>
+
+      <div class="b-product-card">
+        <div class="b-product-main">
+          <div class="b-product-img" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);">&#127834;</div>
+          <div class="b-product-info">
+            <div class="b-product-name">扬州炒饭 <span class="tag tag-success product-status-tag">售卖中</span></div>
+            <div class="b-product-desc">经典扬州味</div>
+            <div class="b-product-price">¥15.00</div>
+          </div>
+        </div>
+        <div class="b-product-actions">
+          <button class="b-product-action text-b-primary" onclick="App.navigateTo('b-product-edit')">编辑</button>
+          <button class="b-product-action text-b-primary" onclick="App.navigateTo('b-spec-config')">规格</button>
+          <button class="b-product-action" onclick="App.toggleProductStatus(this)">下架</button>
+          <button class="b-product-action text-danger">删除</button>
+        </div>
+      </div>
+
+      <div class="b-product-card" style="opacity:0.6;">
+        <div class="b-product-main">
+          <div class="b-product-img" style="background:linear-gradient(135deg,#F5F5F5,#E0E0E0);">&#127830;</div>
+          <div class="b-product-info">
+            <div class="b-product-name">牛肉炒饭 <span class="tag tag-default product-status-tag">已下架</span></div>
+            <div class="b-product-desc">大块牛肉超满足</div>
+            <div class="b-product-price" style="color:var(--text-hint);">¥18.00</div>
+          </div>
+        </div>
+        <div class="b-product-actions">
+          <button class="b-product-action text-b-primary" onclick="App.navigateTo('b-product-edit')">编辑</button>
+          <button class="b-product-action text-b-primary" onclick="App.navigateTo('b-spec-config')">规格</button>
+          <button class="b-product-action" onclick="App.toggleProductStatus(this)">上架</button>
+          <button class="b-product-action text-danger">删除</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== B-07: 新增/编辑商品 ====== -->
+  <div class="page" id="page-b-product-edit">
+    <div class="status-bar"><span class="status-bar-time">9:41</span><div class="status-bar-icons"><span>&#9679;&#9679;&#9679;&#9679;</span></div></div>
+    <div class="nav-bar b-end">
+      <button class="nav-back" onclick="App.navigateBack()">&#8592;</button>
+      <div class="nav-title">编辑商品</div>
+    </div>
+    <div class="page-body">
+      <div class="apply-form">
+        <div class="form-group">
+          <div class="form-label">商品图片（可选）</div>
+          <div style="width:80px;height:80px;border:1px dashed var(--border-color);border-radius:var(--radius-md);display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-hint);font-size:12px;cursor:pointer;">
+            <span style="font-size:24px;">+</span>
+            上传图片
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="form-label"><span class="required">*</span> 商品名称</div>
+          <input class="input-field b-end" placeholder="如：招牌蛋炒饭" value="招牌蛋炒饭">
+        </div>
+        <div class="form-group">
+          <div class="form-label">商品描述</div>
+          <textarea class="textarea-field" placeholder="简单描述您的商品..." style="min-height:60px;">好吃不贵的蛋炒饭</textarea>
+        </div>
+        <div class="form-group">
+          <div class="form-label"><span class="required">*</span> 所属分类</div>
+          <select class="input-field b-end" style="color:var(--text-body);">
+            <option>热销</option><option>主食</option><option>饮品</option><option>小食</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="form-label"><span class="required">*</span> 基础价格（元）</div>
+          <input class="input-field b-end" placeholder="¥ 0.00" type="number" step="0.01" value="12.00">
+        </div>
+        <div class="cell-group" style="margin:0;cursor:pointer;" onclick="App.navigateTo('b-spec-config')">
+          <div class="cell">
+            <span class="cell-title" style="font-weight:500;">规格设置</span>
+            <span class="cell-value">已设置 2个规格组</span>
+            <span class="cell-arrow">></span>
+          </div>
+        </div>
+        <button class="btn btn-primary-lg b-end" style="margin-top:20px;" onclick="App.showToast('商品已保存');setTimeout(()=>App.navigateBack(),800)">保存商品</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== B-08: 规格配置 ====== -->
+  <div class="page" id="page-b-spec-config">
+    <div class="status-bar"><span class="status-bar-time">9:41</span><div class="status-bar-icons"><span>&#9679;&#9679;&#9679;&#9679;</span></div></div>
+    <div class="nav-bar b-end">
+      <button class="nav-back" onclick="App.navigateBack()">&#8592;</button>
+      <div class="nav-title">规格设置</div>
+      <span class="nav-right">+ 添加规格组</span>
+    </div>
+    <div class="spec-template-bar">
+      <span class="spec-template-tag">+ 杯型</span>
+      <span class="spec-template-tag">+ 辣度</span>
+      <span class="spec-template-tag">+ 甜度</span>
+      <span class="spec-template-tag">+ 温度</span>
+      <span class="spec-template-tag">+ 份量</span>
+    </div>
+    <div class="page-body">
+      <div class="spec-config-card">
+        <div class="spec-config-header">
+          <span class="spec-config-title">份量</span>
+          <span style="font-size:13px;color:var(--color-danger);cursor:pointer;">&#128465; 删除</span>
+        </div>
+        <div class="spec-config-body">
+          <div class="spec-config-switches">
+            <label><input type="checkbox" checked> 必选</label>
+            <label><input type="checkbox"> 可多选</label>
+          </div>
+          <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">选项列表</div>
+          <div class="spec-config-row">
+            <input class="input-field b-end" value="大份" style="flex:1;">
+            <input class="input-field b-end price-input" value="+3" style="width:70px;text-align:center;">
+            <button class="spec-config-remove">&#10005;</button>
+          </div>
+          <div class="spec-config-row">
+            <input class="input-field b-end" value="中份" style="flex:1;">
+            <input class="input-field b-end price-input" value="0" style="width:70px;text-align:center;">
+            <button class="spec-config-remove">&#10005;</button>
+          </div>
+          <div class="spec-config-row">
+            <input class="input-field b-end" value="小份" style="flex:1;">
+            <input class="input-field b-end price-input" value="-2" style="width:70px;text-align:center;">
+            <button class="spec-config-remove">&#10005;</button>
+          </div>
+          <button class="add-option-btn">+ 添加选项</button>
+        </div>
+      </div>
+
+      <div class="spec-config-card">
+        <div class="spec-config-header">
+          <span class="spec-config-title">辣度</span>
+          <span style="font-size:13px;color:var(--color-danger);cursor:pointer;">&#128465; 删除</span>
+        </div>
+        <div class="spec-config-body">
+          <div class="spec-config-switches">
+            <label><input type="checkbox" checked> 必选</label>
+            <label><input type="checkbox"> 可多选</label>
+          </div>
+          <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">选项列表</div>
+          <div class="spec-config-row">
+            <input class="input-field b-end" value="微辣" style="flex:1;">
+            <input class="input-field b-end price-input" value="0" style="width:70px;text-align:center;">
+            <button class="spec-config-remove">&#10005;</button>
+          </div>
+          <div class="spec-config-row">
+            <input class="input-field b-end" value="中辣" style="flex:1;">
+            <input class="input-field b-end price-input" value="0" style="width:70px;text-align:center;">
+            <button class="spec-config-remove">&#10005;</button>
+          </div>
+          <div class="spec-config-row">
+            <input class="input-field b-end" value="特辣" style="flex:1;">
+            <input class="input-field b-end price-input" value="0" style="width:70px;text-align:center;">
+            <button class="spec-config-remove">&#10005;</button>
+          </div>
+          <button class="add-option-btn">+ 添加选项</button>
+        </div>
+      </div>
+
+      <div class="spec-config-card">
+        <div class="spec-config-header">
+          <span class="spec-config-title">加料</span>
+          <span style="font-size:13px;color:var(--color-danger);cursor:pointer;">&#128465; 删除</span>
+        </div>
+        <div class="spec-config-body">
+          <div class="spec-config-switches">
+            <label><input type="checkbox"> 必选</label>
+            <label><input type="checkbox" checked> 可多选</label>
+          </div>
+          <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">选项列表</div>
+          <div class="spec-config-row">
+            <input class="input-field b-end" value="火腿肠" style="flex:1;">
+            <input class="input-field b-end price-input" value="+2" style="width:70px;text-align:center;">
+            <button class="spec-config-remove">&#10005;</button>
+          </div>
+          <div class="spec-config-row">
+            <input class="input-field b-end" value="煎蛋" style="flex:1;">
+            <input class="input-field b-end price-input" value="+3" style="width:70px;text-align:center;">
+            <button class="spec-config-remove">&#10005;</button>
+          </div>
+          <button class="add-option-btn">+ 添加选项</button>
+        </div>
+      </div>
+
+      <div style="padding:16px;">
+        <button class="btn btn-primary-lg b-end" onclick="App.showToast('规格已保存');setTimeout(()=>App.navigateBack(),800)">保存规格设置</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== B-09: 分类管理 ====== -->
+  <div class="page" id="page-b-category">
+    <div class="status-bar"><span class="status-bar-time">9:41</span><div class="status-bar-icons"><span>&#9679;&#9679;&#9679;&#9679;</span></div></div>
+    <div class="nav-bar b-end">
+      <button class="nav-back" onclick="App.navigateBack()">&#8592;</button>
+      <div class="nav-title">分类管理</div>
+      <span class="nav-right" onclick="App.showToast('新增分类')">+ 新增</span>
+    </div>
+    <div class="page-body">
+      <div style="padding:12px 16px;font-size:12px;color:var(--text-hint);">长按拖拽可排序</div>
+      <div style="background:var(--bg-card);">
+        <div style="display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid var(--divider-color);">
+          <span style="color:var(--text-hint);margin-right:12px;cursor:grab;">&#9776;</span>
+          <span style="flex:1;font-size:14px;">热销</span>
+          <span style="font-size:12px;color:var(--text-hint);margin-right:12px;">5件商品</span>
+          <span style="font-size:13px;color:var(--b-primary);cursor:pointer;margin-right:12px;">编辑</span>
+          <span style="font-size:13px;color:var(--color-danger);cursor:pointer;">&#10005;</span>
+        </div>
+        <div style="display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid var(--divider-color);">
+          <span style="color:var(--text-hint);margin-right:12px;cursor:grab;">&#9776;</span>
+          <span style="flex:1;font-size:14px;">主食</span>
+          <span style="font-size:12px;color:var(--text-hint);margin-right:12px;">3件商品</span>
+          <span style="font-size:13px;color:var(--b-primary);cursor:pointer;margin-right:12px;">编辑</span>
+          <span style="font-size:13px;color:var(--color-danger);cursor:pointer;">&#10005;</span>
+        </div>
+        <div style="display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid var(--divider-color);">
+          <span style="color:var(--text-hint);margin-right:12px;cursor:grab;">&#9776;</span>
+          <span style="flex:1;font-size:14px;">饮品</span>
+          <span style="font-size:12px;color:var(--text-hint);margin-right:12px;">2件商品</span>
+          <span style="font-size:13px;color:var(--b-primary);cursor:pointer;margin-right:12px;">编辑</span>
+          <span style="font-size:13px;color:var(--color-danger);cursor:pointer;">&#10005;</span>
+        </div>
+        <div style="display:flex;align-items:center;padding:14px 16px;">
+          <span style="color:var(--text-hint);margin-right:12px;cursor:grab;">&#9776;</span>
+          <span style="flex:1;font-size:14px;">小食</span>
+          <span style="font-size:12px;color:var(--text-hint);margin-right:12px;">1件商品</span>
+          <span style="font-size:13px;color:var(--b-primary);cursor:pointer;margin-right:12px;">编辑</span>
+          <span style="font-size:13px;color:var(--color-danger);cursor:pointer;">&#10005;</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== B-10: 账单统计 ====== -->
+  <div class="page" id="page-b-stats">
+    <div class="status-bar"><span class="status-bar-time">9:41</span><div class="status-bar-icons"><span>&#9679;&#9679;&#9679;&#9679;</span></div></div>
+    <div class="nav-bar b-end">
+      <button class="nav-back" onclick="App.navigateBack()">&#8592;</button>
+      <div class="nav-title">账单统计</div>
+    </div>
+    <div class="filter-tabs">
+      <div class="filter-tab b-active" data-group="b-stats" data-tab="today" onclick="App.switchFilterTab('b-stats','today')">今日</div>
+      <div class="filter-tab" data-group="b-stats" data-tab="week" onclick="App.switchFilterTab('b-stats','week')">本周</div>
+      <div class="filter-tab" data-group="b-stats" data-tab="month" onclick="App.switchFilterTab('b-stats','month')">本月</div>
+      <div class="filter-tab" data-group="b-stats" data-tab="custom" onclick="App.switchFilterTab('b-stats','custom')">自定义</div>
+    </div>
+    <div class="page-body">
+      <div class="stats-summary">
+        <div class="stats-main-label">营业额</div>
+        <div class="stats-main-value">¥3,580</div>
+        <div class="data-grid" style="margin-top:16px;">
+          <div class="data-item"><div class="data-value">45</div><div class="data-label">订单数</div></div>
+          <div class="data-item"><div class="data-value text-danger">¥12</div><div class="data-label">退款</div></div>
+          <div class="data-item"><div class="data-value" style="color:var(--color-warning);">¥358</div><div class="data-label">平台抽佣</div></div>
+        </div>
+        <div class="stats-income">
+          实际收入 <span class="stats-income-value">¥3,210</span>
+        </div>
+      </div>
+
+      <div class="section-header">账单明细</div>
+      <div class="bill-item">
+        <div class="bill-info"><div class="bill-time">02-10 12:30 &nbsp; #001</div><div class="bill-desc">蛋炒饭x1 珍珠奶茶x2</div></div>
+        <div style="text-align:right;"><div class="bill-amount">+¥53.00</div><div class="bill-commission">抽佣 ¥5.30</div></div>
+      </div>
+      <div class="bill-item">
+        <div class="bill-info"><div class="bill-time">02-10 11:15 &nbsp; #002</div><div class="bill-desc">扬州炒饭x2 柠檬茶x1</div></div>
+        <div style="text-align:right;"><div class="bill-amount">+¥40.00</div><div class="bill-commission">抽佣 ¥4.00</div></div>
+      </div>
+      <div class="bill-item">
+        <div class="bill-info"><div class="bill-time">02-10 10:20 &nbsp; #003</div><div class="bill-desc">牛肉炒饭x1 薯条x1</div></div>
+        <div style="text-align:right;"><div class="bill-amount">+¥26.00</div><div class="bill-commission">抽佣 ¥2.60</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== B-11: 店铺设置 ====== -->
+  <div class="page" id="page-b-settings">
+    <div class="status-bar"><span class="status-bar-time">9:41</span><div class="status-bar-icons"><span>&#9679;&#9679;&#9679;&#9679;</span></div></div>
+    <div class="nav-bar b-end">
+      <button class="nav-back" onclick="App.navigateBack()">&#8592;</button>
+      <div class="nav-title">店铺设置</div>
+    </div>
+    <div class="page-body">
+      <div class="section-label">基本信息</div>
+      <div class="cell-group">
+        <div class="cell">
+          <span class="cell-title">店铺头图</span>
+          <div style="width:44px;height:44px;border-radius:var(--radius-md);background:linear-gradient(135deg,#FF6B35,#FFAB76);display:flex;align-items:center;justify-content:center;font-size:20px;margin-right:8px;">&#127858;</div>
+          <span class="cell-arrow">></span>
+        </div>
+        <div class="cell">
+          <span class="cell-title">店铺名称</span>
+          <span class="cell-value">胖子炒饭</span>
+          <span class="cell-arrow">></span>
+        </div>
+        <div class="cell">
+          <span class="cell-title">店铺公告</span>
+          <span class="cell-value truncate" style="max-width:140px;">今日新品蛋炒饭</span>
+          <span class="cell-arrow">></span>
+        </div>
+        <div class="cell">
+          <span class="cell-title">联系电话</span>
+          <span class="cell-value">138****8888</span>
+          <span class="cell-arrow">></span>
+        </div>
+      </div>
+
+      <div class="section-label">推广</div>
+      <div class="cell-group">
+        <div class="cell" onclick="App.navigateTo('b-invite')">
+          <span class="cell-title">我的邀请码</span>
+          <span class="cell-value" style="font-weight:600;color:var(--b-primary);letter-spacing:2px;">A3X9K2</span>
+          <span class="cell-arrow">></span>
+        </div>
+        <div class="cell">
+          <span class="cell-title">我的推荐</span>
+          <span class="cell-value">已推荐 3 家商户</span>
+          <span class="cell-arrow">></span>
+        </div>
+      </div>
+
+      <div class="section-label">预留功能</div>
+      <div class="cell-group">
+        <div class="cell" style="opacity:0.5;">
+          <span class="cell-title">起送价</span>
+          <span class="cell-value">敬请期待</span>
+        </div>
+        <div class="cell" style="opacity:0.5;">
+          <span class="cell-title">包装费</span>
+          <span class="cell-value">敬请期待</span>
+        </div>
+        <div class="cell" style="opacity:0.5;">
+          <span class="cell-title">配送费</span>
+          <span class="cell-value">敬请期待</span>
+        </div>
+      </div>
+      <div style="height:20px;"></div>
+    </div>
+  </div>
+
+  <!-- ====== B-12: 邀请码分享 ====== -->
+  <div class="page" id="page-b-invite">
+    <div class="status-bar"><span class="status-bar-time">9:41</span><div class="status-bar-icons"><span>&#9679;&#9679;&#9679;&#9679;</span></div></div>
+    <div class="nav-bar b-end">
+      <button class="nav-back" onclick="App.navigateBack()">&#8592;</button>
+      <div class="nav-title">我的邀请码</div>
+    </div>
+    <div class="page-body">
+      <div class="invite-card">
+        <div class="invite-label">推荐商家入驻，享受分成</div>
+        <div class="invite-code">A3X9K2</div>
+        <button class="btn" style="background:rgba(255,255,255,0.2);color:#fff;height:36px;padding:0 24px;" onclick="App.showToast('邀请码已复制')">复制邀请码</button>
+      </div>
+
+      <div class="card" style="font-size:13px;color:var(--text-secondary);line-height:1.8;">
+        <div style="font-weight:600;color:var(--text-primary);margin-bottom:4px;">推荐规则说明</div>
+        &#183; 推荐商家成功入驻后，可享受该商家营业额抽佣的分成<br>
+        &#183; 分成比例：直接推荐50%，间接推荐25%<br>
+        &#183; 分成结算周期：订单完成后自动结算
+      </div>
+
+      <div class="section-header">我的推荐记录</div>
+      <div class="cell-group">
+        <div class="cell">
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:500;">奶茶小站</div>
+            <div style="font-size:11px;color:var(--text-hint);margin-top:2px;">入驻时间 2026-01-15</div>
+          </div>
+          <span class="tag tag-primary">直接推荐</span>
+        </div>
+        <div class="cell">
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:500;">烧烤大排档</div>
+            <div style="font-size:11px;color:var(--text-hint);margin-top:2px;">入驻时间 2026-02-01</div>
+          </div>
+          <span class="tag tag-primary">直接推荐</span>
+        </div>
+        <div class="cell">
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:500;">兰州拉面</div>
+            <div style="font-size:11px;color:var(--text-hint);margin-top:2px;">入驻时间 2026-02-08</div>
+          </div>
+          <span class="tag tag-primary">直接推荐</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end phone-frame -->
+
+<script src="js/app.js"></script>
+<script>
+  // Fix B-end reject popup overlay
+  const origReject = App.rejectOrder;
+  App.rejectOrder = function() {
+    const overlay = document.getElementById('overlay-b-orders');
+    if (overlay) overlay.classList.add('show');
+    const popup = document.getElementById('reject-popup');
+    if (popup) popup.classList.add('show');
+  };
+</script>
+</body>
+</html>
