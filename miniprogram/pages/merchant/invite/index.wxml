@@ -1,0 +1,8 @@
+<nav-bar title="邀请有礼" left-arrow="{{true}}" />
+<view class="page-container">
+  <view class="page-body">
+    <view class="loading-center">
+      <text>邀请有礼 - 开发中</text>
+    </view>
+  </view>
+</view>

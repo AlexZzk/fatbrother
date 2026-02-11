@@ -1,0 +1,4 @@
+/* 商家详情 */
+.page-container {
+  min-height: 100vh;
+}

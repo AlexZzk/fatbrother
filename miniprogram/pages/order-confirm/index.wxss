@@ -1,0 +1,4 @@
+/* 确认订单 */
+.page-container {
+  min-height: 100vh;
+}

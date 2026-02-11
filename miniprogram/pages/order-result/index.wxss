@@ -1,0 +1,4 @@
+/* 支付结果 */
+.page-container {
+  min-height: 100vh;
+}

@@ -1,0 +1,8 @@
+<nav-bar title="商户入驻" left-arrow="{{true}}" />
+<view class="page-container">
+  <view class="page-body">
+    <view class="loading-center">
+      <text>商户入驻 - 开发中</text>
+    </view>
+  </view>
+</view>

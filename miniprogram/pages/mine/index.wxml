@@ -1,0 +1,9 @@
+<nav-bar title="我的" />
+<view class="page-container">
+  <view class="page-body">
+    <view class="loading-center">
+      <text>我的 - 开发中</text>
+    </view>
+  </view>
+  <custom-tab-bar selected="{{2}}" />
+</view>

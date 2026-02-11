@@ -1,0 +1,40 @@
+.cell {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: auto;
+  padding: 28rpx 32rpx;
+  background-color: #FFFFFF;
+  border-bottom: 1rpx solid #F0F0F0;
+  box-sizing: border-box;
+}
+
+.cell--active {
+  background-color: #F5F5F5;
+}
+
+.cell--disabled {
+  opacity: 0.5;
+}
+
+.cell__icon {
+  font-size: 36rpx;
+  margin-right: 24rpx;
+}
+
+.cell__title {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333333;
+}
+
+.cell__value {
+  font-size: 26rpx;
+  color: #999999;
+  margin-right: 8rpx;
+}
+
+.cell__arrow {
+  font-size: 24rpx;
+  color: #999999;
+}

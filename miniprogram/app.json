@@ -1,0 +1,60 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/search/index",
+    "pages/shop/index",
+    "pages/order-confirm/index",
+    "pages/order-result/index",
+    "pages/order-list/index",
+    "pages/order-detail/index",
+    "pages/review/index",
+    "pages/mine/index",
+    "pages/profile/index",
+    "pages/bill/index",
+    "pages/merchant/guide/index",
+    "pages/merchant/apply/index",
+    "pages/merchant/pending/index",
+    "pages/merchant/dashboard/index",
+    "pages/merchant/orders/index",
+    "pages/merchant/menu/index",
+    "pages/merchant/product-edit/index",
+    "pages/merchant/spec-config/index",
+    "pages/merchant/category/index",
+    "pages/merchant/statistics/index",
+    "pages/merchant/settings/index",
+    "pages/merchant/invite/index"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "navigationBarTitleText": "胖兄弟外卖",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F5F5F5",
+    "backgroundTextStyle": "dark",
+    "navigationStyle": "custom"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#999999",
+    "selectedColor": "#FF6B35",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/order-list/index",
+        "text": "订单"
+      },
+      {
+        "pagePath": "pages/mine/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "usingComponents": {},
+  "sitemapLocation": "sitemap.json",
+  "cloud": true,
+  "lazyCodeLoading": "requiredComponents"
+}

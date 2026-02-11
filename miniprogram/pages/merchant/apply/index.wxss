@@ -1,0 +1,4 @@
+/* 入驻申请 */
+.page-container {
+  min-height: 100vh;
+}

@@ -1,0 +1,8 @@
+<nav-bar title="数据统计" left-arrow="{{true}}" />
+<view class="page-container">
+  <view class="page-body">
+    <view class="loading-center">
+      <text>数据统计 - 开发中</text>
+    </view>
+  </view>
+</view>

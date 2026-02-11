@@ -1,0 +1,6 @@
+<view class="cell {{disabled ? 'cell--disabled' : ''}}" hover-class="{{disabled ? '' : 'cell--active'}}" bindtap="onClick">
+  <text wx:if="{{icon}}" class="cell__icon">{{icon}}</text>
+  <text class="cell__title">{{title}}</text>
+  <text wx:if="{{value}}" class="cell__value">{{value}}</text>
+  <text wx:if="{{arrow}}" class="cell__arrow">></text>
+</view>

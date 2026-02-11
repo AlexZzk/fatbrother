@@ -1,0 +1,31 @@
+<view class="tab-bar">
+  <view
+    class="tab-item {{active === 0 ? 'active' : ''}}"
+    data-index="0"
+    data-path="/pages/index/index"
+    bindtap="switchTab"
+  >
+    <view class="tab-icon">{{active === 0 ? '首' : '首'}}</view>
+    <view class="tab-label">首页</view>
+  </view>
+
+  <view
+    class="tab-item {{active === 1 ? 'active' : ''}}"
+    data-index="1"
+    data-path="/pages/order-list/index"
+    bindtap="switchTab"
+  >
+    <view class="tab-icon">{{active === 1 ? '单' : '单'}}</view>
+    <view class="tab-label">订单</view>
+  </view>
+
+  <view
+    class="tab-item {{active === 2 ? 'active' : ''}}"
+    data-index="2"
+    data-path="/pages/mine/index"
+    bindtap="switchTab"
+  >
+    <view class="tab-icon">{{active === 2 ? '我' : '我'}}</view>
+    <view class="tab-label">我的</view>
+  </view>
+</view>

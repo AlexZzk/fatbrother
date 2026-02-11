@@ -1,0 +1,4 @@
+/* 店铺设置 */
+.page-container {
+  min-height: 100vh;
+}

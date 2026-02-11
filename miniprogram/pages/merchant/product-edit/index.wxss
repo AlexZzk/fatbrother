@@ -1,0 +1,4 @@
+/* 编辑商品 */
+.page-container {
+  min-height: 100vh;
+}

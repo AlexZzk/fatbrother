@@ -1,0 +1,46 @@
+.stepper {
+  display: inline-flex;
+  align-items: center;
+}
+
+.stepper__btn {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  font-weight: 500;
+  padding: 0;
+  margin: 0;
+  border: none;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+.stepper__btn::after {
+  border: none;
+}
+
+.stepper__minus {
+  background: #F5F5F5;
+  color: #666;
+}
+
+.stepper__plus {
+  background: #FF6B35;
+  color: #FFF;
+}
+
+.stepper__btn--disabled {
+  opacity: 0.3;
+}
+
+.stepper__value {
+  width: 64rpx;
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #222;
+}

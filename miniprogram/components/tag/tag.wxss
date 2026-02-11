@@ -1,0 +1,32 @@
+.tag {
+  display: inline-flex;
+  padding: 4rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+.tag--default {
+  background-color: #F0F0F0;
+  color: #666666;
+}
+
+.tag--primary {
+  background-color: rgba(255, 107, 53, 0.08);
+  color: #FF6B35;
+}
+
+.tag--success {
+  background-color: #E8F8EE;
+  color: #00B578;
+}
+
+.tag--warning {
+  background-color: #FFF3E0;
+  color: #FF9500;
+}
+
+.tag--danger {
+  background-color: #FFEBEE;
+  color: #FF3B30;
+}

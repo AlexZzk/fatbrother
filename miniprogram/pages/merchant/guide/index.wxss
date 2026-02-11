@@ -1,0 +1,4 @@
+/* 商户入驻 */
+.page-container {
+  min-height: 100vh;
+}

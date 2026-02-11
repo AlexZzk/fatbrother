@@ -1,0 +1,4 @@
+/* 邀请有礼 */
+.page-container {
+  min-height: 100vh;
+}

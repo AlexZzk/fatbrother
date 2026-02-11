@@ -1,0 +1,30 @@
+.price {
+  display: inline-flex;
+  align-items: baseline;
+  font-weight: 700;
+}
+
+.price--sm {
+  font-size: 24rpx;
+}
+
+.price--md {
+  font-size: 30rpx;
+}
+
+.price--lg {
+  font-size: 36rpx;
+}
+
+.price__symbol {
+  font-size: 70%;
+  font-weight: 500;
+}
+
+.price__int {
+  font-size: inherit;
+}
+
+.price__dec {
+  font-size: 70%;
+}
