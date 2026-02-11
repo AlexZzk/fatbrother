@@ -1,4 +1,150 @@
 /* 商家详情 */
 .page-container {
   min-height: 100vh;
+  background-color: #F5F5F5;
+  padding-bottom: 120rpx;
+}
+
+/* 头图 */
+.shop-header {
+  width: 100%;
+  height: 300rpx;
+  background-color: #FF6B35;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.shop-header-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.3));
+}
+
+/* 商家信息卡 */
+.shop-info-card {
+  display: flex;
+  align-items: center;
+  padding: 24rpx;
+  background-color: #FFFFFF;
+  margin-top: -40rpx;
+  margin-left: 24rpx;
+  margin-right: 24rpx;
+  border-radius: 16rpx;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.shop-avatar {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 12rpx;
+  flex-shrink: 0;
+  margin-right: 20rpx;
+  background-color: #F5F5F5;
+}
+
+.shop-detail {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.shop-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #222222;
+}
+
+.shop-meta {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  font-size: 24rpx;
+}
+
+.shop-rating {
+  color: #FF6B35;
+  font-weight: 500;
+}
+
+.shop-sales {
+  color: #666666;
+}
+
+/* 公告 */
+.shop-announcement {
+  margin: 16rpx 24rpx;
+  padding: 16rpx 20rpx;
+  background-color: #FFFBE6;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+  color: #8C6C00;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 菜单区域 */
+.menu-area {
+  display: flex;
+  margin: 16rpx 0;
+  background-color: #FFFFFF;
+  min-height: 600rpx;
+}
+
+.category-nav {
+  width: 160rpx;
+  flex-shrink: 0;
+  background-color: #F7F8FA;
+  height: calc(100vh - 500rpx);
+}
+
+.category-tab {
+  padding: 24rpx 16rpx;
+  font-size: 26rpx;
+  color: #666666;
+  text-align: center;
+  border-left: 6rpx solid transparent;
+}
+
+.category-tab--active {
+  background-color: #FFFFFF;
+  color: #FF6B35;
+  font-weight: 600;
+  border-left-color: #FF6B35;
+}
+
+.product-list {
+  flex: 1;
+  padding: 0 16rpx;
+  height: calc(100vh - 500rpx);
+}
+
+.product-category-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333333;
+  padding: 20rpx 0 8rpx;
+}
+
+/* 购物车底栏定位 */
+.cart-bar-wrap {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 998;
+}
+
+.loading-center {
+  text-align: center;
+  padding: 200rpx 0;
+  color: #999999;
+  font-size: 28rpx;
 }

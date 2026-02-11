@@ -1,0 +1,101 @@
+.popup-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 100rpx;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 999;
+  display: flex;
+  align-items: flex-end;
+}
+
+.popup-panel {
+  width: 100%;
+  max-height: 50vh;
+  background-color: #FFFFFF;
+  border-radius: 24rpx 24rpx 0 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 28rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+
+.popup-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #222222;
+}
+
+.popup-clear {
+  font-size: 26rpx;
+  color: #FF6B35;
+}
+
+.popup-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 28rpx;
+}
+
+.cart-item {
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+
+.cart-item:last-child {
+  border-bottom: none;
+}
+
+.item-info {
+  margin-bottom: 8rpx;
+}
+
+.item-name {
+  font-size: 28rpx;
+  color: #222222;
+  font-weight: 500;
+}
+
+.item-specs {
+  font-size: 22rpx;
+  color: #999999;
+  margin-left: 8rpx;
+}
+
+.item-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.item-price {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #FF3B30;
+}
+
+.popup-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 28rpx;
+  border-top: 1rpx solid #F0F0F0;
+}
+
+.footer-label {
+  font-size: 28rpx;
+  color: #222222;
+}
+
+.footer-total {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #FF3B30;
+}

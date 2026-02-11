@@ -1,0 +1,31 @@
+<view wx:if="{{show}}" class="popup-mask" bindtap="onMaskTap" catchtouchmove="noop">
+  <view class="popup-panel" catchtap="noop">
+    <!-- Header -->
+    <view class="popup-header">
+      <text class="popup-title">购物车</text>
+      <view class="popup-clear" bindtap="onClear">清空</view>
+    </view>
+
+    <!-- Item list -->
+    <scroll-view class="popup-body" scroll-y>
+      <view wx:for="{{items}}" wx:key="cartId" class="cart-item">
+        <view class="item-info">
+          <text class="item-name">{{item.productName}}</text>
+          <text wx:if="{{item.specs.length > 0}}" class="item-specs">
+            ({{item.specs.map(s => s.itemName).join('/')}})
+          </text>
+        </view>
+        <view class="item-bottom">
+          <text class="item-price">¥{{item.unitPrice / 100}}</text>
+          <stepper value="{{item.quantity}}" min="{{0}}" max="{{99}}" data-cartid="{{item.cartId}}" bind:change="onQuantityChange" />
+        </view>
+      </view>
+    </scroll-view>
+
+    <!-- Footer -->
+    <view class="popup-footer">
+      <text class="footer-label">合计</text>
+      <text class="footer-total">¥{{totalPrice / 100}}</text>
+    </view>
+  </view>
+</view>
