@@ -1,0 +1,410 @@
+const cloud = require('wx-server-sdk')
+
+cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
+const db = cloud.database()
+const _ = db.command
+const usersCollection = db.collection('users')
+const merchantsCollection = db.collection('merchants')
+
+/**
+ * 商户模块云函数
+ * 通过 action 字段路由到具体方法
+ */
+exports.main = async (event, context) => {
+  const { OPENID } = cloud.getWXContext()
+  const { action } = event
+
+  const actions = {
+    verifyInviteCode,
+    apply,
+    getApplyStatus,
+    getMerchantInfo,
+    updateSettings,
+    toggleStatus,
+    getInviteRecords
+  }
+
+  if (!actions[action]) {
+    return { code: 1001, message: `未知的 action: ${action}` }
+  }
+
+  try {
+    return await actions[action](event, OPENID)
+  } catch (err) {
+    console.error(`[merchant/${action}] error:`, err)
+    return { code: 9999, message: '系统内部错误' }
+  }
+}
+
+/**
+ * 验证邀请码有效性
+ */
+async function verifyInviteCode(event, openid) {
+  const { code } = event
+  if (!code) {
+    return { code: 1001, message: '请输入邀请码' }
+  }
+
+  const normalizedCode = code.toUpperCase().trim()
+
+  // 查找拥有该邀请码的商户
+  const { data: merchants } = await merchantsCollection
+    .where({ invite_code: normalizedCode, status: 'active' })
+    .limit(1)
+    .get()
+
+  if (merchants.length === 0) {
+    return { code: 2001, message: '邀请码无效或对应商户已停用' }
+  }
+
+  return {
+    code: 0,
+    message: 'success',
+    data: {
+      valid: true,
+      referrerShopName: merchants[0].shop_name
+    }
+  }
+}
+
+/**
+ * 提交入驻申请
+ */
+async function apply(event, openid) {
+  const { invite_code, shop_name, contact_name, contact_phone, mch_id } = event
+
+  // 参数验证
+  if (!invite_code || !shop_name || !contact_name || !contact_phone) {
+    return { code: 1001, message: '请填写完整信息' }
+  }
+  if (shop_name.length < 2 || shop_name.length > 20) {
+    return { code: 1001, message: '店铺名称需要2-20个字符' }
+  }
+  if (!/^1\d{10}$/.test(contact_phone)) {
+    return { code: 1001, message: '请输入正确的手机号' }
+  }
+
+  // 查找当前用户
+  const { data: users } = await usersCollection
+    .where({ _openid: openid })
+    .limit(1)
+    .get()
+  if (users.length === 0) {
+    return { code: 1002, message: '请先登录' }
+  }
+  const userId = users[0]._id
+
+  // 检查是否已申请
+  const { data: existingMerchants } = await merchantsCollection
+    .where({ user_id: userId })
+    .limit(1)
+    .get()
+  if (existingMerchants.length > 0) {
+    const status = existingMerchants[0].status
+    if (status === 'active') {
+      return { code: 1005, message: '您已是商户，无需重复申请' }
+    }
+    if (status === 'pending') {
+      return { code: 1005, message: '您已有待审核的申请' }
+    }
+  }
+
+  // 验证邀请码
+  const normalizedCode = invite_code.toUpperCase().trim()
+  const { data: referrers } = await merchantsCollection
+    .where({ invite_code: normalizedCode, status: 'active' })
+    .limit(1)
+    .get()
+  if (referrers.length === 0) {
+    return { code: 2001, message: '邀请码无效' }
+  }
+
+  const referrer = referrers[0]
+
+  // 构建推荐链（最多2级）
+  const referrerId = referrer._id
+  const indirectReferrerId = referrer.referrer_id || ''
+
+  // 生成唯一邀请码（6位大写字母+数字）
+  const newInviteCode = generateInviteCode()
+
+  const now = db.serverDate()
+  const merchantData = {
+    user_id: userId,
+    mch_id: mch_id || '',
+    shop_name: shop_name.trim(),
+    shop_avatar: '',
+    announcement: '',
+    contact_name: contact_name.trim(),
+    contact_phone,
+    status: 'pending',
+    is_open: false,
+    location: null,
+    invite_code: newInviteCode,
+    referrer_id: referrerId,
+    indirect_referrer_id: indirectReferrerId,
+    rating: 5.0,
+    monthly_sales: 0,
+    created_at: now,
+    updated_at: now
+  }
+
+  const { _id } = await merchantsCollection.add({ data: merchantData })
+
+  // 更新用户角色为 merchant
+  await usersCollection.doc(userId).update({
+    data: { role: 'merchant', updated_at: now }
+  })
+
+  return {
+    code: 0,
+    message: 'success',
+    data: {
+      merchantId: _id,
+      status: 'pending'
+    }
+  }
+}
+
+/**
+ * 查询当前用户的申请状态
+ */
+async function getApplyStatus(event, openid) {
+  const { data: users } = await usersCollection
+    .where({ _openid: openid })
+    .limit(1)
+    .get()
+  if (users.length === 0) {
+    return { code: 1002, message: '请先登录' }
+  }
+
+  const { data: merchants } = await merchantsCollection
+    .where({ user_id: users[0]._id })
+    .limit(1)
+    .get()
+
+  if (merchants.length === 0) {
+    return {
+      code: 0,
+      message: 'success',
+      data: { hasApplied: false, merchantInfo: null }
+    }
+  }
+
+  const m = merchants[0]
+  return {
+    code: 0,
+    message: 'success',
+    data: {
+      hasApplied: true,
+      merchantInfo: {
+        _id: m._id,
+        shop_name: m.shop_name,
+        contact_name: m.contact_name,
+        contact_phone: m.contact_phone,
+        status: m.status,
+        invite_code: m.invite_code,
+        is_open: m.is_open,
+        created_at: m.created_at
+      }
+    }
+  }
+}
+
+/**
+ * 获取商户详细信息
+ */
+async function getMerchantInfo(event, openid) {
+  const { merchantId } = event
+
+  // 如果传了 merchantId，查指定商户（C端浏览用）
+  if (merchantId) {
+    const { data: merchant } = await merchantsCollection.doc(merchantId).get()
+    if (!merchant) {
+      return { code: 2002, message: '商户不存在' }
+    }
+    return { code: 0, message: 'success', data: { merchantInfo: merchant } }
+  }
+
+  // 否则查当前用户的商户信息
+  const { data: users } = await usersCollection
+    .where({ _openid: openid })
+    .limit(1)
+    .get()
+  if (users.length === 0) {
+    return { code: 1002, message: '请先登录' }
+  }
+
+  const { data: merchants } = await merchantsCollection
+    .where({ user_id: users[0]._id })
+    .limit(1)
+    .get()
+
+  if (merchants.length === 0) {
+    return { code: 2002, message: '您还不是商户' }
+  }
+
+  return {
+    code: 0,
+    message: 'success',
+    data: { merchantInfo: merchants[0] }
+  }
+}
+
+/**
+ * 更新店铺设置
+ */
+async function updateSettings(event, openid) {
+  const { shop_name, shop_avatar, announcement, contact_phone } = event
+
+  const { data: users } = await usersCollection
+    .where({ _openid: openid })
+    .limit(1)
+    .get()
+  if (users.length === 0) {
+    return { code: 1002, message: '请先登录' }
+  }
+
+  const { data: merchants } = await merchantsCollection
+    .where({ user_id: users[0]._id, status: 'active' })
+    .limit(1)
+    .get()
+  if (merchants.length === 0) {
+    return { code: 1003, message: '无权限或商户未激活' }
+  }
+
+  const updateData = { updated_at: db.serverDate() }
+  if (shop_name !== undefined) updateData.shop_name = shop_name.trim()
+  if (shop_avatar !== undefined) updateData.shop_avatar = shop_avatar
+  if (announcement !== undefined) updateData.announcement = announcement.trim()
+  if (contact_phone !== undefined) updateData.contact_phone = contact_phone
+
+  await merchantsCollection.doc(merchants[0]._id).update({ data: updateData })
+
+  // 返回更新后的信息
+  const { data: updated } = await merchantsCollection.doc(merchants[0]._id).get()
+  return {
+    code: 0,
+    message: 'success',
+    data: { merchantInfo: updated }
+  }
+}
+
+/**
+ * 切换营业状态（开店/闭店）
+ */
+async function toggleStatus(event, openid) {
+  const { isOpen, location } = event
+
+  const { data: users } = await usersCollection
+    .where({ _openid: openid })
+    .limit(1)
+    .get()
+  if (users.length === 0) {
+    return { code: 1002, message: '请先登录' }
+  }
+
+  const { data: merchants } = await merchantsCollection
+    .where({ user_id: users[0]._id, status: 'active' })
+    .limit(1)
+    .get()
+  if (merchants.length === 0) {
+    return { code: 1003, message: '无权限或商户未激活' }
+  }
+
+  const updateData = {
+    is_open: !!isOpen,
+    updated_at: db.serverDate()
+  }
+
+  // 开店时更新GPS位置
+  if (isOpen && location && location.latitude && location.longitude) {
+    updateData.location = db.Geo.Point(location.longitude, location.latitude)
+  }
+
+  await merchantsCollection.doc(merchants[0]._id).update({ data: updateData })
+
+  return {
+    code: 0,
+    message: 'success',
+    data: {
+      is_open: !!isOpen
+    }
+  }
+}
+
+/**
+ * 获取邀请记录（当前商户推荐的商户列表）
+ */
+async function getInviteRecords(event, openid) {
+  const { data: users } = await usersCollection
+    .where({ _openid: openid })
+    .limit(1)
+    .get()
+  if (users.length === 0) {
+    return { code: 1002, message: '请先登录' }
+  }
+
+  const { data: merchants } = await merchantsCollection
+    .where({ user_id: users[0]._id })
+    .limit(1)
+    .get()
+  if (merchants.length === 0) {
+    return { code: 2002, message: '您还不是商户' }
+  }
+
+  const myMerchantId = merchants[0]._id
+
+  // 直接推荐
+  const { data: directReferrals } = await merchantsCollection
+    .where({ referrer_id: myMerchantId })
+    .orderBy('created_at', 'desc')
+    .get()
+
+  // 间接推荐
+  const { data: indirectReferrals } = await merchantsCollection
+    .where({ indirect_referrer_id: myMerchantId })
+    .orderBy('created_at', 'desc')
+    .get()
+
+  const records = [
+    ...directReferrals.map(r => ({
+      _id: r._id,
+      shop_name: r.shop_name,
+      type: 'direct',
+      status: r.status,
+      created_at: r.created_at
+    })),
+    ...indirectReferrals
+      .filter(r => r.referrer_id !== myMerchantId) // 排除直接推荐重复
+      .map(r => ({
+        _id: r._id,
+        shop_name: r.shop_name,
+        type: 'indirect',
+        status: r.status,
+        created_at: r.created_at
+      }))
+  ]
+
+  return {
+    code: 0,
+    message: 'success',
+    data: {
+      records,
+      directCount: directReferrals.length,
+      indirectCount: indirectReferrals.filter(r => r.referrer_id !== myMerchantId).length
+    }
+  }
+}
+
+/**
+ * 生成6位邀请码（大写字母+数字）
+ */
+function generateInviteCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // 去除易混淆字符 I/O/0/1
+  let code = ''
+  for (let i = 0; i < 6; i++) {
+    code += chars[Math.floor(Math.random() * chars.length)]
+  }
+  return code
+}

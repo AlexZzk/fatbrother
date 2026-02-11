@@ -34,6 +34,11 @@ const merchantService = {
   // Get nearby merchant list (for C-end)
   getNearbyList(params) {
     return callFunction('merchant', { action: 'getNearbyList', ...params })
+  },
+
+  // Get invite records (referral list)
+  getInviteRecords() {
+    return callFunction('merchant', { action: 'getInviteRecords' })
   }
 }
 

@@ -1,8 +1,72 @@
-<nav-bar title="邀请有礼" left-arrow="{{true}}" />
+<nav-bar title="我的邀请码" left-arrow="{{true}}" />
+
 <view class="page-container">
-  <view class="page-body">
-    <view class="loading-center">
-      <text>邀请有礼 - 开发中</text>
+  <block wx:if="{{!loading}}">
+    <!-- 邀请码卡片 -->
+    <view class="invite-card">
+      <view class="card-subtitle">推荐商家入驻，享受分成</view>
+      <view class="code-box">
+        <text class="code-text">{{inviteCode}}</text>
+      </view>
+      <button class="copy-btn" bindtap="onCopyCode">复制邀请码</button>
     </view>
-  </view>
+
+    <!-- 推荐规则 -->
+    <view class="rules-section">
+      <view class="rules-title">推荐规则说明</view>
+      <view class="rules-list">
+        <view class="rule-item">
+          <text class="rule-dot">·</text>
+          <text class="rule-text">推荐商家成功入驻后，可享受该商家营业额抽佣的分成</text>
+        </view>
+        <view class="rule-item">
+          <text class="rule-dot">·</text>
+          <text class="rule-text">分成比例：直接推荐50%，间接推荐25%</text>
+        </view>
+        <view class="rule-item">
+          <text class="rule-dot">·</text>
+          <text class="rule-text">分成结算周期：T+1自动到账</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 推荐记录 -->
+    <view class="records-section">
+      <view class="records-header">
+        <text class="records-title">我的推荐记录</text>
+        <text class="records-count">直接 {{directCount}} · 间接 {{indirectCount}}</text>
+      </view>
+
+      <view wx:if="{{records.length}}" class="records-card">
+        <view
+          wx:for="{{records}}"
+          wx:key="_id"
+          class="record-item {{index < records.length - 1 ? 'record-item--border' : ''}}"
+        >
+          <view class="record-top">
+            <text class="record-name">{{item.shop_name}}</text>
+            <view class="record-type record-type--{{item.type}}">
+              <text>{{item.type === 'direct' ? '直接推荐' : '间接推荐'}}</text>
+            </view>
+          </view>
+          <view class="record-bottom">
+            <text class="record-time">入驻时间 {{item.created_at_text}}</text>
+            <view class="record-status record-status--{{item.status}}">
+              <text>{{item.status === 'active' ? '营业中' : item.status === 'pending' ? '审核中' : '已停用'}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view wx:else class="records-empty">
+        <text>暂无推荐记录，快去分享邀请码吧</text>
+      </view>
+    </view>
+  </block>
+
+  <block wx:elif="{{loading}}">
+    <view class="loading-center"><text>加载中...</text></view>
+  </block>
 </view>
+
+<toast id="toast" />

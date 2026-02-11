@@ -1,8 +1,76 @@
-<nav-bar title="商户首页" left-arrow="{{true}}" />
+<nav-bar title="胖兄弟商户后台" right-text="返回C端" right-color="#1677FF" bind:rightclick="onBackToC" />
+
 <view class="page-container">
-  <view class="page-body">
-    <view class="loading-center">
-      <text>商户首页 - 开发中</text>
+  <block wx:if="{{!loading}}">
+    <!-- 营业状态卡片 -->
+    <view class="status-card {{isOpen ? 'status-card--open' : 'status-card--closed'}}">
+      <view class="status-info">
+        <text class="status-dot {{isOpen ? 'status-dot--open' : ''}}">●</text>
+        <text class="status-text">{{isOpen ? '营业中' : '休息中'}}</text>
+      </view>
+      <text class="status-shop-name">{{merchantInfo.shop_name}}</text>
+      <button
+        class="btn-toggle {{isOpen ? 'btn-toggle--close' : 'btn-toggle--open'}}"
+        bindtap="onToggleStatus"
+      >{{isOpen ? '结束营业' : '开始营业'}}</button>
     </view>
-  </view>
+
+    <!-- 今日数据 -->
+    <view class="stats-card">
+      <text class="card-title">今日数据</text>
+      <view class="stats-grid">
+        <view class="stats-item">
+          <text class="stats-value">{{todayStats.orderCount}}</text>
+          <text class="stats-label">订单数</text>
+        </view>
+        <view class="stats-item">
+          <text class="stats-value">¥{{todayStats.revenue}}</text>
+          <text class="stats-label">营业额</text>
+        </view>
+        <view class="stats-item">
+          <text class="stats-value">¥{{todayStats.refund}}</text>
+          <text class="stats-label">退款</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 待处理订单 -->
+    <view class="alert-card" bindtap="onNavTo" data-page="orders">
+      <view class="alert-left">
+        <text class="alert-icon">⚡</text>
+        <text class="alert-title">待处理订单</text>
+      </view>
+      <view class="alert-right">
+        <text class="alert-count">待接单 <text class="alert-num">{{pendingOrders.pendingAccept}}</text></text>
+        <text class="alert-count">待出餐 <text class="alert-num">{{pendingOrders.pendingReady}}</text></text>
+        <text class="alert-arrow">></text>
+      </view>
+    </view>
+
+    <!-- 功能宫格 -->
+    <view class="func-grid">
+      <view class="func-item" bindtap="onNavTo" data-page="orders">
+        <text class="func-icon">📋</text>
+        <text class="func-label">订单管理</text>
+      </view>
+      <view class="func-item" bindtap="onNavTo" data-page="menu">
+        <text class="func-icon">🍽</text>
+        <text class="func-label">菜单管理</text>
+      </view>
+      <view class="func-item" bindtap="onNavTo" data-page="statistics">
+        <text class="func-icon">📊</text>
+        <text class="func-label">数据统计</text>
+      </view>
+      <view class="func-item" bindtap="onNavTo" data-page="settings">
+        <text class="func-icon">⚙️</text>
+        <text class="func-label">店铺设置</text>
+      </view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view class="loading-center"><text>加载中...</text></view>
+  </block>
 </view>
+
+<toast id="toast" />

@@ -1,8 +1,108 @@
 <nav-bar title="店铺设置" left-arrow="{{true}}" />
+
 <view class="page-container">
-  <view class="page-body">
-    <view class="loading-center">
-      <text>店铺设置 - 开发中</text>
+  <block wx:if="{{!loading && merchantInfo}}">
+    <!-- 基础信息 -->
+    <view class="section">
+      <view class="section-title">基础信息</view>
+      <view class="section-card">
+        <view class="avatar-row" bindtap="onChangeAvatar">
+          <text class="avatar-label">店铺头图</text>
+          <view class="avatar-right">
+            <image
+              wx:if="{{merchantInfo.shop_avatar}}"
+              class="avatar-img"
+              src="{{merchantInfo.shop_avatar}}"
+              mode="aspectFill"
+            />
+            <view wx:else class="avatar-placeholder">
+              <text>点击上传</text>
+            </view>
+            <text class="avatar-arrow">></text>
+          </view>
+        </view>
+        <cell
+          title="店铺名称"
+          value="{{merchantInfo.shop_name}}"
+          arrow
+          data-field="shop_name"
+          bindclick="onEditField"
+        />
+        <cell
+          title="店铺公告"
+          value="{{merchantInfo.announcement || '未设置'}}"
+          arrow
+          data-field="announcement"
+          bindclick="onEditField"
+        />
+        <cell
+          title="联系电话"
+          value="{{merchantInfo.contact_phone}}"
+          arrow
+          data-field="contact_phone"
+          bindclick="onEditField"
+        />
+      </view>
+    </view>
+
+    <!-- 推广 -->
+    <view class="section">
+      <view class="section-title">推广</view>
+      <view class="section-card">
+        <cell
+          icon="🎟"
+          title="我的邀请码"
+          value="{{merchantInfo.invite_code}}"
+          arrow
+          bindclick="onInviteTap"
+        />
+      </view>
+    </view>
+
+    <!-- 预留功能 -->
+    <view class="section">
+      <view class="section-title">更多设置</view>
+      <view class="section-card">
+        <cell title="起送价" value="敬请期待" disabled bindclick="onComingSoon" />
+        <cell title="包装费" value="敬请期待" disabled bindclick="onComingSoon" />
+        <cell title="配送费" value="敬请期待" disabled bindclick="onComingSoon" />
+      </view>
+    </view>
+  </block>
+
+  <block wx:elif="{{loading}}">
+    <view class="loading-center"><text>加载中...</text></view>
+  </block>
+</view>
+
+<!-- 编辑弹窗 -->
+<view wx:if="{{editingField}}" class="edit-mask" bindtap="onEditCancel">
+  <view class="edit-popup" catchtap="">
+    <view class="edit-header">
+      <text class="edit-title">编辑{{editingField === 'shop_name' ? '店铺名称' : editingField === 'announcement' ? '店铺公告' : '联系电话'}}</text>
+    </view>
+    <input
+      wx:if="{{editingField !== 'announcement'}}"
+      class="edit-input"
+      value="{{editValue}}"
+      focus="{{true}}"
+      bindinput="onEditInput"
+      bindconfirm="onEditConfirm"
+    />
+    <textarea
+      wx:else
+      class="edit-textarea"
+      value="{{editValue}}"
+      focus="{{true}}"
+      bindinput="onEditInput"
+      maxlength="100"
+      auto-height
+    />
+    <view class="edit-actions">
+      <button class="edit-btn edit-btn--cancel" bindtap="onEditCancel">取消</button>
+      <button class="edit-btn edit-btn--confirm" bindtap="onEditConfirm">确定</button>
     </view>
   </view>
 </view>
+
+<toast id="toast" />

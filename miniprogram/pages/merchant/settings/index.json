@@ -1,5 +1,7 @@
 {
   "usingComponents": {
-    "nav-bar": "/components/nav-bar/nav-bar"
+    "nav-bar": "/components/nav-bar/nav-bar",
+    "cell": "/components/cell/cell",
+    "toast": "/components/toast/toast"
   }
 }
