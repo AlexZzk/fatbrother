@@ -1,8 +1,67 @@
-<nav-bar title="编辑商品" left-arrow="{{true}}" />
+<nav-bar title="{{isEdit ? '编辑商品' : '添加商品'}}" left-arrow="{{true}}" />
+
 <view class="page-container">
-  <view class="page-body">
-    <view class="loading-center">
-      <text>编辑商品 - 开发中</text>
+  <block wx:if="{{!loading}}">
+    <view class="form-card">
+      <!-- 商品图片 -->
+      <view class="form-section">
+        <view class="form-label">商品图片（可选）</view>
+        <image-uploader src="{{image}}" dir="products" bind:change="onImageChange" />
+      </view>
+
+      <!-- 商品名称 -->
+      <view class="form-section">
+        <view class="form-label"><text class="required">*</text> 商品名称</view>
+        <input class="form-input" placeholder="如：招牌蛋炒饭" value="{{name}}" bindinput="onNameInput" maxlength="30" />
+      </view>
+
+      <!-- 商品描述 -->
+      <view class="form-section">
+        <view class="form-label">商品描述</view>
+        <textarea class="form-textarea" placeholder="简单描述您的商品..." value="{{description}}" bindinput="onDescInput" maxlength="100" auto-height />
+      </view>
+
+      <!-- 所属分类 -->
+      <view class="form-section">
+        <view class="form-label"><text class="required">*</text> 所属分类</view>
+        <picker range="{{categories}}" range-key="name" value="{{categoryIndex}}" bindchange="onCategoryChange">
+          <view class="form-picker {{categoryIndex >= 0 ? '' : 'form-picker--placeholder'}}">
+            {{categoryIndex >= 0 ? categories[categoryIndex].name : '请选择分类'}}
+            <text class="picker-arrow">▾</text>
+          </view>
+        </picker>
+      </view>
+
+      <!-- 基础价格 -->
+      <view class="form-section">
+        <view class="form-label"><text class="required">*</text> 基础价格（元）</view>
+        <view class="price-input-wrap">
+          <text class="price-prefix">¥</text>
+          <input class="form-input price-input" type="digit" placeholder="0.00" value="{{priceYuan}}" bindinput="onPriceInput" />
+        </view>
+      </view>
+
+      <!-- 规格设置 -->
+      <view class="form-section form-section--link" bindtap="onGoSpec">
+        <view class="form-label-row">
+          <text>规格设置</text>
+          <view class="spec-hint">
+            <text class="spec-count">{{specGroups.length > 0 ? '已设置 ' + specGroups.length + ' 个规格组' : '未设置'}}</text>
+            <text class="link-arrow">></text>
+          </view>
+        </view>
+      </view>
     </view>
+
+    <!-- 保存按钮 -->
+    <view class="save-wrap">
+      <button class="save-btn" bindtap="onSave" disabled="{{saving}}" loading="{{saving}}">保存商品</button>
+    </view>
+  </block>
+
+  <view wx:elif="{{loading}}" class="loading-center">
+    <text>加载中...</text>
   </view>
 </view>
+
+<toast id="toast" />

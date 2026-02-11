@@ -1,5 +1,8 @@
 {
   "usingComponents": {
-    "nav-bar": "/components/nav-bar/nav-bar"
+    "nav-bar": "/components/nav-bar/nav-bar",
+    "image-uploader": "/components/image-uploader/image-uploader",
+    "cell": "/components/cell/cell",
+    "toast": "/components/toast/toast"
   }
 }

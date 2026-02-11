@@ -1,8 +1,69 @@
-<nav-bar title="规格配置" left-arrow="{{true}}" />
+<nav-bar title="规格设置" left-arrow="{{true}}" rightText="+ 规格组" bind:rightClick="onAddGroup" />
+
 <view class="page-container">
-  <view class="page-body">
-    <view class="loading-center">
-      <text>规格配置 - 开发中</text>
+  <!-- 快捷模板 -->
+  <view class="template-section">
+    <view class="section-title">快捷模板</view>
+    <view class="template-list">
+      <view class="template-btn" data-key="cup" bindtap="onAddTemplate">杯型</view>
+      <view class="template-btn" data-key="spice" bindtap="onAddTemplate">辣度</view>
+      <view class="template-btn" data-key="sugar" bindtap="onAddTemplate">甜度</view>
+      <view class="template-btn" data-key="temp" bindtap="onAddTemplate">温度</view>
     </view>
   </view>
+
+  <!-- 规格组列表 -->
+  <view wx:for="{{specGroups}}" wx:key="index" wx:for-index="gi" wx:for-item="group" class="group-card">
+    <view class="group-header">
+      <text class="group-label">规格组 {{gi + 1}}</text>
+      <view class="group-delete" data-gi="{{gi}}" bindtap="onDeleteGroup">删除</view>
+    </view>
+
+    <!-- 规格组名称 -->
+    <input class="group-name-input" placeholder="规格组名称" value="{{group.name}}" data-gi="{{gi}}" bindinput="onGroupNameInput" />
+
+    <!-- 属性开关 -->
+    <view class="toggle-row">
+      <view class="toggle-item" data-gi="{{gi}}" bindtap="onToggleRequired">
+        <view class="checkbox {{group.required ? 'checkbox--checked' : ''}}">
+          <text wx:if="{{group.required}}">✓</text>
+        </view>
+        <text>必选</text>
+      </view>
+      <view class="toggle-item" data-gi="{{gi}}" bindtap="onToggleMulti">
+        <view class="checkbox {{group.multi_select ? 'checkbox--checked' : ''}}">
+          <text wx:if="{{group.multi_select}}">✓</text>
+        </view>
+        <text>可多选</text>
+      </view>
+    </view>
+
+    <!-- 选项列表 -->
+    <view class="spec-list">
+      <view class="spec-header-row">
+        <text class="spec-col-name">选项名称</text>
+        <text class="spec-col-price">加价(元)</text>
+        <text class="spec-col-del"></text>
+      </view>
+      <view wx:for="{{group.specs}}" wx:key="index" wx:for-index="si" wx:for-item="spec" class="spec-row">
+        <input class="spec-name-input" placeholder="选项名" value="{{spec.name}}" data-gi="{{gi}}" data-si="{{si}}" bindinput="onSpecNameInput" />
+        <input class="spec-price-input" type="digit" placeholder="0" value="{{spec.price_display}}" data-gi="{{gi}}" data-si="{{si}}" bindinput="onSpecPriceInput" />
+        <view class="spec-delete" data-gi="{{gi}}" data-si="{{si}}" bindtap="onDeleteSpec">×</view>
+      </view>
+    </view>
+
+    <view class="add-spec-btn" data-gi="{{gi}}" bindtap="onAddSpec">+ 添加选项</view>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:if="{{specGroups.length === 0}}" class="empty-hint">
+    <text>暂无规格组，点击上方模板快速添加</text>
+  </view>
+
+  <!-- 保存按钮 -->
+  <view class="save-wrap">
+    <button class="save-btn" bindtap="onSave">保存规格设置</button>
+  </view>
 </view>
+
+<toast id="toast" />

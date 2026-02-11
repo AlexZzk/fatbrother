@@ -1,4 +1,172 @@
 /* 分类管理 */
 .page-container {
   min-height: 100vh;
+  background-color: #F5F5F5;
+  padding-bottom: 40rpx;
+}
+
+.hint {
+  padding: 20rpx 32rpx;
+  font-size: 24rpx;
+  color: #999999;
+}
+
+.category-list {
+  margin: 0 24rpx;
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.category-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 28rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+
+.category-item:last-child {
+  border-bottom: none;
+}
+
+.category-left {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  flex: 1;
+}
+
+.sort-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.sort-btn {
+  width: 44rpx;
+  height: 44rpx;
+  line-height: 44rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: #666666;
+  background-color: #F5F5F5;
+  border-radius: 8rpx;
+}
+
+.sort-btn--disabled {
+  color: #DDDDDD;
+}
+
+.category-info {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.category-name {
+  font-size: 30rpx;
+  color: #333333;
+  font-weight: 500;
+}
+
+.category-count {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+.category-right {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  flex-shrink: 0;
+}
+
+.action-btn {
+  font-size: 26rpx;
+  color: #1677FF;
+  padding: 8rpx 16rpx;
+}
+
+.action-btn--danger {
+  color: #FF4D4F;
+}
+
+.empty-hint {
+  text-align: center;
+  padding: 120rpx 0;
+  color: #999999;
+  font-size: 28rpx;
+}
+
+.loading-center {
+  text-align: center;
+  padding: 200rpx 0;
+  color: #999999;
+  font-size: 28rpx;
+}
+
+/* Modal */
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  width: 560rpx;
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 40rpx;
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333333;
+  text-align: center;
+  margin-bottom: 32rpx;
+}
+
+.modal-input {
+  width: 100%;
+  height: 80rpx;
+  border: 2rpx solid #E8E8E8;
+  border-radius: 12rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+  margin-bottom: 32rpx;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 24rpx;
+}
+
+.modal-btn {
+  flex: 1;
+  height: 76rpx;
+  line-height: 76rpx;
+  text-align: center;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+}
+
+.modal-btn--cancel {
+  background-color: #F5F5F5;
+  color: #666666;
+}
+
+.modal-btn--confirm {
+  background-color: #1677FF;
+  color: #FFFFFF;
 }
