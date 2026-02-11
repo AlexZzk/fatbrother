@@ -1,0 +1,19 @@
+<view class="product-item {{product.image ? '' : 'product-item--noimg'}}">
+  <image wx:if="{{product.image}}" class="product-img" src="{{product.image}}" mode="aspectFill" />
+  <view class="product-info">
+    <view class="product-top">
+      <text class="product-name">{{product.name}}</text>
+      <text wx:if="{{product.description}}" class="product-desc">{{product.description}}</text>
+    </view>
+    <view class="product-bottom">
+      <price value="{{product.base_price}}" size="medium" />
+      <view class="product-actions">
+        <block wx:if="{{count > 0 && !(product.spec_groups && product.spec_groups.length > 0)}}">
+          <view class="action-btn action-btn--minus" bindtap="onMinus">-</view>
+          <text class="action-count">{{count}}</text>
+        </block>
+        <view class="action-btn action-btn--add" bindtap="onAdd">+</view>
+      </view>
+    </view>
+  </view>
+</view>

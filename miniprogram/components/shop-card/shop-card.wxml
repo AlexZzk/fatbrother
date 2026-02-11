@@ -1,0 +1,17 @@
+<view class="shop-card" bindtap="onTap">
+  <image class="shop-avatar" src="{{shop.shop_avatar || '/images/default-shop.png'}}" mode="aspectFill" />
+  <view class="shop-info">
+    <view class="shop-top">
+      <text class="shop-name">{{shop.shop_name}}</text>
+      <text class="shop-arrow">></text>
+    </view>
+    <view class="shop-meta">
+      <text class="shop-rating">{{shop.rating || '5.0'}}</text>
+      <text class="shop-sales">月售{{shop.monthly_sales || 0}}单</text>
+      <text wx:if="{{distanceText}}" class="shop-distance">{{distanceText}}</text>
+    </view>
+    <view wx:if="{{shop.announcement}}" class="shop-announce">
+      <text>{{shop.announcement}}</text>
+    </view>
+  </view>
+</view>

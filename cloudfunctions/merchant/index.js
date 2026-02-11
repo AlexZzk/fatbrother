@@ -21,7 +21,8 @@ exports.main = async (event, context) => {
     getMerchantInfo,
     updateSettings,
     toggleStatus,
-    getInviteRecords
+    getInviteRecords,
+    getNearbyList
   }
 
   if (!actions[action]) {
@@ -395,6 +396,77 @@ async function getInviteRecords(event, openid) {
       indirectCount: indirectReferrals.filter(r => r.referrer_id !== myMerchantId).length
     }
   }
+}
+
+/**
+ * 获取附近营业中的商家列表
+ */
+async function getNearbyList(event, openid) {
+  const { latitude, longitude, page = 1, pageSize = 20 } = event
+
+  // Query active & open merchants
+  const query = { status: 'active', is_open: true }
+
+  const { data: merchants } = await merchantsCollection
+    .where(query)
+    .limit(100)
+    .get()
+
+  // Calculate distance for each merchant and sort
+  let list = merchants.map(m => {
+    let distance = null
+    if (latitude && longitude && m.location) {
+      const loc = m.location
+      // GeoPoint coordinates: [longitude, latitude]
+      const mLng = loc.coordinates ? loc.coordinates[0] : 0
+      const mLat = loc.coordinates ? loc.coordinates[1] : 0
+      distance = calcDistance(latitude, longitude, mLat, mLng)
+    }
+    return {
+      _id: m._id,
+      shop_name: m.shop_name,
+      shop_avatar: m.shop_avatar || '',
+      announcement: m.announcement || '',
+      rating: m.rating || 5.0,
+      monthly_sales: m.monthly_sales || 0,
+      distance
+    }
+  })
+
+  // Sort by distance (nulls last)
+  list.sort((a, b) => {
+    if (a.distance === null && b.distance === null) return 0
+    if (a.distance === null) return 1
+    if (b.distance === null) return -1
+    return a.distance - b.distance
+  })
+
+  // Paginate
+  const start = (page - 1) * pageSize
+  const paged = list.slice(start, start + pageSize)
+
+  return {
+    code: 0,
+    message: 'success',
+    data: {
+      list: paged,
+      total: list.length,
+      hasMore: start + pageSize < list.length
+    }
+  }
+}
+
+/**
+ * Haversine distance calculation (meters)
+ */
+function calcDistance(lat1, lng1, lat2, lng2) {
+  const R = 6371000
+  const dLat = (lat2 - lat1) * Math.PI / 180
+  const dLng = (lng2 - lng1) * Math.PI / 180
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLng / 2) * Math.sin(dLng / 2)
+  return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)))
 }
 
 /**
