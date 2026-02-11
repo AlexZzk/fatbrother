@@ -1,6 +1,8 @@
 {
   "usingComponents": {
     "nav-bar": "/components/nav-bar/nav-bar",
-    "custom-tab-bar": "/components/custom-tab-bar/custom-tab-bar"
+    "custom-tab-bar": "/components/custom-tab-bar/custom-tab-bar",
+    "cell": "/components/cell/cell",
+    "toast": "/components/toast/toast"
   }
 }

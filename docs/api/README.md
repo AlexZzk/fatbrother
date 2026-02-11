@@ -75,7 +75,7 @@ callFunction('merchant', { action: 'getMerchantInfo', merchantId: 'xxx' })
 
 | 模块 | 文档 | 云函数 | Sprint | 状态 |
 |------|------|--------|--------|------|
-| 用户模块 | [user-api.md](./user-api.md) | `user` | S1 | 待开发 |
+| 用户模块 | [user-api.md](./user-api.md) | `user` | S1 | **已完成** |
 | 商户模块 | [merchant-api.md](./merchant-api.md) | `merchant` | S2 | 待开发 |
 | 商品模块 | [product-api.md](./product-api.md) | `product` | S3 | 待开发 |
 | 订单模块 | [order-api.md](./order-api.md) | `order` | S5-S6 | 待开发 |

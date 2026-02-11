@@ -1,8 +1,64 @@
 <nav-bar title="个人信息" left-arrow="{{true}}" />
+
 <view class="page-container">
-  <view class="page-body">
-    <view class="loading-center">
-      <text>个人信息 - 开发中</text>
+  <view class="profile-card">
+    <!-- 头像 -->
+    <button class="profile-row" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+      <text class="profile-row__label">头像</text>
+      <view class="profile-row__right">
+        <image
+          class="profile-avatar"
+          src="{{userInfo.avatar_url || '/images/default-avatar.png'}}"
+          mode="aspectFill"
+        />
+        <text class="profile-row__arrow">></text>
+      </view>
+    </button>
+
+    <view class="profile-divider"></view>
+
+    <!-- 昵称 -->
+    <view class="profile-row" bindtap="onNicknameTap">
+      <text class="profile-row__label">昵称</text>
+      <view class="profile-row__right">
+        <block wx:if="{{editingNickname}}">
+          <input
+            class="profile-nickname-input"
+            type="nickname"
+            value="{{nicknameInput}}"
+            focus="{{true}}"
+            placeholder="请输入昵称"
+            bindinput="onNicknameInput"
+            bindconfirm="onNicknameConfirm"
+            bindblur="onNicknameBlur"
+          />
+        </block>
+        <block wx:else>
+          <text class="profile-row__value">{{userInfo.nick_name || '未设置'}}</text>
+          <text class="profile-row__arrow">></text>
+        </block>
+      </view>
+    </view>
+
+    <view class="profile-divider"></view>
+
+    <!-- 手机号 -->
+    <view class="profile-row">
+      <text class="profile-row__label">手机号</text>
+      <view class="profile-row__right">
+        <block wx:if="{{userInfo.phone}}">
+          <text class="profile-row__value">{{userInfo.phone}}</text>
+        </block>
+        <block wx:else>
+          <button
+            class="profile-phone-btn"
+            open-type="getPhoneNumber"
+            bindgetphonenumber="onGetPhoneNumber"
+          >授权获取</button>
+        </block>
+      </view>
     </view>
   </view>
 </view>
+
+<toast id="toast" />
