@@ -1,8 +1,101 @@
-<nav-bar title="菜单管理" left-arrow="{{true}}" />
+<!-- 菜单管理页 B-06 -->
+<nav-bar
+  title="菜单管理"
+  left-arrow="{{true}}"
+  right-text="+ 添加商品"
+  bind:right="onAddProduct"
+/>
+
 <view class="page-container">
-  <view class="page-body">
-    <view class="loading-center">
-      <text>菜单管理 - 开发中</text>
+  <!-- 分类管理入口 -->
+  <view class="category-header">
+    <text class="category-header__label">分类管理</text>
+    <text class="category-header__edit" bind:tap="onEditCategory">[编辑分类]</text>
+  </view>
+
+  <!-- 分类Tab横向滚动 -->
+  <scroll-view
+    class="category-tabs"
+    scroll-x
+    enable-flex
+    enhanced
+    show-scrollbar="{{false}}"
+  >
+    <view
+      class="category-tab {{activeCategory === 'all' ? 'category-tab--active' : ''}}"
+      bind:tap="onCategoryTap"
+      data-id="all"
+    >
+      全部
+    </view>
+    <view
+      wx:for="{{categories}}"
+      wx:key="_id"
+      class="category-tab {{activeCategory === item._id ? 'category-tab--active' : ''}}"
+      bind:tap="onCategoryTap"
+      data-id="{{item._id}}"
+    >
+      {{item.name}}
+    </view>
+  </scroll-view>
+
+  <!-- 商品列表 -->
+  <view class="product-list" wx:if="{{!loading && filteredProducts.length > 0}}">
+    <view
+      class="product-card {{!item.isOnSale ? 'product-card--off' : ''}}"
+      wx:for="{{filteredProducts}}"
+      wx:key="_id"
+    >
+      <!-- 商品信息区 -->
+      <view class="product-info">
+        <image
+          class="product-info__image"
+          src="{{item.imageUrl || '/images/default-product.png'}}"
+          mode="aspectFill"
+        />
+        <view class="product-info__detail">
+          <view class="product-info__row">
+            <text class="product-info__name">{{item.name}}</text>
+            <text class="product-info__price">¥{{item.priceYuan}}</text>
+          </view>
+          <text class="product-info__desc" wx:if="{{item.description}}">{{item.description}}</text>
+          <view class="product-info__status">
+            <text
+              class="status-tag {{item.isOnSale ? 'status-tag--on' : 'status-tag--off'}}"
+            >{{item.isOnSale ? '上架中' : '已下架'}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 操作按钮组 -->
+      <view class="product-actions">
+        <view class="action-btn action-btn--edit" bind:tap="onEditProduct" data-id="{{item._id}}">编辑</view>
+        <view class="action-btn action-btn--spec" bind:tap="onSpecConfig" data-id="{{item._id}}">规格</view>
+        <view
+          class="action-btn {{item.isOnSale ? 'action-btn--off-sale' : 'action-btn--on-sale'}}"
+          bind:tap="onToggleSale"
+          data-id="{{item._id}}"
+          data-status="{{item.isOnSale}}"
+        >{{item.isOnSale ? '下架' : '上架'}}</view>
+        <view class="action-btn action-btn--delete" bind:tap="onDeleteProduct" data-id="{{item._id}}" data-name="{{item.name}}">删除</view>
+      </view>
     </view>
   </view>
+
+  <!-- 加载中 -->
+  <view class="loading-center" wx:if="{{loading}}">
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 空状态 -->
+  <empty-state
+    wx:if="{{!loading && filteredProducts.length === 0}}"
+    icon="📋"
+    text="暂无商品"
+    description="点击右上角「+ 添加商品」开始创建"
+    button-text="添加商品"
+    bind:action="onAddProduct"
+  />
 </view>
+
+<toast id="toast" />

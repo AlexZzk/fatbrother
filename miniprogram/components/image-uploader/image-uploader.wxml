@@ -1,0 +1,15 @@
+<view class="uploader">
+  <block wx:if="{{src}}">
+    <image class="uploader__preview" src="{{src}}" mode="aspectFill" bindtap="onPreview" />
+    <view class="uploader__delete" bindtap="onDelete">×</view>
+  </block>
+  <block wx:else>
+    <view class="uploader__trigger" bindtap="onChoose">
+      <view wx:if="{{uploading}}" class="uploader__loading">上传中...</view>
+      <view wx:else class="uploader__placeholder">
+        <text class="uploader__icon">+</text>
+        <text class="uploader__text">{{placeholder}}</text>
+      </view>
+    </view>
+  </block>
+</view>
