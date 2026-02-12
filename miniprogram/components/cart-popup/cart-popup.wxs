@@ -1,0 +1,12 @@
+function formatSpecs(specs) {
+  if (!specs || !specs.length) return ''
+  var names = []
+  for (var i = 0; i < specs.length; i++) {
+    names.push(specs[i].itemName)
+  }
+  return '(' + names.join('/') + ')'
+}
+
+module.exports = {
+  formatSpecs: formatSpecs
+}
