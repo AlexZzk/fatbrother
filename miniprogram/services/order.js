@@ -39,6 +39,11 @@ const orderService = {
   // Complete order
   complete(orderId) {
     return callFunction('order', { action: 'complete', orderId })
+  },
+
+  // Merchant: get order list with tab counts
+  getMerchantOrders(params) {
+    return callFunction('order', { action: 'getMerchantOrders', ...params })
   }
 }
 

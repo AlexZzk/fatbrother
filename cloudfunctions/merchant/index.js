@@ -22,7 +22,8 @@ exports.main = async (event, context) => {
     updateSettings,
     toggleStatus,
     getInviteRecords,
-    getNearbyList
+    getNearbyList,
+    getTodayStats
   }
 
   if (!actions[action]) {
@@ -479,4 +480,62 @@ function generateInviteCode() {
     code += chars[Math.floor(Math.random() * chars.length)]
   }
   return code
+}
+
+/**
+ * S6-6: 获取商户今日统计数据
+ */
+async function getTodayStats(event, openid) {
+  // Find merchant by openid
+  const { data: merchants } = await merchantsCollection
+    .where({ owner_openid: openid, status: 'active' })
+    .limit(1)
+    .get()
+
+  if (!merchants || merchants.length === 0) {
+    return { code: 2002, message: '商户不存在' }
+  }
+
+  const merchantId = merchants[0]._id
+  const ordersCol = db.collection('orders')
+
+  // Today's start (00:00:00)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  // Get completed orders today
+  const { data: completedOrders } = await ordersCol.where({
+    merchant_id: merchantId,
+    status: 'COMPLETED',
+    created_at: _.gte(today)
+  }).limit(1000).get()
+
+  // Get cancelled orders today (for refund count)
+  const { data: cancelledOrders } = await ordersCol.where({
+    merchant_id: merchantId,
+    status: 'CANCELLED',
+    created_at: _.gte(today)
+  }).limit(1000).get()
+
+  // Get pending counts
+  const [pendingAcceptCount, acceptedCount] = await Promise.all([
+    ordersCol.where({ merchant_id: merchantId, status: 'PENDING_ACCEPT' }).count(),
+    ordersCol.where({ merchant_id: merchantId, status: 'ACCEPTED' }).count()
+  ])
+
+  const orderCount = completedOrders.length
+  const revenue = completedOrders.reduce((sum, o) => sum + (o.actual_price || 0), 0)
+  const refund = cancelledOrders.reduce((sum, o) => sum + (o.actual_price || 0), 0)
+
+  return {
+    code: 0,
+    message: 'success',
+    data: {
+      orderCount,
+      revenue,
+      refund,
+      pendingAccept: pendingAcceptCount.total,
+      pendingReady: acceptedCount.total
+    }
+  }
 }

@@ -1,5 +1,6 @@
 const app = getApp()
 const merchantService = require('../../../services/merchant')
+const format = require('../../../utils/format')
 const location = require('../../../utils/location')
 
 Page({
@@ -8,7 +9,7 @@ Page({
     statusBarHeight: 0,
     merchantInfo: null,
     isOpen: false,
-    todayStats: { orderCount: 0, revenue: 0, refund: 0 },
+    todayStats: { orderCount: 0, revenue: '0.00', refund: '0.00' },
     pendingOrders: { pendingAccept: 0, pendingReady: 0 },
     loading: true
   },
@@ -22,6 +23,7 @@ Page({
 
   onShow() {
     this._loadMerchantInfo()
+    this._loadTodayStats()
   },
 
   async _loadMerchantInfo() {
@@ -36,6 +38,25 @@ Page({
       })
     } catch (err) {
       this.setData({ loading: false })
+    }
+  },
+
+  async _loadTodayStats() {
+    try {
+      const data = await merchantService.getTodayStats()
+      this.setData({
+        todayStats: {
+          orderCount: data.orderCount || 0,
+          revenue: format.price(data.revenue || 0),
+          refund: format.price(data.refund || 0)
+        },
+        pendingOrders: {
+          pendingAccept: data.pendingAccept || 0,
+          pendingReady: data.pendingReady || 0
+        }
+      })
+    } catch (err) {
+      // silent - keep defaults
     }
   },
 

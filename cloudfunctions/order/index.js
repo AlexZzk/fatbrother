@@ -22,7 +22,13 @@ const actions = {
   create,
   getList,
   getDetail,
-  cancel
+  cancel,
+  getMerchantOrders,
+  accept,
+  reject,
+  markReady,
+  complete,
+  autoCancel
 }
 
 exports.main = async (event, context) => {
@@ -296,4 +302,175 @@ async function cancel(event) {
   })
 
   return { orderId }
+}
+
+// ============================================================
+// S6: B端商户操作
+// ============================================================
+
+/**
+ * 查找当前 openid 对应的商户，验证 active 状态
+ */
+async function getMerchantByOpenid(openid) {
+  const { data } = await merchantsCol.where({ owner_openid: openid, status: 'active' }).limit(1).get()
+  if (!data || data.length === 0) {
+    throw createError(2001, '商户不存在或未激活')
+  }
+  return data[0]
+}
+
+/**
+ * S6-1: 商户获取订单列表
+ */
+async function getMerchantOrders(event) {
+  const { _openid, status, page = 1, pageSize = 20 } = event
+  const merchant = await getMerchantByOpenid(_openid)
+
+  const query = { merchant_id: merchant._id }
+  if (status) {
+    query.status = status
+  }
+
+  const countResult = await ordersCol.where(query).count()
+  const total = countResult.total
+  const skip = (page - 1) * pageSize
+
+  const { data: list } = await ordersCol.where(query)
+    .orderBy('created_at', 'desc')
+    .skip(skip)
+    .limit(pageSize)
+    .get()
+
+  // Also return counts per status for tab badges
+  const [pendingCount, acceptedCount, readyCount] = await Promise.all([
+    ordersCol.where({ merchant_id: merchant._id, status: STATUS.PENDING_ACCEPT }).count(),
+    ordersCol.where({ merchant_id: merchant._id, status: STATUS.ACCEPTED }).count(),
+    ordersCol.where({ merchant_id: merchant._id, status: STATUS.READY }).count()
+  ])
+
+  return {
+    list,
+    total,
+    hasMore: skip + list.length < total,
+    counts: {
+      pendingAccept: pendingCount.total,
+      accepted: acceptedCount.total,
+      ready: readyCount.total
+    }
+  }
+}
+
+/**
+ * S6-2: 商户接单
+ */
+async function accept(event) {
+  const { _openid, orderId } = event
+  if (!orderId) throw createError(1001, '缺少订单ID')
+
+  const merchant = await getMerchantByOpenid(_openid)
+  const { data: order } = await ordersCol.doc(orderId).get().catch(() => ({ data: null }))
+  if (!order) throw createError(2001, '订单不存在')
+  if (order.merchant_id !== merchant._id) throw createError(2001, '无权操作此订单')
+  if (order.status !== STATUS.PENDING_ACCEPT) throw createError(2002, '当前状态不可接单')
+
+  const now = db.serverDate()
+  await ordersCol.doc(orderId).update({
+    data: { status: STATUS.ACCEPTED, accepted_at: now, updated_at: now }
+  })
+  return { orderId }
+}
+
+/**
+ * S6-3: 商户拒单
+ */
+async function reject(event) {
+  const { _openid, orderId, reason = '' } = event
+  if (!orderId) throw createError(1001, '缺少订单ID')
+
+  const merchant = await getMerchantByOpenid(_openid)
+  const { data: order } = await ordersCol.doc(orderId).get().catch(() => ({ data: null }))
+  if (!order) throw createError(2001, '订单不存在')
+  if (order.merchant_id !== merchant._id) throw createError(2001, '无权操作此订单')
+  if (order.status !== STATUS.PENDING_ACCEPT) throw createError(2002, '当前状态不可拒单')
+
+  const now = db.serverDate()
+  await ordersCol.doc(orderId).update({
+    data: {
+      status: STATUS.CANCELLED,
+      cancel_reason: `商家拒单：${reason}`.substring(0, 200),
+      cancelled_at: now,
+      updated_at: now
+    }
+  })
+  return { orderId }
+}
+
+/**
+ * S6-4: 商户标记出餐
+ */
+async function markReady(event) {
+  const { _openid, orderId } = event
+  if (!orderId) throw createError(1001, '缺少订单ID')
+
+  const merchant = await getMerchantByOpenid(_openid)
+  const { data: order } = await ordersCol.doc(orderId).get().catch(() => ({ data: null }))
+  if (!order) throw createError(2001, '订单不存在')
+  if (order.merchant_id !== merchant._id) throw createError(2001, '无权操作此订单')
+  if (order.status !== STATUS.ACCEPTED) throw createError(2002, '当前状态不可标记出餐')
+
+  const now = db.serverDate()
+  await ordersCol.doc(orderId).update({
+    data: { status: STATUS.READY, ready_at: now, updated_at: now }
+  })
+  return { orderId }
+}
+
+/**
+ * S6-5: 商户确认完成
+ */
+async function complete(event) {
+  const { _openid, orderId } = event
+  if (!orderId) throw createError(1001, '缺少订单ID')
+
+  const merchant = await getMerchantByOpenid(_openid)
+  const { data: order } = await ordersCol.doc(orderId).get().catch(() => ({ data: null }))
+  if (!order) throw createError(2001, '订单不存在')
+  if (order.merchant_id !== merchant._id) throw createError(2001, '无权操作此订单')
+  if (order.status !== STATUS.READY) throw createError(2002, '当前状态不可完成')
+
+  const now = db.serverDate()
+  await ordersCol.doc(orderId).update({
+    data: { status: STATUS.COMPLETED, completed_at: now, updated_at: now }
+  })
+  return { orderId }
+}
+
+/**
+ * S6-7: 定时触发 - 超时30分钟自动取消 PENDING_ACCEPT 订单
+ * 配置定时触发器: 每5分钟执行一次
+ */
+async function autoCancel() {
+  const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000)
+  const now = db.serverDate()
+
+  // 查找超时的待接单订单
+  const { data: expiredOrders } = await ordersCol.where({
+    status: STATUS.PENDING_ACCEPT,
+    created_at: _.lt(thirtyMinutesAgo)
+  }).limit(100).get()
+
+  let cancelledCount = 0
+  for (const order of expiredOrders) {
+    await ordersCol.doc(order._id).update({
+      data: {
+        status: STATUS.CANCELLED,
+        cancel_reason: '超时未接单，系统自动取消',
+        cancelled_at: now,
+        updated_at: now
+      }
+    })
+    cancelledCount++
+  }
+
+  return { cancelledCount }
 }

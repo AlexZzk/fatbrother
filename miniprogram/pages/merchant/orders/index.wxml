@@ -1,8 +1,146 @@
 <nav-bar title="订单管理" left-arrow="{{true}}" />
+
 <view class="page-container">
-  <view class="page-body">
-    <view class="loading-center">
-      <text>订单管理 - 开发中</text>
+  <!-- Tab bar with badge counts -->
+  <view class="tabs-bar">
+    <view
+      wx:for="{{tabs}}"
+      wx:key="key"
+      class="tab-item {{activeTab === index ? 'tab-item--active' : ''}}"
+      data-index="{{index}}"
+      bindtap="onTabTap"
+    >
+      <text>{{item.label}}</text>
+      <view class="tab-badge" wx:if="{{index === 0 && counts.pendingAccept > 0}}">{{counts.pendingAccept}}</view>
+      <view class="tab-badge" wx:elif="{{index === 1 && counts.accepted > 0}}">{{counts.accepted}}</view>
+      <view class="tab-badge" wx:elif="{{index === 2 && counts.ready > 0}}">{{counts.ready}}</view>
+      <view class="tab-underline" wx:if="{{activeTab === index}}"></view>
+    </view>
+  </view>
+
+  <!-- Notify toggle -->
+  <view class="notify-bar" wx:if="{{activeTab === 0}}">
+    <text class="notify-text">新订单提醒</text>
+    <switch checked="{{notifyEnabled}}" color="#FF6B35" bindchange="onToggleNotify" />
+  </view>
+
+  <!-- Loading -->
+  <view wx:if="{{loading}}" class="loading-center">
+    <text>加载中...</text>
+  </view>
+
+  <!-- Empty state -->
+  <empty-state wx:elif="{{!loading && orders.length === 0}}" icon="order" text="暂无订单" />
+
+  <!-- Order list -->
+  <view class="order-list" wx:else>
+    <view class="order-card" wx:for="{{orders}}" wx:key="_id">
+      <!-- Card header -->
+      <view class="card-header">
+        <view class="card-header-left">
+          <text class="order-no">#{{item.order_no}}</text>
+          <text class="order-time">{{item._createTime}}</text>
+        </view>
+        <view class="card-header-right">
+          <view wx:if="{{item.status === 'PENDING_ACCEPT'}}" class="countdown {{item._urgent ? 'countdown--urgent' : ''}}">
+            <text class="countdown-label">自动取消</text>
+            <text class="countdown-time">{{item._countdownText}}</text>
+          </view>
+          <text wx:elif="{{item.status === 'READY'}}" class="ready-time">出餐 {{item._readyTime}}</text>
+        </view>
+      </view>
+
+      <!-- Item list -->
+      <view class="card-items">
+        <view class="item-row" wx:for="{{item._itemSummary}}" wx:for-item="food" wx:key="name">
+          <view class="item-name-wrap">
+            <text class="item-name">{{food.name}}</text>
+            <text class="item-spec" wx:if="{{food.specStr}}">（{{food.specStr}}）</text>
+          </view>
+          <text class="item-qty">x{{food.quantity}}</text>
+        </view>
+      </view>
+
+      <!-- Card footer -->
+      <view class="card-footer">
+        <view class="card-price">
+          <text class="price-label">实付</text>
+          <text class="price-yen">¥</text>
+          <price value="{{item.actual_price}}" />
+        </view>
+
+        <!-- Action buttons based on status -->
+        <view class="card-actions">
+          <!-- PENDING_ACCEPT: reject + accept -->
+          <block wx:if="{{item.status === 'PENDING_ACCEPT'}}">
+            <view class="action-btn action-btn--reject" data-id="{{item._id}}" bindtap="onShowReject">拒单</view>
+            <view class="action-btn action-btn--accept" data-id="{{item._id}}" bindtap="onAccept">接单</view>
+          </block>
+          <!-- ACCEPTED: markReady -->
+          <block wx:elif="{{item.status === 'ACCEPTED'}}">
+            <view class="action-btn action-btn--ready" data-id="{{item._id}}" bindtap="onMarkReady">出餐</view>
+          </block>
+          <!-- READY: complete -->
+          <block wx:elif="{{item.status === 'READY'}}">
+            <view class="action-btn action-btn--complete" data-id="{{item._id}}" bindtap="onComplete">完成</view>
+          </block>
+        </view>
+      </view>
+    </view>
+
+    <!-- Load more -->
+    <view class="loading-more" wx:if="{{loadingMore}}">
+      <text>加载更多...</text>
+    </view>
+    <view class="no-more" wx:elif="{{!hasMore && orders.length > 0}}">
+      <text>没有更多了</text>
+    </view>
+  </view>
+</view>
+
+<!-- Reject modal -->
+<view class="modal-mask" wx:if="{{showRejectModal}}" bindtap="onCancelReject">
+  <view class="modal-content" catchtap="">
+    <view class="modal-title">拒单原因</view>
+    <view class="reason-list">
+      <view
+        wx:for="{{rejectReasons}}"
+        wx:key="*this"
+        class="reason-item {{selectedReason === index ? 'reason-item--selected' : ''}}"
+        data-index="{{index}}"
+        bindtap="onSelectReason"
+      >
+        <view class="reason-radio {{selectedReason === index ? 'reason-radio--checked' : ''}}"></view>
+        <text>{{item}}</text>
+      </view>
+    </view>
+    <textarea
+      wx:if="{{selectedReason === 3}}"
+      class="reason-input"
+      placeholder="请输入拒单原因"
+      maxlength="100"
+      value="{{customReason}}"
+      bindinput="onCustomReasonInput"
+    />
+    <view class="modal-buttons">
+      <view class="modal-btn modal-btn--cancel" bindtap="onCancelReject">取消</view>
+      <view class="modal-btn modal-btn--confirm" bindtap="onConfirmReject">确认拒单</view>
+    </view>
+  </view>
+</view>
+
+<!-- New order popup -->
+<view class="popup-mask" wx:if="{{showNewOrderPopup}}" bindtap="onDismissPopup">
+  <view class="popup-content" catchtap="">
+    <view class="popup-icon">🔔</view>
+    <view class="popup-title">新订单来啦！</view>
+    <view class="popup-summary" wx:if="{{newOrderInfo}}">
+      <text>{{newOrderInfo.summary}}</text>
+      <text class="popup-price">¥<price value="{{newOrderInfo.actualPrice}}" /></text>
+    </view>
+    <view class="popup-actions">
+      <view class="popup-btn popup-btn--dismiss" bindtap="onDismissPopup">知道了</view>
+      <view class="popup-btn popup-btn--view" bindtap="onViewNewOrder">去处理</view>
     </view>
   </view>
 </view>

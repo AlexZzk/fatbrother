@@ -1,5 +1,9 @@
 {
   "usingComponents": {
-    "nav-bar": "/components/nav-bar/nav-bar"
-  }
+    "nav-bar": "/components/nav-bar/nav-bar",
+    "price": "/components/price/price",
+    "empty-state": "/components/empty-state/empty-state"
+  },
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark"
 }

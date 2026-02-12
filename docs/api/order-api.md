@@ -13,11 +13,12 @@
 | `getList` | 获取订单列表 | C端用户 | S5 | **已完成** |
 | `getDetail` | 获取订单详情 | C端用户/商户 | S5 | **已完成** |
 | `cancel` | 用户取消订单 | C端用户 | S5 | **已完成** |
-| `getMerchantOrders` | 商户获取订单列表 | B端商户 | S6 | 待开发 |
-| `accept` | 商户接单 | B端商户 | S6 | 待开发 |
-| `reject` | 商户拒单 | B端商户 | S6 | 待开发 |
-| `markReady` | 商户标记出餐 | B端商户 | S6 | 待开发 |
-| `complete` | 商户确认完成 | B端商户 | S6 | 待开发 |
+| `getMerchantOrders` | 商户获取订单列表 | B端商户 | S6 | **已完成** |
+| `accept` | 商户接单 | B端商户 | S6 | **已完成** |
+| `reject` | 商户拒单 | B端商户 | S6 | **已完成** |
+| `markReady` | 商户标记出餐 | B端商户 | S6 | **已完成** |
+| `complete` | 商户确认完成 | B端商户 | S6 | **已完成** |
+| `autoCancel` | 超时自动取消 | 定时触发 | S6 | **已完成** |
 
 ---
 
@@ -298,15 +299,279 @@ callFunction('order', {
 
 ---
 
-## 5-9. B端接口（Sprint 6 待开发）
+## 5. getMerchantOrders - 商户获取订单列表
 
-| Action | 迁移路由 | 说明 |
-|--------|---------|------|
-| `getMerchantOrders` | `GET /api/merchant/orders` | 商户获取订单列表 |
-| `accept` | `POST /api/order/:id/accept` | 商户接单 |
-| `reject` | `POST /api/order/:id/reject` | 商户拒单（含原因） |
-| `markReady` | `POST /api/order/:id/ready` | 标记出餐 |
-| `complete` | `POST /api/order/:id/complete` | 确认完成 |
+**说明：** 商户获取自己店铺的订单列表，支持按状态筛选。同时返回各状态计数用于Tab角标。
+
+**调用方式：**
+```js
+callFunction('order', {
+  action: 'getMerchantOrders',
+  status: 'PENDING_ACCEPT',  // 可选，空=全部
+  page: 1,
+  pageSize: 20
+})
+```
+
+**入参：**
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| status | string | 否 | 筛选状态（空=全部） |
+| page | number | 否 | 页码，默认1 |
+| pageSize | number | 否 | 每页条数，默认20 |
+
+**出参：**
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "list": [
+      {
+        "_id": "order_xxx",
+        "order_no": "202602101230001234",
+        "items": [...],
+        "actual_price": 5300,
+        "status": "PENDING_ACCEPT",
+        "created_at": "2026-02-10T12:30:00Z"
+      }
+    ],
+    "hasMore": true,
+    "counts": {
+      "pendingAccept": 3,
+      "accepted": 1,
+      "ready": 2
+    }
+  }
+}
+```
+
+**服务端逻辑：**
+1. 通过 openid 查询商户身份（getMerchantByOpenid）
+2. 以 merchant_id 查询订单，按 created_at 倒序
+3. 并发查询 PENDING_ACCEPT / ACCEPTED / READY 三个计数
+
+**迁移路由：** `GET /api/merchant/orders?status=xxx&page=1&pageSize=20`
+
+---
+
+## 6. accept - 商户接单
+
+**说明：** 商户接受待接单订单，状态变为制作中。
+
+**调用方式：**
+```js
+callFunction('order', {
+  action: 'accept',
+  orderId: 'order_xxx'
+})
+```
+
+**入参：**
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| orderId | string | 是 | 订单ID |
+
+**出参：**
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": { "orderId": "order_xxx" }
+}
+```
+
+**错误码：**
+
+| 错误码 | 说明 |
+|--------|------|
+| 1001 | 缺少订单ID |
+| 2001 | 商户不存在或未激活 |
+| 2002 | 订单不存在/不属于该商户 |
+| 2003 | 当前状态不可接单（非PENDING_ACCEPT） |
+
+**服务端逻辑：**
+1. 验证商户身份
+2. 校验订单属于该商户且状态为 PENDING_ACCEPT
+3. 更新状态为 ACCEPTED，记录 accepted_at
+
+**迁移路由：** `POST /api/order/:id/accept`
+
+---
+
+## 7. reject - 商户拒单
+
+**说明：** 商户拒绝待接单订单，需提供拒单原因。
+
+**调用方式：**
+```js
+callFunction('order', {
+  action: 'reject',
+  orderId: 'order_xxx',
+  reason: '材料不足'
+})
+```
+
+**入参：**
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| orderId | string | 是 | 订单ID |
+| reason | string | 是 | 拒单原因 |
+
+**出参：**
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": { "orderId": "order_xxx" }
+}
+```
+
+**错误码：**
+
+| 错误码 | 说明 |
+|--------|------|
+| 1001 | 缺少订单ID或拒单原因 |
+| 2001 | 商户不存在或未激活 |
+| 2002 | 订单不存在/不属于该商户 |
+| 2003 | 当前状态不可拒单（非PENDING_ACCEPT） |
+
+**服务端逻辑：**
+1. 验证商户身份
+2. 校验订单属于该商户且状态为 PENDING_ACCEPT
+3. 更新状态为 CANCELLED，cancel_reason 前加 "商家拒单：" 前缀
+
+**迁移路由：** `POST /api/order/:id/reject`
+
+---
+
+## 8. markReady - 商户标记出餐
+
+**说明：** 商户标记订单已出餐，等待用户取餐。
+
+**调用方式：**
+```js
+callFunction('order', {
+  action: 'markReady',
+  orderId: 'order_xxx'
+})
+```
+
+**入参：**
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| orderId | string | 是 | 订单ID |
+
+**出参：**
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": { "orderId": "order_xxx" }
+}
+```
+
+**错误码：**
+
+| 错误码 | 说明 |
+|--------|------|
+| 1001 | 缺少订单ID |
+| 2001 | 商户不存在或未激活 |
+| 2002 | 订单不存在/不属于该商户 |
+| 2003 | 当前状态不可标记出餐（非ACCEPTED） |
+
+**服务端逻辑：**
+1. 验证商户身份
+2. 校验订单属于该商户且状态为 ACCEPTED
+3. 更新状态为 READY，记录 ready_at
+
+**迁移路由：** `POST /api/order/:id/ready`
+
+---
+
+## 9. complete - 商户确认完成
+
+**说明：** 商户确认用户已取餐，订单完成。
+
+**调用方式：**
+```js
+callFunction('order', {
+  action: 'complete',
+  orderId: 'order_xxx'
+})
+```
+
+**入参：**
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| orderId | string | 是 | 订单ID |
+
+**出参：**
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": { "orderId": "order_xxx" }
+}
+```
+
+**错误码：**
+
+| 错误码 | 说明 |
+|--------|------|
+| 1001 | 缺少订单ID |
+| 2001 | 商户不存在或未激活 |
+| 2002 | 订单不存在/不属于该商户 |
+| 2003 | 当前状态不可完成（非READY） |
+
+**服务端逻辑：**
+1. 验证商户身份
+2. 校验订单属于该商户且状态为 READY
+3. 更新状态为 COMPLETED，记录 completed_at
+
+**迁移路由：** `POST /api/order/:id/complete`
+
+---
+
+## 10. autoCancel - 超时自动取消
+
+**说明：** 定时触发器每5分钟调用，自动取消超过30分钟未接单的订单。
+
+**调用方式：** 云函数定时触发器（5分钟间隔）
+```json
+{
+  "triggers": [
+    {
+      "name": "autoCancelTimer",
+      "type": "timer",
+      "config": "0 */5 * * * * *"
+    }
+  ]
+}
+```
+
+**入参：** 无（由触发器自动调用）
+
+**出参：**
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "cancelledCount": 2
+  }
+}
+```
+
+**服务端逻辑：**
+1. 查询所有 PENDING_ACCEPT 状态且 created_at 超过30分钟的订单
+2. 批量更新为 CANCELLED，cancel_reason 设为 "超时未接单，系统自动取消"
+3. 返回取消数量
 
 ---
 

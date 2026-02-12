@@ -39,6 +39,11 @@ const merchantService = {
   // Get invite records (referral list)
   getInviteRecords() {
     return callFunction('merchant', { action: 'getInviteRecords' })
+  },
+
+  // Get today's stats (order count, revenue, refund, pending counts)
+  getTodayStats() {
+    return callFunction('merchant', { action: 'getTodayStats' })
   }
 }
 
