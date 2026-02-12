@@ -44,6 +44,16 @@ const orderService = {
   // Merchant: get order list with tab counts
   getMerchantOrders(params) {
     return callFunction('order', { action: 'getMerchantOrders', ...params })
+  },
+
+  // Create payment (re-initiate payment for PENDING_PAY order)
+  createPayment(orderId) {
+    return callFunction('order', { action: 'createPayment', orderId })
+  },
+
+  // Request refund
+  createRefund(orderId, reason) {
+    return callFunction('order', { action: 'createRefund', orderId, reason })
   }
 }
 

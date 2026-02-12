@@ -44,6 +44,11 @@ const merchantService = {
   // Get today's stats (order count, revenue, refund, pending counts)
   getTodayStats() {
     return callFunction('merchant', { action: 'getTodayStats' })
+  },
+
+  // Search merchants by keyword (name + product name fuzzy match)
+  search(params) {
+    return callFunction('merchant', { action: 'search', ...params })
   }
 }
 

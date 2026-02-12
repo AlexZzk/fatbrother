@@ -1,7 +1,7 @@
 # 商户模块 接口文档
 
 > 云函数名：`merchant`
-> 负责 Sprint：S2
+> 负责 Sprint：S2, S7
 > 状态：**已完成**
 
 ## 接口列表
@@ -16,6 +16,7 @@
 | toggleStatus | 切换营业状态 | 是(商户) | `POST /api/merchant/toggle-status` |
 | getInviteRecords | 获取推荐记录 | 是(商户) | `GET /api/merchant/invite-records` |
 | getNearbyList | 获取附近商家 | 否 | `GET /api/merchant/nearby` |
+| search | 搜索商家 | 否 | `GET /api/merchant/search` |
 
 ---
 
@@ -192,3 +193,49 @@
 ## getNearbyList
 
 > 将在 Sprint 4 实现，此处仅占位。
+
+---
+
+## search
+
+### 描述
+搜索商家。支持按店铺名称模糊搜索，同时搜索商品名称并返回对应商家。仅返回 active 且营业中的商户。
+
+### 请求参数
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| action | string | 是 | `"search"` |
+| keyword | string | 是 | 搜索关键词 |
+| page | number | 否 | 页码，默认 1 |
+| pageSize | number | 否 | 每页数量，默认 20 |
+
+### 响应数据
+```json
+{
+  "code": 0, "message": "success",
+  "data": {
+    "list": [
+      {
+        "_id": "merchant_id",
+        "shop_name": "胖兄弟奶茶",
+        "shop_avatar": "cloud://...",
+        "announcement": "欢迎光临",
+        "is_open": true,
+        "location": { "type": "Point", "coordinates": [113.xx, 23.xx] }
+      }
+    ],
+    "total": 5
+  }
+}
+```
+
+### 业务逻辑
+1. 使用 `db.RegExp` 对 `shop_name` 进行模糊匹配
+2. 同时搜索 `products` 集合的 `name` 字段，找到匹配商品对应的 merchant_id
+3. 合并两个结果集并去重
+4. 只返回 `status=active` 且 `is_open=true` 的商户
+
+### 错误码
+| 错误码 | 说明 |
+|--------|------|
+| 1001 | 未传入关键词 |

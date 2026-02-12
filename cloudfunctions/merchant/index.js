@@ -23,7 +23,8 @@ exports.main = async (event, context) => {
     toggleStatus,
     getInviteRecords,
     getNearbyList,
-    getTodayStats
+    getTodayStats,
+    search
   }
 
   if (!actions[action]) {
@@ -536,6 +537,100 @@ async function getTodayStats(event, openid) {
       refund,
       pendingAccept: pendingAcceptCount.total,
       pendingReady: acceptedCount.total
+    }
+  }
+}
+
+/**
+ * S7-7: 搜索商家（模糊匹配商家名 + 商品名）
+ *
+ * 入参:
+ *   keyword - 搜索关键词
+ *   page - 页码（默认1）
+ *   pageSize - 每页条数（默认20）
+ *
+ * 仅返回 active + is_open 的商户
+ */
+async function search(event) {
+  const { keyword, page = 1, pageSize = 20 } = event
+
+  if (!keyword || !keyword.trim()) {
+    return { code: 0, message: 'success', data: { list: [], total: 0, hasMore: false } }
+  }
+
+  const kw = keyword.trim()
+
+  // 云开发数据库使用 RegExp 进行模糊搜索
+  const nameRegex = db.RegExp({ regexp: kw, options: 'i' })
+
+  // 1. 按商家名称搜索
+  const { data: nameMatches } = await merchantsCollection
+    .where({
+      status: 'active',
+      is_open: true,
+      shop_name: nameRegex
+    })
+    .limit(100)
+    .get()
+
+  // 2. 按商品名称搜索（找到商品→取对应 merchant_id）
+  const productsCol = db.collection('products')
+  const { data: productMatches } = await productsCol
+    .where({
+      is_on_sale: true,
+      name: nameRegex
+    })
+    .field({ merchant_id: true })
+    .limit(100)
+    .get()
+
+  // 合并去重 merchant_id
+  const matchedIds = new Set(nameMatches.map(m => m._id))
+  const productMerchantIds = [...new Set(
+    productMatches
+      .map(p => p.merchant_id)
+      .filter(id => !matchedIds.has(id))
+  )]
+
+  // 补充查询通过商品匹配到的商户
+  let productMerchants = []
+  if (productMerchantIds.length > 0) {
+    const { data } = await merchantsCollection
+      .where({
+        _id: _.in(productMerchantIds),
+        status: 'active',
+        is_open: true
+      })
+      .limit(100)
+      .get()
+    productMerchants = data
+  }
+
+  // 合并结果
+  const allMerchants = [...nameMatches, ...productMerchants]
+
+  // 格式化输出
+  const list = allMerchants.map(m => ({
+    _id: m._id,
+    shop_name: m.shop_name,
+    shop_avatar: m.shop_avatar || '',
+    announcement: m.announcement || '',
+    rating: m.rating || 5.0,
+    monthly_sales: m.monthly_sales || 0,
+    distance: null
+  }))
+
+  // 分页
+  const start = (page - 1) * pageSize
+  const paged = list.slice(start, start + pageSize)
+
+  return {
+    code: 0,
+    message: 'success',
+    data: {
+      list: paged,
+      total: list.length,
+      hasMore: start + pageSize < list.length
     }
   }
 }
