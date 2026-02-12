@@ -1,3 +1,4 @@
+<wxs src="./spec-popup.wxs" module="util" />
 <view wx:if="{{show}}" class="spec-mask" bindtap="onMaskTap" catchtouchmove="noop">
   <view class="spec-panel" catchtap="noop">
     <!-- Header -->
@@ -24,14 +25,14 @@
             wx:key="name"
             wx:for-index="si"
             wx:for-item="spec"
-            class="spec-option {{selectedSpecs[gi] && selectedSpecs[gi].indexOf(si) > -1 ? 'spec-option--selected' : ''}}"
+            class="spec-option {{util.contains(selectedSpecs[gi], si) ? 'spec-option--selected' : ''}}"
             data-gi="{{gi}}"
             data-si="{{si}}"
             bindtap="onSelectSpec"
           >
             <text>{{spec.name}}</text>
-            <text wx:if="{{spec.price_delta > 0}}" class="spec-delta">+{{spec.price_delta / 100}}</text>
-            <text wx:if="{{spec.price_delta < 0}}" class="spec-delta">{{spec.price_delta / 100}}</text>
+            <text wx:if="{{util.isPositive(spec.price_delta)}}" class="spec-delta">+{{spec.price_delta / 100}}</text>
+            <text wx:if="{{util.isNegative(spec.price_delta)}}" class="spec-delta">{{spec.price_delta / 100}}</text>
           </view>
         </view>
       </view>

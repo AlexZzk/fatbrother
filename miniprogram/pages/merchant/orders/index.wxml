@@ -11,9 +11,9 @@
       bindtap="onTabTap"
     >
       <text>{{item.label}}</text>
-      <view class="tab-badge" wx:if="{{index === 0 && counts.pendingAccept > 0}}">{{counts.pendingAccept}}</view>
-      <view class="tab-badge" wx:elif="{{index === 1 && counts.accepted > 0}}">{{counts.accepted}}</view>
-      <view class="tab-badge" wx:elif="{{index === 2 && counts.ready > 0}}">{{counts.ready}}</view>
+      <view class="tab-badge" wx:if="{{index === 0 && counts.pendingAccept}}">{{counts.pendingAccept}}</view>
+      <view class="tab-badge" wx:elif="{{index === 1 && counts.accepted}}">{{counts.accepted}}</view>
+      <view class="tab-badge" wx:elif="{{index === 2 && counts.ready}}">{{counts.ready}}</view>
       <view class="tab-underline" wx:if="{{activeTab === index}}"></view>
     </view>
   </view>
@@ -92,7 +92,7 @@
     <view class="loading-more" wx:if="{{loadingMore}}">
       <text>加载更多...</text>
     </view>
-    <view class="no-more" wx:elif="{{!hasMore && orders.length > 0}}">
+    <view class="no-more" wx:elif="{{!hasMore && orders.length}}">
       <text>没有更多了</text>
     </view>
   </view>

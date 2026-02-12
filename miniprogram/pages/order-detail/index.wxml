@@ -92,7 +92,7 @@
 </view>
 
 <!-- Bottom action bar -->
-<view class="action-bar" wx:if="{{buttons.length > 0}}">
+<view class="action-bar" wx:if="{{buttons.length}}">
   <view
     wx:for="{{buttons}}"
     wx:key="type"

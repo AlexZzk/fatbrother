@@ -8,7 +8,7 @@
     <view class="product-bottom">
       <price value="{{product.base_price}}" size="medium" />
       <view class="product-actions">
-        <block wx:if="{{count > 0 && !(product.spec_groups && product.spec_groups.length > 0)}}">
+        <block wx:if="{{count && !(product.spec_groups && product.spec_groups.length)}}">
           <view class="action-btn action-btn--minus" bindtap="onMinus">-</view>
           <text class="action-count">{{count}}</text>
         </block>

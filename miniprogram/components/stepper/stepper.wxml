@@ -1,13 +1,14 @@
+<wxs src="./stepper.wxs" module="util" />
 <view class="stepper">
   <button
-    class="stepper__btn stepper__minus {{value <= min || disabled ? 'stepper__btn--disabled' : ''}}"
-    disabled="{{value <= min || disabled}}"
+    class="stepper__btn stepper__minus {{util.lte(value, min) || disabled ? 'stepper__btn--disabled' : ''}}"
+    disabled="{{util.lte(value, min) || disabled}}"
     bind:tap="onMinus"
   >-</button>
   <text class="stepper__value">{{value}}</text>
   <button
-    class="stepper__btn stepper__plus {{value >= max || disabled ? 'stepper__btn--disabled' : ''}}"
-    disabled="{{value >= max || disabled}}"
+    class="stepper__btn stepper__plus {{util.gte(value, max) || disabled ? 'stepper__btn--disabled' : ''}}"
+    disabled="{{util.gte(value, max) || disabled}}"
     bind:tap="onPlus"
   >+</button>
 </view>

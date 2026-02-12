@@ -23,7 +23,7 @@
 <view class="page-container">
   <!-- 搜索历史（无搜索结果时显示） -->
   <block wx:if="{{!searched}}">
-    <view class="history-section" wx:if="{{history.length > 0}}">
+    <view class="history-section" wx:if="{{history.length}}">
       <view class="section-header">
         <text class="section-title">搜索历史</text>
         <text class="section-clear" bindtap="onClearHistory">清空</text>
@@ -65,7 +65,7 @@
       <view class="loading-more" wx:if="{{loading}}">
         <text>加载更多...</text>
       </view>
-      <view class="no-more" wx:elif="{{!hasMore && results.length > 0}}">
+      <view class="no-more" wx:elif="{{!hasMore && results.length}}">
         <text>没有更多了</text>
       </view>
     </view>

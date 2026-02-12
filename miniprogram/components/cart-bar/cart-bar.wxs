@@ -1,0 +1,8 @@
+function badgeText(count) {
+  if (count > 99) return '99+'
+  return '' + count
+}
+
+module.exports = {
+  badgeText: badgeText
+}
