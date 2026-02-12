@@ -1,3 +1,4 @@
+<wxs src="./cart-popup.wxs" module="util" />
 <view wx:if="{{show}}" class="popup-mask" bindtap="onMaskTap" catchtouchmove="noop">
   <view class="popup-panel" catchtap="noop">
     <!-- Header -->
@@ -11,8 +12,8 @@
       <view wx:for="{{items}}" wx:key="cartId" class="cart-item">
         <view class="item-info">
           <text class="item-name">{{item.productName}}</text>
-          <text wx:if="{{item.specs.length > 0}}" class="item-specs">
-            ({{item.specs.map(s => s.itemName).join('/')}})
+          <text wx:if="{{item.specs.length}}" class="item-specs">
+            {{util.formatSpecs(item.specs)}}
           </text>
         </view>
         <view class="item-bottom">
