@@ -40,7 +40,7 @@
   </scroll-view>
 
   <!-- 商品列表 -->
-  <view class="product-list" wx:if="{{!loading && filteredProducts.length > 0}}">
+  <view class="product-list" wx:if="{{!loading && filteredProducts.length}}">
     <view
       class="product-card {{!item.isOnSale ? 'product-card--off' : ''}}"
       wx:for="{{filteredProducts}}"

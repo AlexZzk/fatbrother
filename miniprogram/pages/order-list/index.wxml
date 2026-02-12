@@ -19,7 +19,7 @@
 
   <!-- Order list -->
   <view class="order-list">
-    <block wx:if="{{!loading && orders.length > 0}}">
+    <block wx:if="{{!loading && orders.length}}">
       <order-card
         wx:for="{{orders}}"
         wx:key="_id"
@@ -43,7 +43,7 @@
     <view wx:if="{{loadingMore}}" class="loading-more">
       <text>加载更多...</text>
     </view>
-    <view wx:if="{{!hasMore && orders.length > 0 && !loading}}" class="no-more">
+    <view wx:if="{{!hasMore && orders.length && !loading}}" class="no-more">
       <text>没有更多了</text>
     </view>
   </view>

@@ -1,0 +1,12 @@
+function gte(a, b) {
+  return a >= b
+}
+
+function lt(a, b) {
+  return a < b
+}
+
+module.exports = {
+  gte: gte,
+  lt: lt
+}

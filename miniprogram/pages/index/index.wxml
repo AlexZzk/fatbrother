@@ -23,7 +23,7 @@
 
   <!-- 商家列表 -->
   <block wx:elif="{{!loading}}">
-    <view wx:if="{{shopList.length > 0}}" class="shop-section">
+    <view wx:if="{{shopList.length}}" class="shop-section">
       <view class="section-title">附近商家</view>
       <view class="shop-list">
         <shop-card

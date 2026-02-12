@@ -7,7 +7,7 @@
     <!-- 左侧 -->
     <view class="nav-bar-left">
       <view wx:if="{{leftArrow}}" class="nav-bar-back" bind:tap="onBack">
-        <text class="nav-bar-back-icon">&#8249;</text>
+        <text class="nav-bar-back-icon">‹</text>
       </view>
       <slot name="left"></slot>
     </view>

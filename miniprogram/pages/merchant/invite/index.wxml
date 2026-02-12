@@ -1,3 +1,4 @@
+<wxs src="../../../utils/compare.wxs" module="cmp" />
 <nav-bar title="我的邀请码" left-arrow="{{true}}" />
 
 <view class="page-container">
@@ -41,7 +42,7 @@
         <view
           wx:for="{{records}}"
           wx:key="_id"
-          class="record-item {{index < records.length - 1 ? 'record-item--border' : ''}}"
+          class="record-item {{cmp.lt(index, records.length - 1) ? 'record-item--border' : ''}}"
         >
           <view class="record-top">
             <text class="record-name">{{item.shop_name}}</text>

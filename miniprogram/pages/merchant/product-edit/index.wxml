@@ -1,3 +1,4 @@
+<wxs src="../../../utils/compare.wxs" module="cmp" />
 <nav-bar title="{{isEdit ? '编辑商品' : '添加商品'}}" left-arrow="{{true}}" />
 
 <view class="page-container">
@@ -25,8 +26,8 @@
       <view class="form-section">
         <view class="form-label"><text class="required">*</text> 所属分类</view>
         <picker range="{{categories}}" range-key="name" value="{{categoryIndex}}" bindchange="onCategoryChange">
-          <view class="form-picker {{categoryIndex >= 0 ? '' : 'form-picker--placeholder'}}">
-            {{categoryIndex >= 0 ? categories[categoryIndex].name : '请选择分类'}}
+          <view class="form-picker {{cmp.gte(categoryIndex, 0) ? '' : 'form-picker--placeholder'}}">
+            {{cmp.gte(categoryIndex, 0) ? categories[categoryIndex].name : '请选择分类'}}
             <text class="picker-arrow">▾</text>
           </view>
         </picker>
@@ -46,7 +47,7 @@
         <view class="form-label-row">
           <text>规格设置</text>
           <view class="spec-hint">
-            <text class="spec-count">{{specGroups.length > 0 ? '已设置 ' + specGroups.length + ' 个规格组' : '未设置'}}</text>
+            <text class="spec-count">{{specGroups.length ? '已设置 ' + specGroups.length + ' 个规格组' : '未设置'}}</text>
             <text class="link-arrow">></text>
           </view>
         </view>
