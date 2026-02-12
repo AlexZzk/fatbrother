@@ -2,14 +2,24 @@ const app = getApp()
 
 Page({
   data: {
-    navBarHeight: 0,
-    statusBarHeight: 0
+    orderId: '',
+    orderNo: ''
   },
 
   onLoad(options) {
     this.setData({
-      navBarHeight: app.globalData.navBarHeight,
-      statusBarHeight: app.globalData.statusBarHeight
+      orderId: options.orderId || '',
+      orderNo: options.orderNo || ''
     })
+  },
+
+  onViewDetail() {
+    wx.redirectTo({
+      url: `/pages/order-detail/index?orderId=${this.data.orderId}`
+    })
+  },
+
+  onBackHome() {
+    wx.switchTab({ url: '/pages/index/index' })
   }
 })

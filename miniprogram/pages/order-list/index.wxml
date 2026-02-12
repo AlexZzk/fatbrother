@@ -1,9 +1,52 @@
 <nav-bar title="我的订单" />
+
 <view class="page-container">
-  <view class="page-body">
-    <view class="loading-center">
-      <text>我的订单 - 开发中</text>
+  <!-- Status tabs -->
+  <scroll-view class="tabs-scroll" scroll-x>
+    <view class="tabs-wrapper">
+      <view
+        wx:for="{{tabs}}"
+        wx:key="key"
+        class="tab-item {{activeTab === index ? 'tab-item--active' : ''}}"
+        data-index="{{index}}"
+        bindtap="onTabTap"
+      >
+        <text>{{item.label}}</text>
+        <view wx:if="{{activeTab === index}}" class="tab-underline"></view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- Order list -->
+  <view class="order-list">
+    <block wx:if="{{!loading && orders.length > 0}}">
+      <order-card
+        wx:for="{{orders}}"
+        wx:key="_id"
+        order="{{item}}"
+        bind:tap="onOrderTap"
+        bind:action="onOrderAction"
+      />
+    </block>
+
+    <!-- Loading -->
+    <view wx:if="{{loading}}" class="loading-center">
+      <text>加载中...</text>
+    </view>
+
+    <!-- Empty -->
+    <view wx:if="{{!loading && orders.length === 0}}" class="empty-wrap">
+      <empty-state text="暂无订单" />
+    </view>
+
+    <!-- Load more -->
+    <view wx:if="{{loadingMore}}" class="loading-more">
+      <text>加载更多...</text>
+    </view>
+    <view wx:if="{{!hasMore && orders.length > 0 && !loading}}" class="no-more">
+      <text>没有更多了</text>
     </view>
   </view>
-  <custom-tab-bar selected="{{1}}" />
 </view>
+
+<custom-tab-bar selected="{{1}}" />

@@ -1,0 +1,122 @@
+.order-card {
+  margin: 0 24rpx 24rpx;
+  padding: 24rpx;
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.merchant-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #222222;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 16rpx;
+}
+
+.status-tag {
+  font-size: 26rpx;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.card-divider {
+  height: 1rpx;
+  background-color: #F0F0F0;
+  margin: 20rpx 0;
+}
+
+.card-products {
+  padding: 0;
+}
+
+.product-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.product-name {
+  font-size: 26rpx;
+  color: #333333;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 16rpx;
+}
+
+.product-qty {
+  font-size: 26rpx;
+  color: #666666;
+  flex-shrink: 0;
+}
+
+.product-count {
+  font-size: 24rpx;
+  color: #999999;
+  margin-top: 4rpx;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.footer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.footer-price {
+  display: flex;
+  align-items: baseline;
+}
+
+.price-label {
+  font-size: 26rpx;
+  color: #333333;
+}
+
+.price-symbol {
+  font-size: 24rpx;
+  color: #FF3B30;
+  font-weight: 600;
+}
+
+.footer-time {
+  font-size: 22rpx;
+  color: #999999;
+}
+
+.footer-actions {
+  display: flex;
+  gap: 16rpx;
+  flex-shrink: 0;
+}
+
+.action-btn {
+  padding: 10rpx 24rpx;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  border: 2rpx solid #DCDEE0;
+  color: #333333;
+  background-color: #FFFFFF;
+}
+
+.action-btn--primary {
+  border-color: #FF6B35;
+  color: #FF6B35;
+}

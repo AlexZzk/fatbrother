@@ -1,4 +1,74 @@
-/* 我的订单 */
+/* 订单列表页 */
 .page-container {
   min-height: 100vh;
+  background-color: #F5F5F5;
+  padding-bottom: 120rpx;
+}
+
+/* Tab bar */
+.tabs-scroll {
+  background-color: #FFFFFF;
+  white-space: nowrap;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+
+.tabs-wrapper {
+  display: inline-flex;
+  padding: 0 8rpx;
+}
+
+.tab-item {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24rpx 28rpx;
+  font-size: 28rpx;
+  color: #666666;
+  position: relative;
+}
+
+.tab-item--active {
+  color: #FF6B35;
+  font-weight: 600;
+}
+
+.tab-underline {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40rpx;
+  height: 4rpx;
+  background-color: #FF6B35;
+  border-radius: 2rpx;
+}
+
+/* Order list */
+.order-list {
+  padding-top: 16rpx;
+}
+
+.loading-center {
+  text-align: center;
+  padding: 200rpx 0;
+  color: #999999;
+  font-size: 28rpx;
+}
+
+.empty-wrap {
+  padding-top: 200rpx;
+}
+
+.loading-more {
+  text-align: center;
+  padding: 24rpx 0;
+  color: #999999;
+  font-size: 24rpx;
+}
+
+.no-more {
+  text-align: center;
+  padding: 24rpx 0;
+  color: #CCCCCC;
+  font-size: 24rpx;
 }

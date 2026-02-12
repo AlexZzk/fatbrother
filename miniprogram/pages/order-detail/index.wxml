@@ -1,8 +1,105 @@
 <nav-bar title="订单详情" left-arrow="{{true}}" />
+
 <view class="page-container">
-  <view class="page-body">
-    <view class="loading-center">
-      <text>订单详情 - 开发中</text>
+  <block wx:if="{{!loading && order}}">
+    <!-- Status card -->
+    <view class="status-card" style="background: {{statusBg}};">
+      <text class="status-title" style="color: {{statusColor}};">{{statusTitle}}</text>
+      <text class="status-desc">{{statusDesc}}</text>
     </view>
+
+    <!-- Merchant info -->
+    <view class="section-card merchant-row" bindtap="onGoShop">
+      <view class="merchant-info">
+        <text class="merchant-icon">🏪</text>
+        <text class="merchant-name">{{order.merchant_name}}</text>
+      </view>
+      <text class="merchant-arrow">></text>
+    </view>
+
+    <!-- Product details -->
+    <view class="section-card">
+      <view class="section-title">商品信息</view>
+      <view class="product-row" wx:for="{{orderItems}}" wx:key="product_id">
+        <view class="product-info">
+          <text class="product-name">{{item.name}}</text>
+          <text class="product-spec" wx:if="{{item.specText}}"> ({{item.specText}})</text>
+        </view>
+        <view class="product-right">
+          <text class="product-qty">x{{item.quantity}}</text>
+          <view class="product-price">
+            <text>¥</text>
+            <price value="{{item.subtotal}}" />
+          </view>
+        </view>
+      </view>
+
+      <view class="price-divider"></view>
+
+      <view class="price-row">
+        <text class="price-label">商品合计</text>
+        <view class="price-value"><text>¥</text><price value="{{order.total_price}}" /></view>
+      </view>
+      <view class="price-row">
+        <text class="price-label">包装费</text>
+        <view class="price-value"><text>¥</text><price value="{{order.packing_fee}}" /></view>
+      </view>
+      <view class="price-row">
+        <text class="price-label">配送费</text>
+        <view class="price-value"><text>¥</text><price value="{{order.delivery_fee}}" /></view>
+      </view>
+
+      <view class="price-divider"></view>
+
+      <view class="price-row price-row--total">
+        <text class="price-label">实付金额</text>
+        <view class="price-value price-value--total"><text>¥</text><price value="{{order.actual_price}}" /></view>
+      </view>
+    </view>
+
+    <!-- Order meta -->
+    <view class="section-card">
+      <view class="section-title">订单信息</view>
+      <view class="meta-row">
+        <text class="meta-label">订单编号</text>
+        <view class="meta-value-wrap">
+          <text class="meta-value">{{order.order_no}}</text>
+          <text class="meta-copy" bindtap="onCopyOrderNo">复制</text>
+        </view>
+      </view>
+      <view class="meta-row">
+        <text class="meta-label">下单时间</text>
+        <text class="meta-value">{{createTimeStr}}</text>
+      </view>
+      <view class="meta-row">
+        <text class="meta-label">支付方式</text>
+        <text class="meta-value">微信支付</text>
+      </view>
+      <view class="meta-row" wx:if="{{order.remark}}">
+        <text class="meta-label">备注</text>
+        <text class="meta-value">{{order.remark}}</text>
+      </view>
+      <view class="meta-row" wx:if="{{order.cancel_reason}}">
+        <text class="meta-label">取消原因</text>
+        <text class="meta-value">{{order.cancel_reason}}</text>
+      </view>
+    </view>
+  </block>
+
+  <view wx:elif="{{loading}}" class="loading-center">
+    <text>加载中...</text>
+  </view>
+</view>
+
+<!-- Bottom action bar -->
+<view class="action-bar" wx:if="{{buttons.length > 0}}">
+  <view
+    wx:for="{{buttons}}"
+    wx:key="type"
+    class="action-btn action-btn--{{item.style}}"
+    data-type="{{item.type}}"
+    bindtap="onActionTap"
+  >
+    {{item.text}}
   </view>
 </view>

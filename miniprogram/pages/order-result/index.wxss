@@ -1,4 +1,72 @@
-/* 支付结果 */
+/* 支付结果页 */
 .page-container {
   min-height: 100vh;
+  background-color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.result-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 48rpx;
+  margin-top: -100rpx;
+}
+
+.result-icon {
+  width: 128rpx;
+  height: 128rpx;
+  border-radius: 50%;
+  background-color: #00B578;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 32rpx;
+}
+
+.icon-check {
+  font-size: 64rpx;
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+.result-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #222222;
+  margin-bottom: 12rpx;
+}
+
+.result-desc {
+  font-size: 28rpx;
+  color: #999999;
+  margin-bottom: 60rpx;
+}
+
+.result-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.btn-primary {
+  width: 400rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  background-color: #FF6B35;
+  color: #FFFFFF;
+  font-size: 30rpx;
+  font-weight: 600;
+  border-radius: 999rpx;
+}
+
+.btn-text {
+  font-size: 28rpx;
+  color: #666666;
+  padding: 16rpx 0;
 }
