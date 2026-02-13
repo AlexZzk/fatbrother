@@ -1,0 +1,10 @@
+{
+  "usingComponents": {
+    "nav-bar": "/components/nav-bar/nav-bar",
+    "custom-tab-bar": "/components/custom-tab-bar/custom-tab-bar",
+    "order-card": "/components/order-card/order-card",
+    "empty-state": "/components/empty-state/empty-state"
+  },
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark"
+}

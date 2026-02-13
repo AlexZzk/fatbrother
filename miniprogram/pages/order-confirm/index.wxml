@@ -1,0 +1,81 @@
+<nav-bar title="确认订单" left-arrow="{{true}}" />
+
+<view class="page-container">
+  <block wx:if="{{merchant}}">
+    <!-- 取餐方式 -->
+    <view class="section-card">
+      <view class="section-title">取餐方式</view>
+      <view class="pickup-row">
+        <text class="pickup-icon">🏪</text>
+        <text class="pickup-text">到店自取</text>
+      </view>
+      <view class="pickup-address" wx:if="{{merchant.address}}">
+        <text class="pickup-icon">📍</text>
+        <text class="address-text">{{merchant.address}}</text>
+      </view>
+    </view>
+
+    <!-- 商品清单 -->
+    <view class="section-card">
+      <view class="section-title">商品清单</view>
+      <view class="product-row" wx:for="{{cartItems}}" wx:key="cartId">
+        <view class="product-info">
+          <text class="product-name">{{item.productName}}</text>
+          <text class="product-spec" wx:if="{{item.specText}}"> ({{item.specText}})</text>
+        </view>
+        <view class="product-right">
+          <text class="product-qty">x{{item.quantity}}</text>
+          <view class="product-price">
+            <text>¥</text>
+            <price value="{{item.subtotal}}" />
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 价格明细 -->
+    <view class="section-card">
+      <view class="section-title">价格明细</view>
+      <view class="price-row">
+        <text class="price-label">商品合计</text>
+        <view class="price-value"><text>¥</text><price value="{{totalPrice}}" /></view>
+      </view>
+      <view class="price-row">
+        <text class="price-label">包装费</text>
+        <view class="price-value"><text>¥</text><price value="{{packingFee}}" /></view>
+      </view>
+      <view class="price-row">
+        <text class="price-label">配送费</text>
+        <view class="price-value"><text>¥</text><price value="{{deliveryFee}}" /></view>
+      </view>
+      <view class="price-divider"></view>
+      <view class="price-row price-row--total">
+        <text class="price-label">合计</text>
+        <view class="price-value price-value--total"><text>¥</text><price value="{{actualPrice}}" /></view>
+      </view>
+    </view>
+
+    <!-- 备注 -->
+    <view class="section-card">
+      <view class="section-title">备注</view>
+      <textarea
+        class="remark-input"
+        placeholder="选填，如口味偏好、取餐时间等"
+        maxlength="200"
+        value="{{remark}}"
+        bindinput="onRemarkInput"
+      />
+    </view>
+  </block>
+</view>
+
+<!-- 底部提交栏 -->
+<view class="submit-bar" wx:if="{{merchant}}">
+  <view class="submit-total">
+    <text class="submit-label">合计 </text>
+    <view class="submit-price"><text>¥</text><price value="{{actualPrice}}" /></view>
+  </view>
+  <view class="submit-btn {{submitting ? 'submit-btn--disabled' : ''}}" bindtap="onSubmit">
+    {{submitting ? '提交中...' : '提交订单'}}
+  </view>
+</view>

@@ -1,0 +1,18 @@
+function isPositive(val) {
+  return val > 0
+}
+
+function isNegative(val) {
+  return val < 0
+}
+
+function contains(arr, val) {
+  if (!arr) return false
+  return arr.indexOf(val) > -1
+}
+
+module.exports = {
+  isPositive: isPositive,
+  isNegative: isNegative,
+  contains: contains
+}

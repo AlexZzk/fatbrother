@@ -1,0 +1,199 @@
+/* 订单确认页 */
+.page-container {
+  min-height: 100vh;
+  background-color: #F5F5F5;
+  padding: 16rpx 0 160rpx;
+}
+
+.section-card {
+  margin: 0 24rpx 16rpx;
+  padding: 24rpx;
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #222222;
+  margin-bottom: 20rpx;
+}
+
+/* 取餐方式 */
+.pickup-row {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-bottom: 12rpx;
+}
+
+.pickup-icon {
+  font-size: 28rpx;
+}
+
+.pickup-text {
+  font-size: 28rpx;
+  color: #333333;
+  font-weight: 500;
+}
+
+.pickup-address {
+  display: flex;
+  align-items: flex-start;
+  gap: 8rpx;
+}
+
+.address-text {
+  font-size: 24rpx;
+  color: #666666;
+  line-height: 1.5;
+}
+
+/* 商品清单 */
+.product-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12rpx 0;
+  border-bottom: 1rpx solid #F5F5F5;
+}
+
+.product-row:last-child {
+  border-bottom: none;
+}
+
+.product-info {
+  flex: 1;
+  margin-right: 16rpx;
+}
+
+.product-name {
+  font-size: 26rpx;
+  color: #333333;
+}
+
+.product-spec {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+.product-right {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  flex-shrink: 0;
+}
+
+.product-qty {
+  font-size: 26rpx;
+  color: #666666;
+}
+
+.product-price {
+  font-size: 26rpx;
+  color: #333333;
+  font-weight: 500;
+  display: flex;
+  align-items: baseline;
+}
+
+/* 价格明细 */
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8rpx 0;
+}
+
+.price-label {
+  font-size: 26rpx;
+  color: #666666;
+}
+
+.price-value {
+  font-size: 26rpx;
+  color: #333333;
+  display: flex;
+  align-items: baseline;
+}
+
+.price-divider {
+  height: 1rpx;
+  background-color: #F0F0F0;
+  margin: 12rpx 0;
+}
+
+.price-row--total .price-label {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333333;
+}
+
+.price-value--total {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #FF3B30;
+}
+
+/* 备注 */
+.remark-input {
+  width: 100%;
+  height: 160rpx;
+  font-size: 26rpx;
+  color: #333333;
+  padding: 16rpx;
+  background-color: #F7F8FA;
+  border-radius: 12rpx;
+  box-sizing: border-box;
+}
+
+/* 底部提交栏 */
+.submit-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 24rpx;
+  padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
+  background-color: #FFFFFF;
+  border-top: 1rpx solid #F0F0F0;
+  z-index: 100;
+}
+
+.submit-total {
+  display: flex;
+  align-items: baseline;
+}
+
+.submit-label {
+  font-size: 26rpx;
+  color: #333333;
+}
+
+.submit-price {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #FF3B30;
+  display: flex;
+  align-items: baseline;
+}
+
+.submit-btn {
+  padding: 0 48rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  background-color: #FF6B35;
+  color: #FFFFFF;
+  font-size: 30rpx;
+  font-weight: 600;
+  border-radius: 999rpx;
+  text-align: center;
+}
+
+.submit-btn--disabled {
+  background-color: #CCCCCC;
+}

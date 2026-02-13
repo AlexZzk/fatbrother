@@ -1,0 +1,59 @@
+.uploader {
+  position: relative;
+  width: 200rpx;
+  height: 200rpx;
+}
+
+.uploader__preview {
+  width: 100%;
+  height: 100%;
+  border-radius: 12rpx;
+}
+
+.uploader__delete {
+  position: absolute;
+  top: -12rpx;
+  right: -12rpx;
+  width: 40rpx;
+  height: 40rpx;
+  line-height: 40rpx;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #FFFFFF;
+  font-size: 24rpx;
+  border-radius: 50%;
+}
+
+.uploader__trigger {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #F7F8FA;
+  border: 2rpx dashed #DCDEE0;
+  border-radius: 12rpx;
+}
+
+.uploader__placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.uploader__icon {
+  font-size: 48rpx;
+  color: #DCDEE0;
+  line-height: 1;
+}
+
+.uploader__text {
+  font-size: 22rpx;
+  color: #969799;
+}
+
+.uploader__loading {
+  font-size: 24rpx;
+  color: #969799;
+}

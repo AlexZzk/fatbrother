@@ -1,0 +1,38 @@
+<nav-bar title="商户入驻" left-arrow="{{true}}" />
+
+<view class="page-container">
+  <view class="guide-hero">
+    <text class="guide-icon">🏪</text>
+    <text class="guide-title">入驻胖兄弟，开启您的生意</text>
+    <text class="guide-subtitle">简单几步，轻松开店</text>
+  </view>
+
+  <view class="guide-features">
+    <view class="feature-item">
+      <text class="feature-icon">📋</text>
+      <view class="feature-text">
+        <text class="feature-title">轻松管理菜单和订单</text>
+        <text class="feature-desc">商品上下架、分类管理一键搞定</text>
+      </view>
+    </view>
+    <view class="feature-item">
+      <text class="feature-icon">🔔</text>
+      <view class="feature-text">
+        <text class="feature-title">实时接收订单提醒</text>
+        <text class="feature-desc">新订单即时通知，不错过每一笔生意</text>
+      </view>
+    </view>
+    <view class="feature-item">
+      <text class="feature-icon">📊</text>
+      <view class="feature-text">
+        <text class="feature-title">营业数据一目了然</text>
+        <text class="feature-desc">订单量、营业额、评分清晰展示</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="guide-actions">
+    <button class="btn-apply" bindtap="onApplyTap">我要入驻开店</button>
+    <text class="link-status" bindtap="onCheckStatusTap">已提交申请？查看审核进度 ></text>
+  </view>
+</view>

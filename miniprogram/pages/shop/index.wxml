@@ -1,0 +1,93 @@
+<nav-bar left-arrow="{{true}}" background="transparent" />
+
+<view class="page-container">
+  <block wx:if="{{!loading && merchant}}">
+    <!-- 商家头图 -->
+    <view class="shop-header" style="background-image: url('{{merchant.shop_avatar || ''}}');">
+      <view class="shop-header-mask"></view>
+    </view>
+
+    <!-- 商家信息 -->
+    <view class="shop-info-card">
+      <image class="shop-avatar" src="{{merchant.shop_avatar || '/images/default-shop.png'}}" mode="aspectFill" />
+      <view class="shop-detail">
+        <text class="shop-name">{{merchant.shop_name}}</text>
+        <view class="shop-meta">
+          <text class="shop-rating">{{merchant.rating || '5.0'}}</text>
+          <text class="shop-sales">月售{{merchant.monthly_sales || 0}}单</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 公告 -->
+    <view wx:if="{{merchant.announcement}}" class="shop-announcement">
+      <text>📢 {{merchant.announcement}}</text>
+    </view>
+
+    <!-- 菜单区域：左侧分类 + 右侧商品 -->
+    <view class="menu-area">
+      <!-- 左侧分类 -->
+      <scroll-view class="category-nav" scroll-y>
+        <view
+          wx:for="{{menu}}"
+          wx:key="_id"
+          class="category-tab {{activeCategoryIndex === index ? 'category-tab--active' : ''}}"
+          data-index="{{index}}"
+          bindtap="onCategoryTap"
+        >
+          {{item.name}}
+        </view>
+      </scroll-view>
+
+      <!-- 右侧商品列表 -->
+      <scroll-view class="product-list" scroll-y scroll-into-view="cat-{{activeCategoryIndex}}">
+        <view wx:for="{{menu}}" wx:key="_id" id="cat-{{index}}">
+          <view class="product-category-title">{{item.name}}</view>
+          <product-item
+            wx:for="{{item.products}}"
+            wx:for-item="product"
+            wx:key="_id"
+            product="{{product}}"
+            count="{{productCounts[product._id] || 0}}"
+            bind:add="onAddProduct"
+            bind:minus="onMinusProduct"
+            bind:specadd="onSpecAdd"
+          />
+        </view>
+      </scroll-view>
+    </view>
+  </block>
+
+  <view wx:elif="{{loading}}" class="loading-center">
+    <text>加载中...</text>
+  </view>
+</view>
+
+<!-- 规格弹窗 -->
+<spec-popup
+  show="{{showSpecPopup}}"
+  product="{{specProduct}}"
+  bind:confirm="onSpecConfirm"
+  bind:close="onSpecClose"
+/>
+
+<!-- 购物车弹窗 -->
+<cart-popup
+  show="{{showCartPopup}}"
+  items="{{cartItems}}"
+  totalPrice="{{cartTotal}}"
+  bind:close="onCartPopupClose"
+  bind:change="onCartItemChange"
+  bind:clear="onCartClear"
+/>
+
+<!-- 购物车底栏 -->
+<view class="cart-bar-wrap">
+  <cart-bar
+    count="{{cartCount}}"
+    totalPrice="{{cartTotal}}"
+    merchantId="{{merchantId}}"
+    bind:toggle="onCartToggle"
+    bind:checkout="onCheckout"
+  />
+</view>

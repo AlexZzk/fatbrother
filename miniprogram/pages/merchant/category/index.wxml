@@ -1,0 +1,52 @@
+<nav-bar title="分类管理" left-arrow="{{true}}" rightText="+ 新增" bind:rightClick="onAddCategory" />
+
+<view class="page-container">
+  <view class="hint">长按拖拽可排序（使用上下按钮调整顺序）</view>
+
+  <block wx:if="{{!loading}}">
+    <view wx:if="{{categories.length}}" class="category-list">
+      <view
+        wx:for="{{categories}}"
+        wx:key="_id"
+        class="category-item"
+      >
+        <view class="category-left">
+          <view class="sort-btns">
+            <view class="sort-btn {{index === 0 ? 'sort-btn--disabled' : ''}}" data-index="{{index}}" bindtap="onMoveUp">↑</view>
+            <view class="sort-btn {{index === categories.length - 1 ? 'sort-btn--disabled' : ''}}" data-index="{{index}}" bindtap="onMoveDown">↓</view>
+          </view>
+          <view class="category-info">
+            <text class="category-name">{{item.name}}</text>
+            <text class="category-count">({{item.product_count || 0}}件商品)</text>
+          </view>
+        </view>
+        <view class="category-right">
+          <view class="action-btn" data-id="{{item._id}}" data-name="{{item.name}}" bindtap="onEditCategory">编辑</view>
+          <view class="action-btn action-btn--danger" data-id="{{item._id}}" data-count="{{item.product_count || 0}}" bindtap="onDeleteCategory">删除</view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="empty-hint">
+      <text>暂无分类，点击右上角添加</text>
+    </view>
+  </block>
+
+  <view wx:elif="{{loading}}" class="loading-center">
+    <text>加载中...</text>
+  </view>
+</view>
+
+<!-- 新增/编辑弹窗 -->
+<view wx:if="{{showModal}}" class="modal-mask" bindtap="onModalCancel">
+  <view class="modal-content" catchtap="">
+    <view class="modal-title">{{modalTitle}}</view>
+    <input class="modal-input" placeholder="请输入分类名称" value="{{editName}}" bindinput="onNameInput" focus="{{showModal}}" />
+    <view class="modal-footer">
+      <view class="modal-btn modal-btn--cancel" bindtap="onModalCancel">取消</view>
+      <view class="modal-btn modal-btn--confirm" bindtap="onModalConfirm">确定</view>
+    </view>
+  </view>
+</view>
+
+<toast id="toast" />

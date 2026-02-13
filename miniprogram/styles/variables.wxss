@@ -1,0 +1,135 @@
+/**
+ * 胖兄弟外卖 - 设计系统变量
+ *
+ * 注意：小程序不支持CSS自定义属性(var())
+ * 此文件作为变量参考文档，实际使用时直接写值
+ * 同时通过 @import 引入可使用其中定义的 class
+ */
+
+/* ============================================
+   色彩变量参考
+   ============================================
+   C端主色:      #FF6B35
+   C端主色浅:    #FF8F5E
+   C端主色背景:  rgba(255, 107, 53, 0.08)
+
+   B端主色:      #1677FF
+   B端主色浅:    #4A9AFF
+   B端主色背景:  rgba(22, 119, 255, 0.08)
+
+   成功:         #00B578
+   成功背景:     #E8F8EE
+   危险:         #FF3B30
+   危险背景:     #FFEBEE
+   警告:         #FF9500
+   警告背景:     #FFF3E0
+   禁用:         #8C8C8C
+
+   文字-主标题:  #222222
+   文字-正文:    #333333
+   文字-次要:    #666666
+   文字-辅助:    #999999
+   边框:         #E8E8E8
+   分割线:       #F0F0F0
+   页面背景:     #F5F5F5
+   卡片背景:     #FFFFFF
+   ============================================ */
+
+/* ============================================
+   通用工具类
+   ============================================ */
+
+/* -- 文字颜色 -- */
+.text-primary { color: #FF6B35; }
+.text-b-primary { color: #1677FF; }
+.text-success { color: #00B578; }
+.text-danger { color: #FF3B30; }
+.text-warning { color: #FF9500; }
+.text-body { color: #333333; }
+.text-secondary { color: #666666; }
+.text-hint { color: #999999; }
+
+/* -- 文字大小 -- */
+.text-xs { font-size: 22rpx; }
+.text-sm { font-size: 24rpx; }
+.text-base { font-size: 28rpx; }
+.text-md { font-size: 30rpx; }
+.text-lg { font-size: 32rpx; }
+.text-xl { font-size: 36rpx; }
+
+/* -- 文字粗细 -- */
+.text-normal { font-weight: 400; }
+.text-medium { font-weight: 500; }
+.text-bold { font-weight: 600; }
+.text-heavy { font-weight: 700; }
+
+/* -- 文本截断 -- */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* -- Flex 布局 -- */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-row { flex-direction: row; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-1 { flex: 1; }
+.flex-shrink-0 { flex-shrink: 0; }
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.items-end { align-items: flex-end; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-end { justify-content: flex-end; }
+
+/* -- 间距 -- */
+.mt-xs { margin-top: 8rpx; }
+.mt-sm { margin-top: 16rpx; }
+.mt-md { margin-top: 24rpx; }
+.mt-lg { margin-top: 32rpx; }
+.mt-xl { margin-top: 48rpx; }
+.mb-xs { margin-bottom: 8rpx; }
+.mb-sm { margin-bottom: 16rpx; }
+.mb-md { margin-bottom: 24rpx; }
+.mb-lg { margin-bottom: 32rpx; }
+.ml-sm { margin-left: 16rpx; }
+.mr-sm { margin-right: 16rpx; }
+
+.pt-sm { padding-top: 16rpx; }
+.pb-sm { padding-bottom: 16rpx; }
+.px-md { padding-left: 24rpx; padding-right: 24rpx; }
+.px-lg { padding-left: 32rpx; padding-right: 32rpx; }
+.py-md { padding-top: 24rpx; padding-bottom: 24rpx; }
+.py-lg { padding-top: 32rpx; padding-bottom: 32rpx; }
+
+.gap-xs { gap: 8rpx; }
+.gap-sm { gap: 16rpx; }
+.gap-md { gap: 24rpx; }
+
+/* -- 圆角 -- */
+.rounded-sm { border-radius: 8rpx; }
+.rounded-md { border-radius: 16rpx; }
+.rounded-lg { border-radius: 24rpx; }
+.rounded-full { border-radius: 999rpx; }
+.rounded-circle { border-radius: 50%; }
+
+/* -- 背景 -- */
+.bg-page { background-color: #F5F5F5; }
+.bg-white { background-color: #FFFFFF; }
+
+/* -- 阴影 -- */
+.shadow-sm { box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06); }
+.shadow-md { box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1); }
+.shadow-lg { box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.15); }
+
+/* -- 安全区域 -- */
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }

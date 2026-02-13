@@ -1,0 +1,8 @@
+<nav-bar title="我的账单" left-arrow="{{true}}" />
+<view class="page-container">
+  <view class="page-body">
+    <view class="loading-center">
+      <text>我的账单 - 开发中</text>
+    </view>
+  </view>
+</view>

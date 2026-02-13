@@ -1,0 +1,1 @@
+<text class="tag tag--{{type}}">{{text}}</text>

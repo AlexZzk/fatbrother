@@ -1,0 +1,91 @@
+<nav-bar title="我的" bg-color="#FF6B35" title-color="#FFFFFF" />
+
+<view class="page-container">
+  <!-- 用户信息头部区域 -->
+  <view class="user-header" bindtap="onUserInfoTap">
+    <view class="user-header__content">
+      <!-- 已登录 -->
+      <block wx:if="{{isLoggedIn && userInfo}}">
+        <image
+          class="user-avatar"
+          src="{{userInfo.avatar_url || '/images/default-avatar.png'}}"
+          mode="aspectFill"
+        />
+        <view class="user-info">
+          <text class="user-name">{{userInfo.nick_name || '微信用户'}}</text>
+          <text wx:if="{{userInfo.phone}}" class="user-phone">{{userInfo.phone}}</text>
+        </view>
+      </block>
+      <!-- 未登录 -->
+      <block wx:else>
+        <view class="user-avatar user-avatar--default">
+          <text class="user-avatar__icon">👤</text>
+        </view>
+        <view class="user-info">
+          <text class="user-name">点击登录</text>
+          <text class="user-hint">登录后享受更多服务</text>
+        </view>
+      </block>
+      <text class="user-arrow">></text>
+    </view>
+  </view>
+
+  <!-- 我的服务 -->
+  <view class="section">
+    <view class="section-title">我的服务</view>
+    <view class="section-card">
+      <cell icon="📋" title="我的订单" arrow bindclick="onOrdersTap" />
+      <cell icon="📊" title="账单统计" value="即将上线" arrow disabled bindclick="onBillTap" />
+      <cell icon="📍" title="收货地址" value="即将上线" arrow disabled bindclick="onAddressTap" />
+    </view>
+  </view>
+
+  <!-- 商户中心 -->
+  <view class="section">
+    <view class="section-title">商户中心</view>
+    <view class="section-card">
+      <cell
+        icon="🏪"
+        title="商户管理"
+        value="{{merchantInfo && merchantInfo.status === 'active' ? merchantInfo.shop_name : '入驻开店'}}"
+        arrow
+        bindclick="onMerchantTap"
+      />
+    </view>
+  </view>
+
+  <!-- 其他 -->
+  <view class="section">
+    <view class="section-title">其他</view>
+    <view class="section-card">
+      <button class="contact-btn" open-type="contact">
+        <cell icon="📞" title="联系客服" arrow />
+      </button>
+      <cell icon="ℹ️" title="关于我们" arrow bindclick="onAboutTap" />
+    </view>
+  </view>
+
+  <!-- 底部间距给 TabBar 留空 -->
+  <view class="safe-bottom"></view>
+
+  <custom-tab-bar active="{{2}}" />
+</view>
+
+<!-- 登录弹窗 -->
+<view wx:if="{{showLoginPopup}}" class="login-mask" bindtap="onMaskTap">
+  <view class="login-popup" catchtap="preventTap">
+    <view class="login-popup__icon">👤</view>
+    <view class="login-popup__title">微信授权登录</view>
+    <view class="login-popup__desc">授权微信登录以使用完整功能</view>
+    <view class="login-popup__actions">
+      <button class="login-btn login-btn--cancel" bindtap="onCancelLogin">取消</button>
+      <button
+        class="login-btn login-btn--confirm"
+        bindtap="onConfirmLogin"
+        loading="{{loginLoading}}"
+      >授权登录</button>
+    </view>
+  </view>
+</view>
+
+<toast id="toast" />

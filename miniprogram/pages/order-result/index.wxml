@@ -1,0 +1,18 @@
+<nav-bar title="" background="transparent" />
+
+<view class="page-container">
+  <view class="result-content">
+    <!-- Success icon -->
+    <view class="result-icon">
+      <text class="icon-check">✓</text>
+    </view>
+
+    <text class="result-title">下单成功</text>
+    <text class="result-desc">商家确认中，请耐心等待</text>
+
+    <view class="result-actions">
+      <view class="btn-primary" bindtap="onViewDetail">查看订单详情</view>
+      <view class="btn-text" bindtap="onBackHome">返回首页</view>
+    </view>
+  </view>
+</view>

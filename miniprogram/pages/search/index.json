@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "nav-bar": "/components/nav-bar/nav-bar",
+    "shop-card": "/components/shop-card/shop-card",
+    "empty-state": "/components/empty-state/empty-state"
+  },
+  "enablePullDownRefresh": false
+}

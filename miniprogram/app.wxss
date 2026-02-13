@@ -1,0 +1,266 @@
+/**
+ * 胖兄弟外卖 - 全局样式
+ */
+@import './styles/variables.wxss';
+
+/* ============================================
+   Reset
+   ============================================ */
+page {
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue',
+    Helvetica, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: 28rpx;
+  line-height: 1.5;
+  color: #333333;
+  background-color: #F5F5F5;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+
+view, text, image, navigator, button, input, textarea, scroll-view {
+  box-sizing: border-box;
+}
+
+button {
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: none;
+  line-height: inherit;
+  font-size: inherit;
+}
+
+button::after {
+  border: none;
+}
+
+image {
+  display: block;
+}
+
+/* ============================================
+   页面容器
+   ============================================ */
+.page-container {
+  min-height: 100vh;
+  background-color: #F5F5F5;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ============================================
+   卡片
+   ============================================ */
+.card {
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  margin: 24rpx 32rpx;
+  padding: 32rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.card-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #222222;
+  margin-bottom: 24rpx;
+}
+
+/* ============================================
+   分区标题
+   ============================================ */
+.section-header {
+  padding: 32rpx 32rpx 16rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #222222;
+}
+
+.section-label {
+  padding: 24rpx 32rpx 8rpx;
+  font-size: 24rpx;
+  color: #999999;
+}
+
+/* ============================================
+   按钮
+   ============================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 999rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.btn:active {
+  opacity: 0.85;
+}
+
+/* C端主按钮 */
+.btn-c-primary {
+  background: linear-gradient(135deg, #FF6B35, #FF8F5E);
+  color: #FFFFFF;
+  height: 88rpx;
+  padding: 0 48rpx;
+  font-size: 30rpx;
+}
+
+.btn-c-primary-full {
+  background: linear-gradient(135deg, #FF6B35, #FF8F5E);
+  color: #FFFFFF;
+  height: 88rpx;
+  width: 100%;
+  font-size: 30rpx;
+}
+
+/* B端主按钮 */
+.btn-b-primary {
+  background: linear-gradient(135deg, #1677FF, #4A9AFF);
+  color: #FFFFFF;
+  height: 88rpx;
+  padding: 0 48rpx;
+  font-size: 30rpx;
+}
+
+.btn-b-primary-full {
+  background: linear-gradient(135deg, #1677FF, #4A9AFF);
+  color: #FFFFFF;
+  height: 88rpx;
+  width: 100%;
+  font-size: 30rpx;
+}
+
+/* 小按钮 */
+.btn-sm {
+  height: 56rpx;
+  padding: 0 24rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+/* 边框按钮 */
+.btn-outline {
+  background: transparent;
+  border: 1rpx solid #E8E8E8;
+  color: #333333;
+  height: 56rpx;
+  padding: 0 24rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.btn-outline-primary {
+  border-color: #FF6B35;
+  color: #FF6B35;
+}
+
+.btn-outline-danger {
+  border-color: #FF3B30;
+  color: #FF3B30;
+}
+
+/* 危险按钮 */
+.btn-danger {
+  background: #FF3B30;
+  color: #FFFFFF;
+  height: 56rpx;
+  padding: 0 24rpx;
+  font-size: 24rpx;
+}
+
+/* 成功按钮 */
+.btn-success {
+  background: #00B578;
+  color: #FFFFFF;
+  height: 56rpx;
+  padding: 0 24rpx;
+  font-size: 24rpx;
+}
+
+/* 禁用按钮 */
+.btn-disabled {
+  background: #E8E8E8 !important;
+  color: #999999 !important;
+}
+
+/* ============================================
+   分割线
+   ============================================ */
+.divider {
+  height: 1rpx;
+  background: #F0F0F0;
+}
+
+/* ============================================
+   底部安全区域占位
+   ============================================ */
+.bottom-safe-area {
+  height: env(safe-area-inset-bottom);
+}
+
+/* ============================================
+   遮罩层
+   ============================================ */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+}
+
+/* ============================================
+   输入框
+   ============================================ */
+.input-field {
+  width: 100%;
+  height: 80rpx;
+  padding: 0 24rpx;
+  border: 1rpx solid #E8E8E8;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  color: #333333;
+  background: #FFFFFF;
+}
+
+.textarea-field {
+  width: 100%;
+  min-height: 160rpx;
+  padding: 20rpx 24rpx;
+  border: 1rpx solid #E8E8E8;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  color: #333333;
+  background: #FFFFFF;
+}
+
+/* ============================================
+   加载状态
+   ============================================ */
+.loading-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 0;
+  color: #999999;
+  font-size: 24rpx;
+}
+
+.loading-bottom {
+  text-align: center;
+  padding: 32rpx 0;
+  font-size: 24rpx;
+  color: #999999;
+}

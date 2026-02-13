@@ -1,0 +1,48 @@
+<nav-bar title="审核中" left-arrow="{{true}}" />
+
+<view class="page-container">
+  <block wx:if="{{!loading && merchantInfo}}">
+    <view class="pending-hero">
+      <text class="pending-icon">⏳</text>
+      <text class="pending-title">您的入驻申请已提交</text>
+      <text class="pending-subtitle">平台将在1-3个工作日内完成审核</text>
+    </view>
+
+    <view class="info-card">
+      <view class="info-row">
+        <text class="info-label">店铺名称</text>
+        <text class="info-value">{{merchantInfo.shop_name}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">联系人</text>
+        <text class="info-value">{{merchantInfo.contact_name}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">提交时间</text>
+        <text class="info-value">{{merchantInfo.created_at_text}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">审核状态</text>
+        <text class="info-value status-pending">审核中</text>
+      </view>
+    </view>
+
+    <view class="pending-footer">
+      <text class="footer-text">如有疑问，请联系客服</text>
+    </view>
+  </block>
+
+  <block wx:elif="{{!loading && !merchantInfo}}">
+    <view class="pending-hero">
+      <text class="pending-icon">📝</text>
+      <text class="pending-title">您还未提交申请</text>
+      <text class="pending-subtitle">请先完成入驻申请</text>
+    </view>
+  </block>
+
+  <block wx:elif="{{loading}}">
+    <view class="loading-center">
+      <text>加载中...</text>
+    </view>
+  </block>
+</view>

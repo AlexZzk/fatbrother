@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "nav-bar": "/components/nav-bar/nav-bar",
+    "product-item": "/components/product-item/product-item",
+    "spec-popup": "/components/spec-popup/spec-popup",
+    "cart-bar": "/components/cart-bar/cart-bar",
+    "cart-popup": "/components/cart-popup/cart-popup"
+  }
+}

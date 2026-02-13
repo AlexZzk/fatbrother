@@ -1,0 +1,54 @@
+<wxs src="./spec-popup.wxs" module="util" />
+<view wx:if="{{show}}" class="spec-mask" bindtap="onMaskTap" catchtouchmove="noop">
+  <view class="spec-panel" catchtap="noop">
+    <!-- Header -->
+    <view class="spec-header">
+      <image wx:if="{{product.image}}" class="spec-product-img" src="{{product.image}}" mode="aspectFill" />
+      <view class="spec-product-info">
+        <text class="spec-product-name">{{product.name}}</text>
+        <text class="spec-product-price">¥{{totalPrice / 100}}</text>
+      </view>
+      <view class="spec-close" bindtap="onClose">×</view>
+    </view>
+
+    <!-- Spec groups -->
+    <scroll-view class="spec-body" scroll-y>
+      <view wx:for="{{product.spec_groups}}" wx:key="name" wx:for-index="gi" wx:for-item="group" class="spec-group">
+        <view class="spec-group-title">
+          <text>{{group.name}}</text>
+          <text wx:if="{{group.required}}" class="spec-tag spec-tag--required">必选</text>
+          <text wx:if="{{group.multi_select}}" class="spec-tag spec-tag--multi">可多选</text>
+        </view>
+        <view class="spec-options">
+          <view
+            wx:for="{{group.specs}}"
+            wx:key="name"
+            wx:for-index="si"
+            wx:for-item="spec"
+            class="spec-option {{util.contains(selectedSpecs[gi], si) ? 'spec-option--selected' : ''}}"
+            data-gi="{{gi}}"
+            data-si="{{si}}"
+            bindtap="onSelectSpec"
+          >
+            <text>{{spec.name}}</text>
+            <text wx:if="{{util.isPositive(spec.price_delta)}}" class="spec-delta">+{{spec.price_delta / 100}}</text>
+            <text wx:if="{{util.isNegative(spec.price_delta)}}" class="spec-delta">{{spec.price_delta / 100}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- Quantity -->
+      <view class="spec-quantity">
+        <text class="spec-quantity-label">数量</text>
+        <stepper value="{{quantity}}" min="{{1}}" max="{{99}}" bind:change="onQuantityChange" />
+      </view>
+    </scroll-view>
+
+    <!-- Footer -->
+    <view class="spec-footer">
+      <button class="spec-confirm-btn {{canSubmit ? '' : 'spec-confirm-btn--disabled'}}" bindtap="onConfirm" disabled="{{!canSubmit}}">
+        {{canSubmit ? '加入购物车  ¥' + totalPrice / 100 : '请选择 ' + missingRequired}}
+      </button>
+    </view>
+  </view>
+</view>

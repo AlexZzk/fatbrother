@@ -1,0 +1,113 @@
+/* 首页 */
+.page-container {
+  min-height: 100vh;
+  background-color: #F5F5F5;
+  padding-bottom: 120rpx;
+}
+
+/* 定位栏 */
+.location-bar {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 0 8rpx;
+}
+
+.location-icon {
+  font-size: 28rpx;
+}
+
+.location-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #222222;
+  max-width: 300rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.location-arrow {
+  font-size: 20rpx;
+  color: #999999;
+}
+
+/* 搜索框 */
+.search-bar {
+  margin: 16rpx 24rpx;
+  padding: 16rpx 24rpx;
+  background-color: #FFFFFF;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.search-icon {
+  font-size: 28rpx;
+}
+
+.search-placeholder {
+  font-size: 26rpx;
+  color: #999999;
+}
+
+/* 商家列表 */
+.shop-section {
+  padding: 0 24rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #222222;
+  padding: 24rpx 0 16rpx;
+}
+
+.shop-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 加载更多 */
+.load-more {
+  text-align: center;
+  padding: 24rpx 0;
+  font-size: 24rpx;
+  color: #999999;
+}
+
+/* 定位失败 */
+.location-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx 0;
+  gap: 24rpx;
+}
+
+.error-text {
+  font-size: 28rpx;
+  color: #999999;
+}
+
+.retry-btn {
+  padding: 16rpx 48rpx;
+  background-color: #FF6B35;
+  color: #FFFFFF;
+  font-size: 28rpx;
+  border-radius: 999rpx;
+}
+
+/* 空状态 */
+.empty-wrap {
+  padding: 80rpx 0;
+}
+
+.loading-center {
+  text-align: center;
+  padding: 200rpx 0;
+  color: #999999;
+  font-size: 28rpx;
+}

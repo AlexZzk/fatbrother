@@ -1,0 +1,90 @@
+/* 个人信息 */
+.page-container {
+  min-height: 100vh;
+  background-color: #F5F5F5;
+  padding: 24rpx;
+}
+
+.profile-card {
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.profile-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 32rpx;
+  /* 重置 button 样式 */
+  background: none;
+  border: none;
+  line-height: normal;
+  text-align: left;
+  font-size: inherit;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.profile-row::after {
+  border: none;
+}
+
+.profile-row__label {
+  font-size: 28rpx;
+  color: #333333;
+  flex-shrink: 0;
+}
+
+.profile-row__right {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.profile-row__value {
+  font-size: 28rpx;
+  color: #999999;
+}
+
+.profile-row__arrow {
+  font-size: 24rpx;
+  color: #CCCCCC;
+}
+
+.profile-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background-color: #F5F5F5;
+}
+
+.profile-divider {
+  height: 1rpx;
+  background-color: #F0F0F0;
+  margin: 0 32rpx;
+}
+
+.profile-nickname-input {
+  font-size: 28rpx;
+  color: #333333;
+  text-align: right;
+  width: 300rpx;
+}
+
+.profile-phone-btn {
+  display: inline-block;
+  font-size: 26rpx;
+  color: #FF6B35;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  line-height: normal;
+}
+
+.profile-phone-btn::after {
+  border: none;
+}

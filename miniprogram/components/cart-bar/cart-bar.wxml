@@ -1,0 +1,17 @@
+<wxs src="./cart-bar.wxs" module="util" />
+<view class="cart-bar">
+  <view class="cart-left" bindtap="onCartTap">
+    <view class="cart-icon-wrap">
+      <text class="cart-icon">🛒</text>
+      <view wx:if="{{count}}" class="cart-badge">{{util.badgeText(count)}}</view>
+    </view>
+    <view class="cart-info">
+      <text wx:if="{{count}}" class="cart-count">已选{{count}}件</text>
+      <text wx:else class="cart-empty">购物车是空的</text>
+      <text wx:if="{{count}}" class="cart-total">¥{{totalPrice / 100}}</text>
+    </view>
+  </view>
+  <view class="cart-checkout {{count ? '' : 'cart-checkout--disabled'}}" bindtap="onCheckout">
+    去结算
+  </view>
+</view>

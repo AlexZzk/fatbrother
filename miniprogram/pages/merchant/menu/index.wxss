@@ -1,0 +1,201 @@
+/* 菜单管理 B-06 */
+.page-container {
+  min-height: 100vh;
+  background-color: #F5F5F5;
+  padding-bottom: 40rpx;
+}
+
+/* 分类管理入口 */
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 32rpx 12rpx;
+  background-color: #FFFFFF;
+}
+
+.category-header__label {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #222222;
+}
+
+.category-header__edit {
+  font-size: 26rpx;
+  color: #1677FF;
+}
+
+/* 分类Tab */
+.category-tabs {
+  display: flex;
+  white-space: nowrap;
+  padding: 12rpx 32rpx 24rpx;
+  background-color: #FFFFFF;
+  margin-bottom: 16rpx;
+}
+
+.category-tab {
+  display: inline-block;
+  padding: 12rpx 28rpx;
+  margin-right: 16rpx;
+  font-size: 26rpx;
+  color: #666666;
+  background-color: #F5F5F5;
+  border-radius: 32rpx;
+  flex-shrink: 0;
+}
+
+.category-tab--active {
+  color: #FFFFFF;
+  background-color: #1677FF;
+}
+
+/* 商品列表 */
+.product-list {
+  padding: 0 24rpx;
+}
+
+/* 商品卡片 */
+.product-card {
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  overflow: hidden;
+}
+
+.product-card--off {
+  opacity: 0.7;
+}
+
+/* 商品信息区 */
+.product-info {
+  display: flex;
+  padding: 24rpx;
+}
+
+.product-info__image {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 12rpx;
+  flex-shrink: 0;
+  background-color: #F5F5F5;
+}
+
+.product-info__detail {
+  flex: 1;
+  margin-left: 20rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 120rpx;
+}
+
+.product-info__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.product-info__name {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #222222;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 16rpx;
+}
+
+.product-info__price {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #FF3B30;
+  flex-shrink: 0;
+}
+
+.product-info__desc {
+  font-size: 24rpx;
+  color: #999999;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 8rpx;
+}
+
+.product-info__status {
+  margin-top: 8rpx;
+}
+
+/* 状态标签 */
+.status-tag {
+  display: inline-block;
+  font-size: 22rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 6rpx;
+}
+
+.status-tag--on {
+  color: #00B578;
+  background-color: rgba(0, 181, 120, 0.1);
+}
+
+.status-tag--off {
+  color: #8C8C8C;
+  background-color: rgba(140, 140, 140, 0.1);
+}
+
+/* 操作按钮组 */
+.product-actions {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 24rpx;
+  border-top: 1rpx solid #F0F0F0;
+}
+
+.action-btn {
+  flex: 1;
+  text-align: center;
+  font-size: 24rpx;
+  padding: 12rpx 0;
+  border-radius: 8rpx;
+  margin: 0 6rpx;
+}
+
+.action-btn--edit {
+  color: #1677FF;
+  background-color: rgba(22, 119, 255, 0.08);
+}
+
+.action-btn--spec {
+  color: #666666;
+  background-color: #F5F5F5;
+}
+
+.action-btn--on-sale {
+  color: #00B578;
+  background-color: rgba(0, 181, 120, 0.08);
+}
+
+.action-btn--off-sale {
+  color: #FF9500;
+  background-color: rgba(255, 149, 0, 0.08);
+}
+
+.action-btn--delete {
+  color: #FF3B30;
+  background-color: rgba(255, 59, 48, 0.08);
+}
+
+/* 加载状态 */
+.loading-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 120rpx 0;
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: #999999;
+}

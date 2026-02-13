@@ -1,0 +1,30 @@
+<!--
+  自定义导航栏组件
+  支持自定义标题、左侧返回按钮、右侧操作
+-->
+<view class="nav-bar" style="padding-top: {{statusBarHeight}}px;">
+  <view class="nav-bar-content" style="height: {{navBarHeight}}px;">
+    <!-- 左侧 -->
+    <view class="nav-bar-left">
+      <view wx:if="{{leftArrow}}" class="nav-bar-back" bind:tap="onBack">
+        <text class="nav-bar-back-icon">‹</text>
+      </view>
+      <slot name="left"></slot>
+    </view>
+
+    <!-- 标题 -->
+    <view class="nav-bar-title">
+      <text wx:if="{{title}}" class="nav-bar-title-text" style="color: {{titleColor}};">{{title}}</text>
+      <slot name="center"></slot>
+    </view>
+
+    <!-- 右侧 -->
+    <view class="nav-bar-right">
+      <text wx:if="{{rightText}}" class="nav-bar-right-text" style="color: {{rightColor || '#1677FF'}};" bind:tap="onRight">{{rightText}}</text>
+      <slot name="right"></slot>
+    </view>
+  </view>
+</view>
+
+<!-- 占位元素，防止内容被导航栏遮挡 -->
+<view wx:if="{{placeholder}}" style="height: {{statusBarHeight + navBarHeight}}px;"></view>

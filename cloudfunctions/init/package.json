@@ -1,0 +1,11 @@
+{
+  "name": "init",
+  "version": "1.0.0",
+  "description": "胖兄弟外卖 - 数据库初始化云函数，创建集合与索引",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  },
+  "author": "胖兄弟外卖",
+  "license": "ISC"
+}

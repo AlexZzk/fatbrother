@@ -1,0 +1,45 @@
+<view class="order-card" bindtap="onCardTap">
+  <!-- Header: merchant name + status -->
+  <view class="card-header">
+    <text class="merchant-name">{{merchantName}}</text>
+    <text class="status-tag" style="color: {{statusColor}};">{{statusText}}</text>
+  </view>
+
+  <view class="card-divider"></view>
+
+  <!-- Product summary -->
+  <view class="card-products">
+    <view class="product-line" wx:for="{{summaryLines}}" wx:key="name">
+      <text class="product-name">{{item.name}}</text>
+      <text class="product-qty">x{{item.quantity}}</text>
+    </view>
+    <view class="product-count">
+      <text>共{{totalCount}}件</text>
+    </view>
+  </view>
+
+  <view class="card-divider"></view>
+
+  <!-- Price + time + buttons -->
+  <view class="card-footer">
+    <view class="footer-info">
+      <view class="footer-price">
+        <text class="price-label">实付 </text>
+        <text class="price-symbol">¥</text>
+        <price value="{{actualPrice}}" />
+      </view>
+      <text class="footer-time">{{createTime}}</text>
+    </view>
+    <view class="footer-actions">
+      <view
+        wx:for="{{buttons}}"
+        wx:key="type"
+        class="action-btn action-btn--{{item.style}}"
+        data-type="{{item.type}}"
+        catchtap="onButtonTap"
+      >
+        {{item.text}}
+      </view>
+    </view>
+  </view>
+</view>
