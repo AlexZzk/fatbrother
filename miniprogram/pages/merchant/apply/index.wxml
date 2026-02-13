@@ -4,20 +4,20 @@
   <view class="form-section">
     <!-- 邀请码 -->
     <view class="form-group">
-      <text class="form-label">邀请码 <text class="required">*</text></text>
+      <text class="form-label">邀请码</text>
       <view class="form-row">
         <input
           class="form-input form-input--flex"
-          placeholder="请输入邀请码"
+          placeholder="请输入邀请码（选填）"
           value="{{form.invite_code}}"
           data-field="invite_code"
           bindinput="onInput"
           maxlength="6"
         />
-        <button class="btn-verify" bindtap="onVerifyCode">验证</button>
+        <button wx:if="{{form.invite_code}}" class="btn-verify" bindtap="onVerifyCode">验证</button>
       </view>
       <text wx:if="{{inviteVerified}}" class="form-hint form-hint--success">推荐商户：{{referrerShopName}}</text>
-      <text wx:else class="form-hint">没有邀请码？请联系平台客服获取</text>
+      <text wx:else class="form-hint">选填，填写后将与推荐商家建立分成关系</text>
     </view>
 
     <!-- 店铺名称 -->

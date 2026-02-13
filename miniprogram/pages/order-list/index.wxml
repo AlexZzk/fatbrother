@@ -49,4 +49,4 @@
   </view>
 </view>
 
-<custom-tab-bar selected="{{1}}" />
+<custom-tab-bar active="{{1}}" />

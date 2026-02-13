@@ -77,7 +77,7 @@ async function apply(event, openid) {
   const { invite_code, shop_name, contact_name, contact_phone, mch_id } = event
 
   // 参数验证
-  if (!invite_code || !shop_name || !contact_name || !contact_phone) {
+  if (!shop_name || !contact_name || !contact_phone) {
     return { code: 1001, message: '请填写完整信息' }
   }
   if (shop_name.length < 2 || shop_name.length > 20) {
@@ -112,21 +112,24 @@ async function apply(event, openid) {
     }
   }
 
-  // 验证邀请码
-  const normalizedCode = invite_code.toUpperCase().trim()
-  const { data: referrers } = await merchantsCollection
-    .where({ invite_code: normalizedCode, status: 'active' })
-    .limit(1)
-    .get()
-  if (referrers.length === 0) {
-    return { code: 2001, message: '邀请码无效' }
+  // 验证邀请码（选填，不填则为顶级商家，佣金直接归平台）
+  let referrerId = ''
+  let indirectReferrerId = ''
+
+  if (invite_code && invite_code.trim()) {
+    const normalizedCode = invite_code.toUpperCase().trim()
+    const { data: referrers } = await merchantsCollection
+      .where({ invite_code: normalizedCode, status: 'active' })
+      .limit(1)
+      .get()
+    if (referrers.length === 0) {
+      return { code: 2001, message: '邀请码无效' }
+    }
+
+    const referrer = referrers[0]
+    referrerId = referrer._id
+    indirectReferrerId = referrer.referrer_id || ''
   }
-
-  const referrer = referrers[0]
-
-  // 构建推荐链（最多2级）
-  const referrerId = referrer._id
-  const indirectReferrerId = referrer.referrer_id || ''
 
   // 生成唯一邀请码（6位大写字母+数字）
   const newInviteCode = generateInviteCode()

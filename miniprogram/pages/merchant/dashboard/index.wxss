@@ -191,6 +191,16 @@
   color: #333333;
 }
 
+.func-item--disabled {
+  opacity: 0.45;
+}
+
+.func-hint {
+  font-size: 20rpx;
+  color: #999999;
+  margin-top: 4rpx;
+}
+
 .loading-center {
   display: flex;
   justify-content: center;

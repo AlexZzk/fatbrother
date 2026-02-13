@@ -43,22 +43,26 @@ Page({
   },
 
   async _initLocation() {
+    this.setData({ page: 1, shopList: [], hasMore: true })
     try {
       const loc = await location.getLocation()
       this.setData({
         latitude: loc.latitude,
         longitude: loc.longitude,
         locationName: loc.name || '当前位置',
-        locationFailed: false,
-        page: 1,
-        shopList: [],
-        hasMore: true
+        locationFailed: false
       })
       app.globalData.location = loc
-      await this._loadShops()
     } catch (err) {
-      this.setData({ locationFailed: true, loading: false, locationName: '定位失败' })
+      // 定位失败仍然加载商户列表，只是不显示距离
+      this.setData({
+        latitude: 0,
+        longitude: 0,
+        locationFailed: false,
+        locationName: '未定位'
+      })
     }
+    await this._loadShops()
   },
 
   async _loadShops() {

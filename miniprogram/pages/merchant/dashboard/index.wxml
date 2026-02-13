@@ -57,9 +57,10 @@
         <text class="func-icon">🍽</text>
         <text class="func-label">菜单管理</text>
       </view>
-      <view class="func-item" bindtap="onNavTo" data-page="statistics">
+      <view class="func-item func-item--disabled">
         <text class="func-icon">📊</text>
         <text class="func-label">数据统计</text>
+        <text class="func-hint">即将上线</text>
       </view>
       <view class="func-item" bindtap="onNavTo" data-page="settings">
         <text class="func-icon">⚙️</text>
