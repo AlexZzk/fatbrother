@@ -35,7 +35,7 @@
     <view class="section-title">我的服务</view>
     <view class="section-card">
       <cell icon="📋" title="我的订单" arrow bindclick="onOrdersTap" />
-      <cell icon="📊" title="账单统计" arrow bindclick="onBillTap" />
+      <cell icon="📊" title="账单统计" value="即将上线" arrow disabled bindclick="onBillTap" />
       <cell icon="📍" title="收货地址" value="即将上线" arrow disabled bindclick="onAddressTap" />
     </view>
   </view>

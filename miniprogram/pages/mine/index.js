@@ -100,11 +100,10 @@ Page({
    * 导航到账单统计
    */
   onBillTap() {
-    if (!this.data.isLoggedIn) {
-      this.setData({ showLoginPopup: true })
-      return
-    }
-    wx.navigateTo({ url: '/pages/bill/index' })
+    this.selectComponent('#toast').showToast({
+      message: '该功能即将上线',
+      type: 'info'
+    })
   },
 
   /**

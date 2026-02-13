@@ -28,11 +28,11 @@
 }
 
 .tab-icon {
-  font-size: 36rpx;
+  font-size: 40rpx;
   line-height: 1;
   margin-bottom: 4rpx;
   font-style: normal;
-  font-weight: bold;
+  font-weight: normal;
 }
 
 .tab-label {

@@ -57,8 +57,8 @@ Page({
     if (submitting) return
 
     // 表单验证
-    if (!form.invite_code.trim()) {
-      this.selectComponent('#toast').showToast({ message: '请输入邀请码', type: 'error' }); return
+    if (form.invite_code.trim() && !this.data.inviteVerified) {
+      this.selectComponent('#toast').showToast({ message: '请先验证邀请码', type: 'error' }); return
     }
     if (!form.shop_name.trim() || form.shop_name.trim().length < 2) {
       this.selectComponent('#toast').showToast({ message: '店铺名称至少2个字符', type: 'error' }); return

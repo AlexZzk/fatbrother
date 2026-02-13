@@ -1,4 +1,4 @@
-<nav-bar custom="{{true}}">
+<nav-bar left-arrow="{{false}}">
   <view class="location-bar" bindtap="onLocationTap">
     <text class="location-icon">📍</text>
     <text class="location-name">{{locationName}}</text>
@@ -13,18 +13,10 @@
     <text class="search-placeholder">搜索商家、美食</text>
   </view>
 
-  <!-- 定位失败 -->
-  <block wx:if="{{locationFailed}}">
-    <view class="location-error">
-      <text class="error-text">定位失败，请授权定位权限</text>
-      <view class="retry-btn" bindtap="onRetryLocation">点击重新定位</view>
-    </view>
-  </block>
-
   <!-- 商家列表 -->
-  <block wx:elif="{{!loading}}">
+  <block wx:if="{{!loading}}">
     <view wx:if="{{shopList.length}}" class="shop-section">
-      <view class="section-title">附近商家</view>
+      <view class="section-title">{{latitude ? '附近商家' : '推荐商家'}}</view>
       <view class="shop-list">
         <shop-card
           wx:for="{{shopList}}"
@@ -53,4 +45,4 @@
   </view>
 </view>
 
-<custom-tab-bar selected="{{0}}" />
+<custom-tab-bar active="{{0}}" />
