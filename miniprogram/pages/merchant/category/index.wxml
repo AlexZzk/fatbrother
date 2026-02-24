@@ -1,7 +1,7 @@
-<nav-bar title="分类管理" left-arrow="{{true}}" rightText="+ 新增" bind:rightClick="onAddCategory" />
+<nav-bar title="分类管理" left-arrow="{{true}}" rightText="+ 新增" bind:right="onAddCategory" />
 
 <view class="page-container">
-  <view class="hint">长按拖拽可排序（使用上下按钮调整顺序）</view>
+  <view class="hint">使用上下按钮可调整分类顺序</view>
 
   <block wx:if="{{!loading}}">
     <view wx:if="{{categories.length}}" class="category-list">
