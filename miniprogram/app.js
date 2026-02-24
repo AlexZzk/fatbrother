@@ -76,6 +76,10 @@ App({
       this.globalData.isLoggedIn = true
       this.globalData.userInfo = userInfo
       this.globalData.openid = openid
+      const merchantInfo = wx.getStorageSync('merchantInfo')
+      if (merchantInfo) {
+        this.globalData.merchantInfo = merchantInfo
+      }
     }
   },
 
@@ -93,6 +97,11 @@ App({
       // 持久化
       wx.setStorageSync('userInfo', data.userInfo)
       wx.setStorageSync('openid', data.userInfo._id)
+      if (data.merchantInfo) {
+        wx.setStorageSync('merchantInfo', data.merchantInfo)
+      } else {
+        wx.removeStorageSync('merchantInfo')
+      }
       return data
     } catch (err) {
       console.error('[app] login failed:', err)
@@ -110,5 +119,6 @@ App({
     this.globalData.merchantInfo = null
     wx.removeStorageSync('userInfo')
     wx.removeStorageSync('openid')
+    wx.removeStorageSync('merchantInfo')
   }
 })
