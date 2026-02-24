@@ -65,6 +65,11 @@
     </view>
   </view>
 
+  <!-- 退出登录 -->
+  <view wx:if="{{isLoggedIn}}" class="logout-section">
+    <view class="logout-btn" bindtap="onLogoutTap">退出登录</view>
+  </view>
+
   <!-- 底部间距给 TabBar 留空 -->
   <view class="safe-bottom"></view>
 

@@ -158,6 +158,23 @@ Page({
   },
 
   /**
+   * 退出登录
+   */
+  onLogoutTap() {
+    wx.showModal({
+      title: '退出登录',
+      content: '确定要退出登录吗？',
+      confirmColor: '#FF4D4F',
+      success: (res) => {
+        if (res.confirm) {
+          app.logout()
+          this._refreshUserState()
+        }
+      }
+    })
+  },
+
+  /**
    * 关于我们
    */
   onAboutTap() {
