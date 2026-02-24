@@ -32,6 +32,10 @@
   color: #999999;
 }
 
+.location-name--failed {
+  color: #FF6B35;
+}
+
 /* 搜索框 */
 .search-bar {
   margin: 16rpx 24rpx;

@@ -44,8 +44,13 @@ Page({
 
   async _initLocation() {
     this.setData({ page: 1, shopList: [], hasMore: true })
+    await this._autoLocate()
+    await this._loadShops()
+  },
+
+  async _autoLocate() {
     try {
-      const loc = await location.getLocation()
+      const loc = await location.getLocation(false)
       this.setData({
         latitude: loc.latitude,
         longitude: loc.longitude,
@@ -58,11 +63,33 @@ Page({
       this.setData({
         latitude: 0,
         longitude: 0,
-        locationFailed: false,
+        locationFailed: true,
         locationName: '未定位'
       })
+      wx.showToast({
+        title: '定位失败，点击位置栏手动选择',
+        icon: 'none',
+        duration: 2500
+      })
     }
-    await this._loadShops()
+  },
+
+  async _manualSelectLocation() {
+    try {
+      const loc = await location.chooseLocation()
+      this.setData({
+        latitude: loc.latitude,
+        longitude: loc.longitude,
+        locationName: loc.name || loc.address || '已选位置',
+        locationFailed: false
+      })
+      app.globalData.location = loc
+      this.setData({ page: 1, shopList: [], hasMore: true })
+      await this._loadShops()
+    } catch (err) {
+      // 用户取消选择，无需处理
+      console.log('[index] chooseLocation cancelled or failed', err)
+    }
   },
 
   async _loadShops() {
@@ -92,7 +119,17 @@ Page({
   },
 
   onLocationTap() {
-    this._initLocation()
+    wx.showActionSheet({
+      itemList: ['自动定位', '手动选择位置'],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          this.setData({ page: 1, shopList: [], hasMore: true })
+          this._autoLocate().then(() => this._loadShops())
+        } else if (res.tapIndex === 1) {
+          this._manualSelectLocation()
+        }
+      }
+    })
   },
 
   onSearchTap() {
@@ -104,7 +141,4 @@ Page({
     wx.navigateTo({ url: `/pages/shop/index?id=${shopId}` })
   },
 
-  onRetryLocation() {
-    this._initLocation()
-  }
 })

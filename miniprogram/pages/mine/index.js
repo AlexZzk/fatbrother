@@ -1,5 +1,6 @@
 const app = getApp()
 const userService = require('../../services/user')
+const merchantService = require('../../services/merchant')
 
 Page({
   data: {
@@ -26,13 +27,31 @@ Page({
   /**
    * 刷新用户状态
    */
-  _refreshUserState() {
+  async _refreshUserState() {
     const isLoggedIn = app.globalData.isLoggedIn
+    // 先从 globalData 同步（快速路径，避免闪烁）
     this.setData({
       isLoggedIn,
       userInfo: app.globalData.userInfo,
       merchantInfo: app.globalData.merchantInfo
     })
+
+    if (!isLoggedIn) return
+
+    // 从服务端刷新商户状态（捕获状态变更，如 pending → active）
+    try {
+      const data = await merchantService.getApplyStatus()
+      const merchantInfo = data.hasApplied ? data.merchantInfo : null
+      app.globalData.merchantInfo = merchantInfo
+      if (merchantInfo) {
+        wx.setStorageSync('merchantInfo', merchantInfo)
+      } else {
+        wx.removeStorageSync('merchantInfo')
+      }
+      this.setData({ merchantInfo })
+    } catch (err) {
+      console.error('[mine] _refreshUserState getApplyStatus failed:', err)
+    }
   },
 
   /**

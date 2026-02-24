@@ -73,6 +73,16 @@ Page({
     this.setData({ submitting: true })
     try {
       await merchantService.apply(form)
+      // 刷新并持久化商户状态，确保 mine 页路由正确
+      try {
+        const statusData = await merchantService.getApplyStatus()
+        if (statusData.hasApplied && statusData.merchantInfo) {
+          app.globalData.merchantInfo = statusData.merchantInfo
+          wx.setStorageSync('merchantInfo', statusData.merchantInfo)
+        }
+      } catch (e) {
+        console.error('[apply] post-apply status refresh failed:', e)
+      }
       this.selectComponent('#toast').showToast({ message: '申请提交成功', type: 'success' })
       setTimeout(() => {
         wx.redirectTo({ url: '/pages/merchant/pending/index' })
