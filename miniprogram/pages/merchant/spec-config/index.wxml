@@ -1,4 +1,4 @@
-<nav-bar title="规格设置" left-arrow="{{true}}" rightText="+ 规格组" bind:rightClick="onAddGroup" />
+<nav-bar title="规格设置" left-arrow="{{true}}" rightText="+ 规格组" bind:right="onAddGroup" />
 
 <view class="page-container">
   <!-- 快捷模板 -->
