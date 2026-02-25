@@ -19,6 +19,10 @@ Component({
 
     onMinus() {
       this.triggerEvent('minus', { product: this.data.product })
+    },
+
+    onTap() {
+      this.triggerEvent('tap', { product: this.data.product })
     }
   }
 })

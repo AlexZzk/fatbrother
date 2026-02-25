@@ -57,6 +57,7 @@
             bind:add="onAddProduct"
             bind:minus="onMinusProduct"
             bind:specadd="onSpecAdd"
+            bind:tap="onProductTap"
           />
         </view>
       </scroll-view>

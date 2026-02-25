@@ -116,7 +116,12 @@ Page({
     }
   },
 
-  // Show spec popup
+  // Tap anywhere on product card (not on action buttons) → open spec/detail popup
+  onProductTap(e) {
+    this.setData({ showSpecPopup: true, specProduct: e.detail.product })
+  },
+
+  // Show spec popup (tapped "+" on a product with specs)
   onSpecAdd(e) {
     this.setData({ showSpecPopup: true, specProduct: e.detail.product })
   },

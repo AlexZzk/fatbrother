@@ -136,7 +136,9 @@ class WechatPayHelper {
       mchid: this.mchId,
       description,
       out_trade_no: outTradeNo,
-      notify_url: NOTIFY_URL,
+      // Include out_trade_no in notify URL so paymentNotify can find the order
+      // without decrypting the resource first (avoids circular merchant-key lookup)
+      notify_url: `${NOTIFY_URL}?action=paymentNotify&out_trade_no=${outTradeNo}`,
       amount: {
         total: totalAmount,
         currency: 'CNY'
