@@ -30,7 +30,12 @@
   </view>
 
   <!-- Empty state -->
-  <empty-state wx:elif="{{!loading && orders.length === 0}}" icon="order" text="暂无订单" />
+  <empty-state
+    wx:elif="{{!loading && orders.length === 0}}"
+    icon="🧾"
+    text="暂无订单"
+    description="顾客下单后将在这里显示，请保持营业状态"
+  />
 
   <!-- Order list -->
   <view class="order-list" wx:else>
