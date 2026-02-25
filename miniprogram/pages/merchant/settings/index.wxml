@@ -21,6 +21,22 @@
             <text class="avatar-arrow">></text>
           </view>
         </view>
+        <!-- 宣传图 -->
+        <view class="avatar-row" bindtap="onChangeBanner">
+          <text class="avatar-label">店铺宣传图</text>
+          <view class="avatar-right">
+            <image
+              wx:if="{{merchantInfo.shop_banner}}"
+              class="banner-img"
+              src="{{merchantInfo.shop_banner}}"
+              mode="aspectFill"
+            />
+            <view wx:else class="banner-placeholder">
+              <text>点击上传</text>
+            </view>
+            <text class="avatar-arrow">></text>
+          </view>
+        </view>
         <cell
           title="店铺名称"
           value="{{merchantInfo.shop_name}}"

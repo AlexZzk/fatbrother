@@ -140,6 +140,7 @@ async function apply(event, openid) {
     mch_id: mch_id || '',
     shop_name: shop_name.trim(),
     shop_avatar: '',
+    shop_banner: '',
     announcement: '',
     contact_name: contact_name.trim(),
     contact_phone,
@@ -261,7 +262,7 @@ async function getMerchantInfo(event, openid) {
  * 更新店铺设置
  */
 async function updateSettings(event, openid) {
-  const { shop_name, shop_avatar, announcement, contact_phone } = event
+  const { shop_name, shop_avatar, shop_banner, announcement, contact_phone } = event
 
   const { data: users } = await usersCollection
     .where({ _openid: openid })
@@ -282,6 +283,7 @@ async function updateSettings(event, openid) {
   const updateData = { updated_at: db.serverDate() }
   if (shop_name !== undefined) updateData.shop_name = shop_name.trim()
   if (shop_avatar !== undefined) updateData.shop_avatar = shop_avatar
+  if (shop_banner !== undefined) updateData.shop_banner = shop_banner
   if (announcement !== undefined) updateData.announcement = announcement.trim()
   if (contact_phone !== undefined) updateData.contact_phone = contact_phone
 
