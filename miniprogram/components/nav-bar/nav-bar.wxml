@@ -2,7 +2,7 @@
   自定义导航栏组件
   支持自定义标题、左侧返回按钮、右侧操作
 -->
-<view class="nav-bar" style="padding-top: {{statusBarHeight}}px;">
+<view class="nav-bar" style="padding-top: {{statusBarHeight}}px; background: {{bgColor}};">
   <view class="nav-bar-content" style="height: {{navBarHeight}}px;">
     <!-- 左侧 -->
     <view class="nav-bar-left">

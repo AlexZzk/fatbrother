@@ -75,7 +75,7 @@ Page({
       await merchantService.apply(form)
       // 刷新并持久化商户状态，确保 mine 页路由正确
       try {
-        const statusData = await merchantService.getApplyStatus()
+        const statusData = await merchantService.getStatus()
         if (statusData.hasApplied && statusData.merchantInfo) {
           app.globalData.merchantInfo = statusData.merchantInfo
           wx.setStorageSync('merchantInfo', statusData.merchantInfo)
