@@ -43,26 +43,26 @@ Page({
   },
 
   async _loadData(merchantId) {
+    // 先加载商户信息（必要，失败则整页无意义）
     try {
-      const [merchantData, menuData] = await Promise.all([
-        merchantService.getMerchantInfo(merchantId),
-        productService.getMenu(merchantId)
-      ])
+      const merchantData = await merchantService.getMerchantInfo(merchantId)
+      this.setData({ merchant: merchantData.merchantInfo, loading: false })
+    } catch (err) {
+      this.setData({ loading: false })
+      return
+    }
 
-      // Filter only on-sale products for C-end
+    // 再加载菜单（次要，失败不阻塞商户信息展示）
+    try {
+      const menuData = await productService.getMenu(merchantId)
       const menu = (menuData.menu || []).map(cat => ({
         ...cat,
         products: cat.products.filter(p => p.is_on_sale)
       })).filter(cat => cat.products.length > 0)
-
-      this.setData({
-        merchant: merchantData.merchantInfo,
-        menu,
-        loading: false
-      })
+      this.setData({ menu })
       this._refreshCart()
     } catch (err) {
-      this.setData({ loading: false })
+      console.error('[shop] getMenu failed:', err)
     }
   },
 

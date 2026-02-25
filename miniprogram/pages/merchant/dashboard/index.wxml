@@ -1,4 +1,4 @@
-<nav-bar title="胖兄弟商户后台" right-text="返回C端" right-color="#1677FF" bind:rightclick="onBackToC" />
+<nav-bar title="胖兄弟商户后台" right-text="返回C端" right-color="#1677FF" bind:right="onBackToC" />
 
 <view class="page-container">
   <block wx:if="{{!loading}}">

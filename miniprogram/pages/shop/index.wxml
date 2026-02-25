@@ -1,4 +1,4 @@
-<nav-bar left-arrow="{{true}}" background="transparent" />
+<nav-bar left-arrow="{{true}}" bgColor="transparent" />
 
 <view class="page-container">
   <block wx:if="{{!loading && merchant}}">
