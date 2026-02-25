@@ -63,7 +63,11 @@ async function saveCategory(event) {
   const merchant = await getMerchantByOpenid(_openid)
 
   if (categoryId) {
-    // Update existing
+    // Verify ownership before update
+    const { data: cat } = await db.collection('categories').doc(categoryId).get()
+    if (!cat || cat.merchant_id !== merchant._id) {
+      throw createError(1003, '无权限修改此分类')
+    }
     await db.collection('categories').doc(categoryId).update({
       data: { name: name.trim() }
     })
@@ -93,7 +97,13 @@ async function deleteCategory(event) {
   const { _openid, categoryId } = event
   if (!categoryId) throw createError(1001, '缺少分类ID')
 
-  await getMerchantByOpenid(_openid)
+  const merchant = await getMerchantByOpenid(_openid)
+
+  // Verify ownership before delete
+  const { data: cat } = await db.collection('categories').doc(categoryId).get()
+  if (!cat || cat.merchant_id !== merchant._id) {
+    throw createError(1003, '无权限删除此分类')
+  }
 
   // Check if category has products
   const { total } = await db.collection('products')

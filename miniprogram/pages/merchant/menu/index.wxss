@@ -168,8 +168,8 @@
 }
 
 .action-btn--spec {
-  color: #666666;
-  background-color: #F5F5F5;
+  color: #722ED1;
+  background-color: rgba(114, 46, 209, 0.08);
 }
 
 .action-btn--on-sale {
