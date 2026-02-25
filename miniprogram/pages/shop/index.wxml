@@ -3,7 +3,12 @@
 <view class="page-container">
   <block wx:if="{{!loading && merchant}}">
     <!-- 商家头图 -->
-    <view class="shop-header" style="background-image: url('{{merchant.shop_banner || ''}}');">
+    <view class="shop-header">
+      <image
+        class="shop-banner-img"
+        src="{{merchant.shop_banner || '/images/default-banner.png'}}"
+        mode="aspectFill"
+      />
       <view class="shop-header-mask"></view>
     </view>
 
