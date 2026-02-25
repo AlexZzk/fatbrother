@@ -42,9 +42,23 @@ Page({
     try {
       const merchant = app.globalData.merchantInfo
       if (!merchant) return
-      const data = await productService.getCategories(merchant._id)
-      const categories = data.categories || []
-      this.setData({ categories })
+      let data = await productService.getCategories(merchant._id)
+      let categories = data.categories || []
+
+      // Auto-create a default category if none exist
+      if (categories.length === 0) {
+        await productService.saveCategory({ name: '默认分类' })
+        data = await productService.getCategories(merchant._id)
+        categories = data.categories || []
+      }
+
+      const updates = { categories }
+      // For new products, default to first category
+      if (!this.data.isEdit && categories.length > 0 && this.data.categoryIndex < 0) {
+        updates.categoryIndex = 0
+      }
+      this.setData(updates)
+
       // If editing, match category index after both loaded
       if (this.data._pendingCategoryId) {
         this._matchCategoryIndex(this.data._pendingCategoryId)

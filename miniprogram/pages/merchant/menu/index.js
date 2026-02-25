@@ -56,7 +56,9 @@ Page({
           ...p,
           categoryId: cat._id,
           categoryName: cat.name,
-          priceYuan: (p.price / 100).toFixed(2)
+          priceYuan: (p.base_price / 100).toFixed(2),
+          isOnSale: p.is_on_sale,
+          imageUrl: p.image
         }))
 
         allProducts = allProducts.concat(products)
