@@ -47,7 +47,10 @@ class WechatPayHelper {
     this.mchId = config.mch_id
     this.apiKeyV3 = config.api_key_v3
     this.serialNo = config.serial_no
-    this.privateKey = config.private_key
+    // Normalize private key: replace escaped \n with real newlines.
+    // Databases or JSON editors sometimes store the PEM as a single-line
+    // string with literal backslash-n, which causes ERR_OSSL_PEM_NO_START_LINE.
+    this.privateKey = (config.private_key || '').replace(/\\n/g, '\n')
   }
 
   /**

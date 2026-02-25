@@ -104,6 +104,19 @@ cat apiclient_key.pem
 "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADA...\n-----END PRIVATE KEY-----"
 ```
 
+> ⚠️ **常见错误：`ERR_OSSL_PEM_NO_START_LINE`**
+>
+> 如果后端报此错误，说明私钥格式不对。根本原因是存入数据库时 `\n` 变成了字面量的两个字符 `\` + `n`（而不是真正的换行），OpenSSL 解析时找不到 `-----BEGIN...-----` 行头。
+>
+> 代码已做自动 normalize 处理，但如果仍然报错，请用以下命令生成正确格式后重新写入数据库：
+>
+> ```bash
+> # 生成可直接粘贴到数据库 JSON 字段的单行格式
+> awk 'NF {printf "%s\\n", $0}' apiclient_key.pem | sed 's/\\n$//'
+> ```
+>
+> 正确格式的特征：字符串中包含 `\n` 转义序列，首尾有 `-----BEGIN PRIVATE KEY-----` 和 `-----END PRIVATE KEY-----`。
+
 ---
 
 ## 五、代码配置（需要手动替换）
