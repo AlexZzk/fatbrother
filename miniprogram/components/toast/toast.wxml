@@ -1,8 +1,8 @@
 <view class="toast-container {{show ? 'toast-container--visible' : 'toast-container--hidden'}}">
   <view class="toast">
     <view class="toast__icon toast__icon--{{type}}">
-      <text wx:if="{{type === 'success'}}">&#x2713;</text>
-      <text wx:elif="{{type === 'error'}}">&#x2717;</text>
+      <text wx:if="{{type === 'success'}}">✓</text>
+      <text wx:elif="{{type === 'error'}}">✗</text>
       <text wx:else>i</text>
     </view>
     <text class="toast__message">{{message}}</text>

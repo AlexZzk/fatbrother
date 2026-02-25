@@ -25,7 +25,6 @@
     <view class="footer-info">
       <view class="footer-price">
         <text class="price-label">实付 </text>
-        <text class="price-symbol">¥</text>
         <price value="{{actualPrice}}" />
       </view>
       <text class="footer-time">{{createTime}}</text>
