@@ -236,8 +236,16 @@ async function getMenu(event) {
 // ===================== Helpers =====================
 
 async function getMerchantByOpenid(openid) {
+  const { data: users } = await db.collection('users')
+    .where({ _openid: openid })
+    .limit(1)
+    .get()
+  if (users.length === 0) {
+    throw createError(1002, '用户未登录')
+  }
+
   const { data } = await db.collection('merchants')
-    .where({ user_id: openid, status: 'active' })
+    .where({ user_id: users[0]._id, status: 'active' })
     .limit(1)
     .get()
   if (data.length === 0) {
