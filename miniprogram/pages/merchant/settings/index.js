@@ -49,6 +49,23 @@ Page({
     })
   },
 
+  onChangeBanner() {
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ['image'],
+      sizeType: ['compressed'],
+      success: async (res) => {
+        const tempPath = res.tempFiles[0].tempFilePath
+        try {
+          const fileID = await uploadService.uploadImage(tempPath, 'shop-banners')
+          await this._updateField('shop_banner', fileID)
+        } catch (err) {
+          this.selectComponent('#toast').showToast({ message: '上传失败', type: 'error' })
+        }
+      }
+    })
+  },
+
   onEditField(e) {
     const field = e.currentTarget.dataset.field
     const currentValue = this.data.merchantInfo[field] || ''
