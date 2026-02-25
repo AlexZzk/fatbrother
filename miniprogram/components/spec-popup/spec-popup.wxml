@@ -1,6 +1,6 @@
 <wxs src="./spec-popup.wxs" module="util" />
-<view wx:if="{{show}}" class="spec-mask" bindtap="onMaskTap" catchtouchmove="noop">
-  <view class="spec-panel" catchtap="noop">
+<view wx:if="{{show}}" class="spec-mask" bindtap="onMaskTap">
+  <view class="spec-panel" catchtap="noop" catchtouchmove="noop">
     <!-- Header -->
     <view class="spec-header">
       <image wx:if="{{product.image}}" class="spec-product-img" src="{{product.image}}" mode="aspectFill" />

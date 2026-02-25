@@ -68,6 +68,7 @@
 
 .spec-body {
   flex: 1;
+  min-height: 300rpx;
   overflow-y: auto;
   padding: 0 24rpx;
 }

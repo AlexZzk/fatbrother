@@ -3,6 +3,21 @@ const orderService = require('../../../services/order')
 const format = require('../../../utils/format')
 const { ORDER_STATUS, PAGE_SIZE } = require('../../../utils/constants')
 
+/**
+ * Robustly parse a timestamp from various formats cloud DB may return:
+ * ISO string, Date object, number (ms), { $date: "..." }, or wx-server-sdk ServerDate.
+ * Returns 0 if unparseable, so remaining time becomes 0 (safe fallback).
+ */
+function parseTimestamp(val) {
+  if (!val) return 0
+  if (val instanceof Date) return val.getTime()
+  if (typeof val === 'number') return val
+  if (typeof val === 'string') return new Date(val).getTime() || 0
+  if (val.$date) return new Date(val.$date).getTime() || 0
+  if (typeof val.toDate === 'function') return val.toDate().getTime()
+  return new Date(String(val)).getTime() || 0
+}
+
 const TABS = [
   { key: ORDER_STATUS.PENDING_ACCEPT, label: '待接单' },
   { key: ORDER_STATUS.ACCEPTED, label: '制作中' },
@@ -125,7 +140,7 @@ Page({
     let changed = false
     const updated = orders.map(order => {
       if (order.status !== ORDER_STATUS.PENDING_ACCEPT) return order
-      const createdAt = new Date(order.created_at).getTime()
+      const createdAt = parseTimestamp(order.created_at)
       const remaining = Math.max(0, AUTO_CANCEL_MS - (now - createdAt))
       const mins = Math.floor(remaining / 60000)
       const secs = Math.floor((remaining % 60000) / 1000)
@@ -153,7 +168,7 @@ Page({
       const res = await orderService.getMerchantOrders({ status, page, pageSize: PAGE_SIZE })
       const list = (res.list || []).map(order => {
         if (order.status === ORDER_STATUS.PENDING_ACCEPT) {
-          const remaining = Math.max(0, AUTO_CANCEL_MS - (Date.now() - new Date(order.created_at).getTime()))
+          const remaining = Math.max(0, AUTO_CANCEL_MS - (Date.now() - parseTimestamp(order.created_at)))
           const mins = Math.floor(remaining / 60000)
           const secs = Math.floor((remaining % 60000) / 1000)
           order._countdownText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`

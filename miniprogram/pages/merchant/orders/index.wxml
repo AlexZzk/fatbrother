@@ -70,7 +70,6 @@
       <view class="card-footer">
         <view class="card-price">
           <text class="price-label">实付</text>
-          <text class="price-yen">¥</text>
           <price value="{{item.actual_price}}" />
         </view>
 
@@ -141,7 +140,7 @@
     <view class="popup-title">新订单来啦！</view>
     <view class="popup-summary" wx:if="{{newOrderInfo}}">
       <text>{{newOrderInfo.summary}}</text>
-      <text class="popup-price">¥<price value="{{newOrderInfo.actualPrice}}" /></text>
+      <view class="popup-price"><price value="{{newOrderInfo.actualPrice}}" /></view>
     </view>
     <view class="popup-actions">
       <view class="popup-btn popup-btn--dismiss" bindtap="onDismissPopup">知道了</view>

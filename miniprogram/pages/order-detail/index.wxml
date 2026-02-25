@@ -28,7 +28,6 @@
         <view class="product-right">
           <text class="product-qty">x{{item.quantity}}</text>
           <view class="product-price">
-            <text>¥</text>
             <price value="{{item.subtotal}}" />
           </view>
         </view>
@@ -38,22 +37,22 @@
 
       <view class="price-row">
         <text class="price-label">商品合计</text>
-        <view class="price-value"><text>¥</text><price value="{{order.total_price}}" /></view>
+        <view class="price-value"><price value="{{order.total_price}}" /></view>
       </view>
       <view class="price-row">
         <text class="price-label">包装费</text>
-        <view class="price-value"><text>¥</text><price value="{{order.packing_fee}}" /></view>
+        <view class="price-value"><price value="{{order.packing_fee}}" /></view>
       </view>
       <view class="price-row">
         <text class="price-label">配送费</text>
-        <view class="price-value"><text>¥</text><price value="{{order.delivery_fee}}" /></view>
+        <view class="price-value"><price value="{{order.delivery_fee}}" /></view>
       </view>
 
       <view class="price-divider"></view>
 
       <view class="price-row price-row--total">
         <text class="price-label">实付金额</text>
-        <view class="price-value price-value--total"><text>¥</text><price value="{{order.actual_price}}" /></view>
+        <view class="price-value price-value--total"><price value="{{order.actual_price}}" /></view>
       </view>
     </view>
 
