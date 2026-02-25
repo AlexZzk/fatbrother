@@ -26,7 +26,6 @@
         <view class="product-right">
           <text class="product-qty">x{{item.quantity}}</text>
           <view class="product-price">
-            <text>¥</text>
             <price value="{{item.subtotal}}" />
           </view>
         </view>
@@ -38,20 +37,20 @@
       <view class="section-title">价格明细</view>
       <view class="price-row">
         <text class="price-label">商品合计</text>
-        <view class="price-value"><text>¥</text><price value="{{totalPrice}}" /></view>
+        <view class="price-value"><price value="{{totalPrice}}" /></view>
       </view>
       <view class="price-row">
         <text class="price-label">包装费</text>
-        <view class="price-value"><text>¥</text><price value="{{packingFee}}" /></view>
+        <view class="price-value"><price value="{{packingFee}}" /></view>
       </view>
       <view class="price-row">
         <text class="price-label">配送费</text>
-        <view class="price-value"><text>¥</text><price value="{{deliveryFee}}" /></view>
+        <view class="price-value"><price value="{{deliveryFee}}" /></view>
       </view>
       <view class="price-divider"></view>
       <view class="price-row price-row--total">
         <text class="price-label">合计</text>
-        <view class="price-value price-value--total"><text>¥</text><price value="{{actualPrice}}" /></view>
+        <view class="price-value price-value--total"><price value="{{actualPrice}}" /></view>
       </view>
     </view>
 
@@ -73,7 +72,7 @@
 <view class="submit-bar" wx:if="{{merchant}}">
   <view class="submit-total">
     <text class="submit-label">合计 </text>
-    <view class="submit-price"><text>¥</text><price value="{{actualPrice}}" /></view>
+    <view class="submit-price"><price value="{{actualPrice}}" /></view>
   </view>
   <view class="submit-btn {{submitting ? 'submit-btn--disabled' : ''}}" bindtap="onSubmit">
     {{submitting ? '提交中...' : '提交订单'}}

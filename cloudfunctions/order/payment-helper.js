@@ -24,8 +24,8 @@
 const crypto = require('crypto')
 const https = require('https')
 
-// ======== TODO_REPLACE: 小程序 APPID ========
-const APP_ID = 'wx_your_appid_here'
+// 平台小程序 APPID（所有商户支付均通过此小程序发起）
+const APP_ID = 'wx711600359fd02988'
 
 // ======== TODO_REPLACE: 支付回调地址 ========
 // 格式: https://<云环境ID>.service.tcloudbase.com/order?action=paymentNotify
