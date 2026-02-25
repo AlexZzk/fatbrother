@@ -9,6 +9,7 @@ const ordersCol = db.collection('orders')
 const merchantsCol = db.collection('merchants')
 const productsCol = db.collection('products')
 const settlementsCol = db.collection('settlements')
+const usersCol = db.collection('users')
 
 // ======== TODO_REPLACE: 设为 true 启用真实微信支付，false 使用模拟支付 ========
 const USE_REAL_PAYMENT = false
@@ -368,7 +369,11 @@ async function cancel(event) {
  * 查找当前 openid 对应的商户，验证 active 状态
  */
 async function getMerchantByOpenid(openid) {
-  const { data } = await merchantsCol.where({ owner_openid: openid, status: 'active' }).limit(1).get()
+  const { data: users } = await usersCol.where({ _openid: openid }).limit(1).get()
+  if (!users || users.length === 0) {
+    throw createError(1002, '用户未登录')
+  }
+  const { data } = await merchantsCol.where({ user_id: users[0]._id, status: 'active' }).limit(1).get()
   if (!data || data.length === 0) {
     throw createError(2001, '商户不存在或未激活')
   }
