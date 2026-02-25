@@ -492,9 +492,14 @@ function generateInviteCode() {
  * S6-6: 获取商户今日统计数据
  */
 async function getTodayStats(event, openid) {
-  // Find merchant by openid
+  // Find user first, then merchant
+  const { data: users } = await usersCollection.where({ _openid: openid }).limit(1).get()
+  if (!users || users.length === 0) {
+    return { code: 1002, message: '请先登录' }
+  }
+
   const { data: merchants } = await merchantsCollection
-    .where({ owner_openid: openid, status: 'active' })
+    .where({ user_id: users[0]._id, status: 'active' })
     .limit(1)
     .get()
 

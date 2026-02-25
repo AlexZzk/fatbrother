@@ -250,7 +250,8 @@ async function create(event) {
 
   // 模拟支付模式：直接通知商户有新订单、通知用户下单成功
   const itemNames = orderItems.map(i => `${i.name}x${i.quantity}`).join(' ')
-  sendNotify('NEW_ORDER', merchant.owner_openid, { ...notifyData, itemSummary: itemNames })
+  const { data: merchantOwner } = await usersCol.doc(merchant.user_id).get().catch(() => ({ data: null }))
+  sendNotify('NEW_ORDER', merchantOwner ? merchantOwner._openid : '', { ...notifyData, itemSummary: itemNames })
   sendNotify('ORDER_SUBMITTED', _openid, notifyData)
 
   return {
@@ -692,7 +693,8 @@ async function paymentNotify(event) {
     merchantName: order.merchant_name, actualPrice: order.actual_price,
     createTime: order.created_at
   }
-  sendNotify('NEW_ORDER', merchant.owner_openid, { ...notifyData, itemSummary: itemNames })
+  const { data: merchantOwner } = await usersCol.doc(merchant.user_id).get().catch(() => ({ data: null }))
+  sendNotify('NEW_ORDER', merchantOwner ? merchantOwner._openid : '', { ...notifyData, itemSummary: itemNames })
   sendNotify('ORDER_SUBMITTED', order.user_id, notifyData)
 
   return { handled: true, orderId: order._id }
