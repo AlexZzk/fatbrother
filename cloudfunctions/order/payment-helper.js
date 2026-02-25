@@ -30,7 +30,7 @@ const APP_ID = 'wx_your_appid_here'
 // ======== TODO_REPLACE: 支付回调地址 ========
 // 格式: https://<云环境ID>.service.tcloudbase.com/order?action=paymentNotify
 // 需要在微信云开发控制台开启 HTTP 访问服务
-const NOTIFY_URL = 'https://your-env-id.service.tcloudbase.com/order'
+const NOTIFY_URL = 'http://cloudbase-2g53go7z650ca946-1392989365.ap-shanghai.app.tcloudbase.com/order'
 
 // 微信支付 API 基础地址
 const API_BASE = 'api.mch.weixin.qq.com'

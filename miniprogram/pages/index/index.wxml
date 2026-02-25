@@ -1,5 +1,5 @@
 <nav-bar left-arrow="{{false}}">
-  <view slot="center" class="location-bar" bindtap="onLocationTap">
+  <view slot="left" class="location-bar" bindtap="onLocationTap">
     <text class="location-icon">📍</text>
     <text class="location-name {{locationFailed ? 'location-name--failed' : ''}}">{{locationName}}</text>
     <text class="location-arrow">∨</text>

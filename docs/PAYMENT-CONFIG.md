@@ -127,10 +127,10 @@ cat apiclient_key.pem
 
 ```js
 // 第 28 行：替换为你的小程序 AppID（微信公众平台 → 开发管理 → AppID）
-const APP_ID = 'wx_your_appid_here'  // ← 替换这里
+const APP_ID = 'wx711600359fd02988'  // ← 替换这里
 
 // 第 33 行：替换为你的云函数 HTTP 触发地址（见第六章）
-const NOTIFY_URL = 'https://your-env-id.service.tcloudbase.com/order'  // ← 替换这里
+const NOTIFY_URL = 'http://cloudbase-2g53go7z650ca946-1392989365.ap-shanghai.app.tcloudbase.com/order'  // ← 替换这里
 ```
 
 ### 5.2 `cloudfunctions/order/index.js`

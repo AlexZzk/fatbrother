@@ -12,13 +12,13 @@ const settlementsCol = db.collection('settlements')
 const usersCol = db.collection('users')
 
 // ======== TODO_REPLACE: 设为 true 启用真实微信支付，false 使用模拟支付 ========
-const USE_REAL_PAYMENT = false
+const USE_REAL_PAYMENT = true
 
 // ======== TODO_REPLACE: 平台佣金配置 ========
 const PLATFORM_CONFIG = {
   commissionRate: 0.10, // 平台佣金比例 10%
   // 平台商户号 - 作为分账接收方
-  platformMchId: 'PLATFORM_MCH_ID_HERE'
+  platformMchId: '1736768370'
 }
 
 /**
