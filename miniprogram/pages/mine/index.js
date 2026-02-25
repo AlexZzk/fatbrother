@@ -40,7 +40,7 @@ Page({
 
     // 从服务端刷新商户状态（捕获状态变更，如 pending → active）
     try {
-      const data = await merchantService.getStatus()
+      const data = await merchantService.getApplyStatus()
       const merchantInfo = data.hasApplied ? data.merchantInfo : null
       app.globalData.merchantInfo = merchantInfo
       if (merchantInfo) {
