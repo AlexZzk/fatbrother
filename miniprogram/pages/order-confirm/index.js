@@ -108,9 +108,6 @@ Page({
 
     this.setData({ submitting: true })
 
-    let createdOrderId = null
-    let createdOrderNo = null
-
     try {
       const res = await orderService.create({
         merchantId: this.data.merchantId,
@@ -125,34 +122,27 @@ Page({
         remark: this.data.remark
       })
 
-      createdOrderId = res.orderId
-      createdOrderNo = res.orderNo
-
-      // 真实支付模式：调起微信支付
-      if (res.payParams) {
-        await this._requestPayment(res.payParams)
-      }
-
-      // Clear cart for this merchant
+      // 订单已创建，清空购物车
       cart.clear(this.data.merchantId)
 
-      // Navigate to result page
+      // 如果有支付参数，发起微信支付（成功/失败/取消都跳转到订单详情）
+      if (res.payParams) {
+        try {
+          await this._requestPayment(res.payParams)
+        } catch (err) {
+          // 支付失败/取消：订单保持待支付状态，用户可在订单详情页重新发起支付
+        }
+      }
+
+      // 无论支付结果如何，一律跳转到订单详情页
       wx.redirectTo({
-        url: `/pages/order-result/index?orderId=${res.orderId}&orderNo=${res.orderNo}`
+        url: `/pages/order-detail/index?orderId=${res.orderId}`
       })
     } catch (err) {
-      if (createdOrderId) {
-        // 订单已创建但支付失败/取消 — 直接跳转到订单详情，不允许重新下单
-        cart.clear(this.data.merchantId)
-        wx.redirectTo({
-          url: `/pages/order-result/index?orderId=${createdOrderId}&orderNo=${createdOrderNo}`
-        })
-      } else {
-        // 订单创建失败 — 允许用户重试
-        const msg = (err && err.message) || '提交失败，请重试'
-        wx.showToast({ title: msg, icon: 'none' })
-        this.setData({ submitting: false })
-      }
+      // 订单创建本身失败 — 允许用户重试
+      const msg = (err && err.message) || '提交失败，请重试'
+      wx.showToast({ title: msg, icon: 'none' })
+      this.setData({ submitting: false })
     }
   },
 

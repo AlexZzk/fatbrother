@@ -5,6 +5,11 @@ const { ORDER_STATUS, ORDER_STATUS_TEXT, ORDER_STATUS_COLOR } = require('../../u
 
 // Status card background & description
 const STATUS_CONFIG = {
+  [ORDER_STATUS.PENDING_PAY]: {
+    bg: 'linear-gradient(135deg, #FFF8E1, #FFF3C4)',
+    title: '待支付',
+    desc: '请在30分钟内完成支付，超时订单将自动取消'
+  },
   [ORDER_STATUS.PENDING_ACCEPT]: {
     bg: 'linear-gradient(135deg, #FFF3E0, #FFE0B2)',
     title: '商家确认中',
@@ -62,7 +67,7 @@ Page({
       const res = await orderService.getDetail(this.data.orderId)
       const order = res.order
 
-      const config = STATUS_CONFIG[order.status] || STATUS_CONFIG[ORDER_STATUS.PENDING_ACCEPT]
+      const config = STATUS_CONFIG[order.status] || { bg: '', title: order.status, desc: '' }
       const statusColor = ORDER_STATUS_COLOR[order.status] || '#999999'
 
       // Format items
@@ -96,6 +101,11 @@ Page({
 
   _getButtons(status, isReviewed) {
     switch (status) {
+      case ORDER_STATUS.PENDING_PAY:
+        return [
+          { type: 'pay', text: '立即支付', style: 'primary' },
+          { type: 'cancel', text: '取消订单', style: 'default' }
+        ]
       case ORDER_STATUS.PENDING_ACCEPT:
         return [
           { type: 'cancel', text: '取消订单', style: 'default' }
@@ -145,6 +155,10 @@ Page({
     const { orderId, order } = this.data
 
     switch (type) {
+      case 'pay':
+        await this._retryPayment()
+        break
+
       case 'cancel':
         wx.showModal({
           title: '取消订单',
@@ -177,5 +191,43 @@ Page({
         }
         break
     }
+  },
+
+  async _retryPayment() {
+    try {
+      wx.showLoading({ title: '请稍候' })
+      const res = await orderService.createPayment(this.data.orderId)
+      wx.hideLoading()
+      await this._requestPayment(res.payParams)
+      // 支付成功，刷新详情（等待回调更新状态）
+      wx.showToast({ title: '支付成功', icon: 'success' })
+      setTimeout(() => this._loadDetail(), 1500)
+    } catch (err) {
+      wx.hideLoading()
+      if (err.message !== '支付已取消') {
+        wx.showToast({ title: err.message || '支付失败', icon: 'none' })
+      }
+      this._loadDetail()
+    }
+  },
+
+  _requestPayment(payParams) {
+    return new Promise((resolve, reject) => {
+      wx.requestPayment({
+        timeStamp: payParams.timeStamp,
+        nonceStr: payParams.nonceStr,
+        package: payParams.package,
+        signType: payParams.signType,
+        paySign: payParams.paySign,
+        success: () => resolve(),
+        fail: (err) => {
+          if (err.errMsg === 'requestPayment:fail cancel') {
+            reject(new Error('支付已取消'))
+          } else {
+            reject(new Error('支付失败，请重试'))
+          }
+        }
+      })
+    })
   }
 })
