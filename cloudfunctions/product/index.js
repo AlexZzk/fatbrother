@@ -11,6 +11,7 @@ const actions = {
   sortCategories,
   getProduct,
   saveProduct,
+  saveSpecs,
   deleteProduct,
   toggleSale,
   getMenu
@@ -191,6 +192,26 @@ async function saveProduct(event) {
     })
     return { productId: res._id }
   }
+}
+
+/**
+ * Save only the spec_groups for a product.
+ * Used by spec-config page when launched directly from the merchant menu.
+ */
+async function saveSpecs(event) {
+  const { _openid, productId, spec_groups } = event
+  if (!productId) throw createError(1001, '缺少商品ID')
+
+  const merchant = await getMerchantByOpenid(_openid)
+  const { data: product } = await db.collection('products').doc(productId).get().catch(() => ({ data: null }))
+  if (!product) throw createError(2001, '商品不存在')
+  if (product.merchant_id !== merchant._id) throw createError(1003, '无权限修改此商品')
+
+  await db.collection('products').doc(productId).update({
+    data: { spec_groups: spec_groups || [], updated_at: db.serverDate() }
+  })
+
+  return { productId }
 }
 
 async function deleteProduct(event) {
