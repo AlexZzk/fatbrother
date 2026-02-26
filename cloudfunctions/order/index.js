@@ -104,9 +104,13 @@ async function _handleHttpCallback(event) {
   })
 
   try {
-    const qs = event.queryStringParameters || {}
     const body = typeof event.body === 'string' ? JSON.parse(event.body) : (event.body || {})
-    const outTradeNo = qs.out_trade_no || ''
+
+    // 从 URL 路径中提取订单号，格式: /paynotify/{out_trade_no}
+    // 微信支付 v3 禁止 notify_url 含查询参数，故改用路径传递
+    const path = event.path || ''
+    const pathMatch = path.match(/\/paynotify\/([^/?#]+)$/)
+    const outTradeNo = pathMatch ? pathMatch[1] : ''
 
     await paymentNotify({ ...body, out_trade_no: outTradeNo, _openid: '' })
     return respond(true)
