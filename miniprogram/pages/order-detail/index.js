@@ -178,7 +178,22 @@ Page({
         break
 
       case 'confirm':
-        wx.showToast({ title: '确认取餐功能开发中', icon: 'none' })
+        wx.showModal({
+          title: '确认取餐',
+          content: '请确认已取到餐品',
+          confirmText: '已取到',
+          success: async (res) => {
+            if (res.confirm) {
+              try {
+                await orderService.userComplete(orderId)
+                wx.showToast({ title: '取餐成功', icon: 'success' })
+                this._loadDetail()
+              } catch (err) {
+                wx.showToast({ title: err.message || '操作失败', icon: 'none' })
+              }
+            }
+          }
+        })
         break
 
       case 'review':

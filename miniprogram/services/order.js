@@ -36,9 +36,14 @@ const orderService = {
     return callFunction('order', { action: 'markReady', orderId })
   },
 
-  // Complete order
+  // Complete order (merchant)
   complete(orderId) {
     return callFunction('order', { action: 'complete', orderId })
+  },
+
+  // User confirm pickup → complete
+  userComplete(orderId) {
+    return callFunction('order', { action: 'userComplete', orderId })
   },
 
   // Merchant: get order list with tab counts
