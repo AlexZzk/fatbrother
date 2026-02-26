@@ -43,7 +43,7 @@ Page({
   },
 
   async _initLocation() {
-    this.setData({ page: 1, shopList: [], hasMore: true })
+    this.setData({ page: 1, shopList: [], hasMore: true, loadingMore: false, loading: true })
     await this._autoLocate()
     await this._loadShops()
   },
@@ -57,7 +57,7 @@ Page({
       this.setData({
         latitude: loc.latitude,
         longitude: loc.longitude,
-        locationName: address || '已定位',
+        locationName: address || `${loc.latitude.toFixed(4)},${loc.longitude.toFixed(4)}`,
         locationFailed: false
       })
     } catch (err) {
