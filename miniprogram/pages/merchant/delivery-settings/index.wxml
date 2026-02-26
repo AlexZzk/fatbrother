@@ -1,0 +1,85 @@
+<nav-bar title="配送费规则" left-arrow="{{true}}" />
+
+<view class="page-container">
+  <block wx:if="{{!loading}}">
+    <!-- 说明 -->
+    <view class="tip-card">
+      <text class="tip-text">按配送距离设置阶梯配送费。距离越近收费越少，超出最大范围则不配送。</text>
+      <text class="tip-text">示例：5km内免费，10km内¥5，超出不配送。</text>
+    </view>
+
+    <!-- 规则列表 -->
+    <view class="rules-card" wx:if="{{rules.length > 0}}">
+      <view class="rule-item" wx:for="{{rules}}" wx:key="max_distance">
+        <view class="rule-info">
+          <text class="rule-distance">{{item.label}}</text>
+          <text class="rule-fee {{item.fee < 0 ? 'rule-fee--no' : item.fee === 0 ? 'rule-fee--free' : ''}}">
+            {{item.feeLabel}}
+          </text>
+        </view>
+        <view class="rule-actions">
+          <view class="rule-btn rule-btn--edit" bindtap="onEditRule" data-index="{{index}}">编辑</view>
+          <view class="rule-btn rule-btn--delete" bindtap="onDeleteRule" data-index="{{index}}">删除</view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="empty-state">
+      <text class="empty-icon">🚚</text>
+      <text class="empty-text">暂未设置配送规则</text>
+      <text class="empty-hint">设置后用户下单时将自动计算配送费</text>
+    </view>
+  </block>
+
+  <view wx:elif="{{loading}}" class="loading-center">
+    <text>加载中...</text>
+  </view>
+</view>
+
+<!-- 底部添加按钮 -->
+<view class="add-bar">
+  <view class="add-btn" bindtap="onAddRule">+ 添加距离段</view>
+</view>
+
+<!-- 编辑弹窗 -->
+<view wx:if="{{showForm}}" class="form-mask" bindtap="onFormCancel">
+  <view class="form-popup" catchtap="">
+    <view class="form-title">{{editingIndex >= 0 ? '编辑规则' : '添加规则'}}</view>
+
+    <view class="form-item">
+      <text class="form-label">最大距离（公里，0 = 兜底规则）</text>
+      <view class="form-row">
+        <input
+          class="form-input"
+          type="digit"
+          placeholder="例如：5"
+          value="{{editForm.max_distance_km}}"
+          data-field="max_distance_km"
+          bindinput="onFormInput"
+        />
+        <text class="form-unit">km</text>
+      </view>
+      <text class="form-hint">填0表示此规则兜底（适用于超出其他规则的距离）</text>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">配送费（-1 = 不配送）</text>
+      <view class="form-row">
+        <text class="form-currency">¥</text>
+        <input
+          class="form-input"
+          type="digit"
+          placeholder="例如：5（填-1表示不配送）"
+          value="{{editForm.fee_yuan}}"
+          data-field="fee_yuan"
+          bindinput="onFormInput"
+        />
+      </view>
+    </view>
+
+    <view class="form-actions">
+      <button class="form-btn form-btn--cancel" bindtap="onFormCancel">取消</button>
+      <button class="form-btn form-btn--confirm" bindtap="onFormConfirm">保存</button>
+    </view>
+  </view>
+</view>

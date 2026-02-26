@@ -5,6 +5,7 @@ const db = cloud.database()
 const _ = db.command
 const usersCollection = db.collection('users')
 const merchantsCollection = db.collection('merchants')
+const promotionsCollection = db.collection('promotions')
 
 /**
  * 商户模块云函数
@@ -24,7 +25,10 @@ exports.main = async (event, context) => {
     getInviteRecords,
     getNearbyList,
     getTodayStats,
-    search
+    search,
+    getPromotions,
+    savePromotion,
+    deletePromotion
   }
 
   if (!actions[action]) {
@@ -260,9 +264,14 @@ async function getMerchantInfo(event, openid) {
 
 /**
  * 更新店铺设置
+ * 支持字段: shop_name, shop_avatar, shop_banner, announcement, contact_phone,
+ *           min_order_amount, packing_fee, delivery_fee_rules
  */
 async function updateSettings(event, openid) {
-  const { shop_name, shop_avatar, shop_banner, announcement, contact_phone } = event
+  const {
+    shop_name, shop_avatar, shop_banner, announcement, contact_phone,
+    min_order_amount, packing_fee, delivery_fee_rules
+  } = event
 
   const { data: users } = await usersCollection
     .where({ _openid: openid })
@@ -286,6 +295,28 @@ async function updateSettings(event, openid) {
   if (shop_banner !== undefined) updateData.shop_banner = shop_banner
   if (announcement !== undefined) updateData.announcement = announcement.trim()
   if (contact_phone !== undefined) updateData.contact_phone = contact_phone
+
+  // 费用设置（单位：分）
+  if (min_order_amount !== undefined) {
+    const val = parseInt(min_order_amount)
+    if (isNaN(val) || val < 0) return { code: 1001, message: '起送价格式不正确' }
+    updateData.min_order_amount = val
+  }
+  if (packing_fee !== undefined) {
+    const val = parseInt(packing_fee)
+    if (isNaN(val) || val < 0) return { code: 1001, message: '包装费格式不正确' }
+    updateData.packing_fee = val
+  }
+  // delivery_fee_rules: Array<{ max_distance: number (meters, 0=unlimited), fee: number (cents, -1=no delivery) }>
+  if (delivery_fee_rules !== undefined) {
+    if (!Array.isArray(delivery_fee_rules)) return { code: 1001, message: '配送费规则格式不正确' }
+    for (const rule of delivery_fee_rules) {
+      if (typeof rule.max_distance !== 'number' || typeof rule.fee !== 'number') {
+        return { code: 1001, message: '配送费规则格式不正确' }
+      }
+    }
+    updateData.delivery_fee_rules = delivery_fee_rules
+  }
 
   await merchantsCollection.doc(merchants[0]._id).update({ data: updateData })
 
@@ -412,66 +443,6 @@ async function getInviteRecords(event, openid) {
   }
 }
 
-/**
- * 获取附近营业中的商家列表
- */
-async function getNearbyList(event, openid) {
-  const { latitude, longitude, page = 1, pageSize = 20 } = event
-
-  // Query active & open merchants
-  const query = { status: 'active', is_open: true }
-
-  const { data: merchants } = await merchantsCollection
-    .where(query)
-    .limit(100)
-    .get()
-
-  // Calculate distance for each merchant and sort
-  let list = merchants.map(m => {
-    let distance = null
-    if (latitude && longitude && m.location) {
-      const loc = m.location
-      // WeChat CloudBase GeoPoint 读取时返回 { longitude, latitude } 直接属性
-      // 而非 GeoJSON 的 coordinates 数组格式
-      const mLng = loc.longitude
-      const mLat = loc.latitude
-      if (mLat && mLng) {
-        distance = calcDistance(latitude, longitude, mLat, mLng)
-      }
-    }
-    return {
-      _id: m._id,
-      shop_name: m.shop_name,
-      shop_avatar: m.shop_avatar || '',
-      announcement: m.announcement || '',
-      rating: m.rating || 5.0,
-      monthly_sales: m.monthly_sales || 0,
-      distance
-    }
-  })
-
-  // Sort by distance (nulls last)
-  list.sort((a, b) => {
-    if (a.distance === null && b.distance === null) return 0
-    if (a.distance === null) return 1
-    if (b.distance === null) return -1
-    return a.distance - b.distance
-  })
-
-  // Paginate
-  const start = (page - 1) * pageSize
-  const paged = list.slice(start, start + pageSize)
-
-  return {
-    code: 0,
-    message: 'success',
-    data: {
-      list: paged,
-      total: list.length,
-      hasMore: start + pageSize < list.length
-    }
-  }
-}
 
 /**
  * Haversine distance calculation (meters)
@@ -557,6 +528,67 @@ async function getTodayStats(event, openid) {
       refund,
       pendingAccept: pendingAcceptCount.total,
       pendingReady: acceptedCount.total
+    }
+  }
+}
+
+/**
+ * 获取附近商家列表时，返回起送价和配送费信息
+ */
+async function getNearbyList(event, openid) {
+  const { latitude, longitude, page = 1, pageSize = 20 } = event
+
+  // Query active & open merchants
+  const query = { status: 'active', is_open: true }
+
+  const { data: merchants } = await merchantsCollection
+    .where(query)
+    .limit(100)
+    .get()
+
+  // Calculate distance for each merchant and sort
+  let list = merchants.map(m => {
+    let distance = null
+    if (latitude && longitude && m.location) {
+      const loc = m.location
+      const mLng = loc.longitude
+      const mLat = loc.latitude
+      if (mLat && mLng) {
+        distance = calcDistance(latitude, longitude, mLat, mLng)
+      }
+    }
+    return {
+      _id: m._id,
+      shop_name: m.shop_name,
+      shop_avatar: m.shop_avatar || '',
+      announcement: m.announcement || '',
+      rating: m.rating || 5.0,
+      monthly_sales: m.monthly_sales || 0,
+      distance,
+      min_order_amount: m.min_order_amount || 0,
+      delivery_fee_rules: m.delivery_fee_rules || []
+    }
+  })
+
+  // Sort by distance (nulls last)
+  list.sort((a, b) => {
+    if (a.distance === null && b.distance === null) return 0
+    if (a.distance === null) return 1
+    if (b.distance === null) return -1
+    return a.distance - b.distance
+  })
+
+  // Paginate
+  const start = (page - 1) * pageSize
+  const paged = list.slice(start, start + pageSize)
+
+  return {
+    code: 0,
+    message: 'success',
+    data: {
+      list: paged,
+      total: list.length,
+      hasMore: start + pageSize < list.length
     }
   }
 }
@@ -653,4 +685,119 @@ async function search(event) {
       hasMore: start + pageSize < list.length
     }
   }
+}
+
+// ============================================================
+// 营销活动（促销）管理
+// promotions 集合结构:
+//   merchant_id  - 商户ID
+//   type         - 'delivery_discount' 满减配送费
+//   name         - 活动名称，例如"满35减5"
+//   min_amount   - 起效最低订单金额（分）
+//   discount_amount - 优惠金额（分）
+//   status       - 'active' | 'inactive'
+//   start_time   - 活动开始时间（null=不限）
+//   end_time     - 活动结束时间（null=不限）
+//   created_at, updated_at
+// ============================================================
+
+/**
+ * 获取当前商户的促销活动列表
+ */
+async function getPromotions(event, openid) {
+  const { data: users } = await usersCollection
+    .where({ _openid: openid }).limit(1).get()
+  if (users.length === 0) return { code: 1002, message: '请先登录' }
+
+  const { data: merchants } = await merchantsCollection
+    .where({ user_id: users[0]._id, status: 'active' }).limit(1).get()
+  if (merchants.length === 0) return { code: 1003, message: '无权限或商户未激活' }
+
+  const { data: promotions } = await promotionsCollection
+    .where({ merchant_id: merchants[0]._id })
+    .orderBy('created_at', 'desc')
+    .limit(50)
+    .get()
+
+  return { code: 0, message: 'success', data: { promotions } }
+}
+
+/**
+ * 创建或更新促销活动
+ * 入参: promotionId(可选), type, name, min_amount, discount_amount,
+ *       status, start_time(可选), end_time(可选)
+ */
+async function savePromotion(event, openid) {
+  const { promotionId, type, name, min_amount, discount_amount, status, start_time, end_time } = event
+
+  if (!type || !name || min_amount === undefined || discount_amount === undefined) {
+    return { code: 1001, message: '参数不完整' }
+  }
+  if (!['delivery_discount'].includes(type)) {
+    return { code: 1001, message: '不支持的活动类型' }
+  }
+  if (typeof min_amount !== 'number' || min_amount < 0) {
+    return { code: 1001, message: '起效金额格式不正确' }
+  }
+  if (typeof discount_amount !== 'number' || discount_amount <= 0) {
+    return { code: 1001, message: '优惠金额格式不正确' }
+  }
+
+  const { data: users } = await usersCollection
+    .where({ _openid: openid }).limit(1).get()
+  if (users.length === 0) return { code: 1002, message: '请先登录' }
+
+  const { data: merchants } = await merchantsCollection
+    .where({ user_id: users[0]._id, status: 'active' }).limit(1).get()
+  if (merchants.length === 0) return { code: 1003, message: '无权限或商户未激活' }
+
+  const now = db.serverDate()
+  const promotionData = {
+    type,
+    name: name.trim(),
+    min_amount,
+    discount_amount,
+    status: status || 'active',
+    start_time: start_time || null,
+    end_time: end_time || null,
+    updated_at: now
+  }
+
+  if (promotionId) {
+    const { data: existing } = await promotionsCollection.doc(promotionId).get().catch(() => ({ data: null }))
+    if (!existing || existing.merchant_id !== merchants[0]._id) {
+      return { code: 1003, message: '无权操作该活动' }
+    }
+    await promotionsCollection.doc(promotionId).update({ data: promotionData })
+    return { code: 0, message: 'success', data: { promotionId } }
+  } else {
+    promotionData.merchant_id = merchants[0]._id
+    promotionData.created_at = now
+    const { _id } = await promotionsCollection.add({ data: promotionData })
+    return { code: 0, message: 'success', data: { promotionId: _id } }
+  }
+}
+
+/**
+ * 删除促销活动
+ */
+async function deletePromotion(event, openid) {
+  const { promotionId } = event
+  if (!promotionId) return { code: 1001, message: '缺少活动ID' }
+
+  const { data: users } = await usersCollection
+    .where({ _openid: openid }).limit(1).get()
+  if (users.length === 0) return { code: 1002, message: '请先登录' }
+
+  const { data: merchants } = await merchantsCollection
+    .where({ user_id: users[0]._id, status: 'active' }).limit(1).get()
+  if (merchants.length === 0) return { code: 1003, message: '无权限或商户未激活' }
+
+  const { data: existing } = await promotionsCollection.doc(promotionId).get().catch(() => ({ data: null }))
+  if (!existing || existing.merchant_id !== merchants[0]._id) {
+    return { code: 1003, message: '无权操作该活动' }
+  }
+
+  await promotionsCollection.doc(promotionId).remove()
+  return { code: 0, message: 'success' }
 }

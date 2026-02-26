@@ -1,0 +1,240 @@
+/* 满减促销页 */
+.page-container {
+  min-height: 100vh;
+  background-color: #F5F5F5;
+  padding: 16rpx 24rpx 160rpx;
+}
+
+.promo-item {
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.promo-main {
+  margin-bottom: 20rpx;
+}
+
+.promo-header {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 8rpx;
+}
+
+.promo-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #222222;
+}
+
+.promo-badge {
+  font-size: 22rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 999rpx;
+}
+
+.promo-badge--active {
+  background-color: #E8F5E9;
+  color: #2E7D32;
+}
+
+.promo-badge--inactive {
+  background-color: #F5F5F5;
+  color: #999999;
+}
+
+.promo-desc {
+  font-size: 26rpx;
+  color: #666666;
+}
+
+.promo-actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.promo-btn {
+  padding: 10rpx 24rpx;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+.promo-btn--toggle {
+  background-color: #E3F2FD;
+  color: #1565C0;
+}
+
+.promo-btn--edit {
+  background-color: #FFF3E0;
+  color: #E65100;
+}
+
+.promo-btn--delete {
+  background-color: #FFEBEE;
+  color: #C62828;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx 0 60rpx;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 24rpx;
+}
+
+.empty-text {
+  font-size: 30rpx;
+  color: #333333;
+  font-weight: 500;
+  margin-bottom: 12rpx;
+}
+
+.empty-hint {
+  font-size: 26rpx;
+  color: #999999;
+}
+
+.loading-center {
+  display: flex;
+  justify-content: center;
+  padding-top: 200rpx;
+  color: #999999;
+  font-size: 28rpx;
+}
+
+/* 底部按钮 */
+.add-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16rpx 24rpx;
+  padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
+  background-color: #FFFFFF;
+  border-top: 1rpx solid #F0F0F0;
+}
+
+.add-btn {
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  background: linear-gradient(135deg, #FF6B35, #FF9A57);
+  color: #FFFFFF;
+  font-size: 30rpx;
+  font-weight: 600;
+  border-radius: 999rpx;
+}
+
+/* 编辑弹窗 */
+.form-mask {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+}
+
+.form-popup {
+  width: 100%;
+  background-color: #FFFFFF;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 40rpx 32rpx calc(40rpx + env(safe-area-inset-bottom));
+}
+
+.form-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #222222;
+  margin-bottom: 32rpx;
+  text-align: center;
+}
+
+.form-item {
+  margin-bottom: 28rpx;
+}
+
+.form-label {
+  font-size: 26rpx;
+  color: #666666;
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.form-input {
+  width: 100%;
+  height: 80rpx;
+  background-color: #F5F5F5;
+  border-radius: 12rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
+
+.form-amount-row {
+  display: flex;
+  align-items: center;
+  background-color: #F5F5F5;
+  border-radius: 12rpx;
+  padding: 0 24rpx;
+}
+
+.form-currency {
+  font-size: 30rpx;
+  color: #333333;
+  font-weight: 600;
+  margin-right: 8rpx;
+}
+
+.form-input--amount {
+  flex: 1;
+  height: 80rpx;
+  background-color: transparent;
+  padding: 0;
+}
+
+.form-tip {
+  font-size: 24rpx;
+  color: #999999;
+  margin-bottom: 32rpx;
+}
+
+.form-actions {
+  display: flex;
+  gap: 24rpx;
+}
+
+.form-btn {
+  flex: 1;
+  height: 88rpx;
+  line-height: 88rpx;
+  border-radius: 999rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  border: none;
+  padding: 0;
+  text-align: center;
+}
+
+.form-btn::after {
+  border: none;
+}
+
+.form-btn--cancel {
+  background-color: #F5F5F5;
+  color: #666666;
+}
+
+.form-btn--confirm {
+  background: linear-gradient(135deg, #FF6B35, #FF9A57);
+  color: #FFFFFF;
+}

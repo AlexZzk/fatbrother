@@ -1,0 +1,100 @@
+<nav-bar title="满减促销" left-arrow="{{true}}" />
+
+<view class="page-container">
+  <block wx:if="{{!loading}}">
+    <!-- 活动列表 -->
+    <view wx:if="{{promotions.length > 0}}">
+      <view class="promo-item" wx:for="{{promotions}}" wx:key="_id">
+        <view class="promo-main">
+          <view class="promo-header">
+            <text class="promo-name">{{item.name}}</text>
+            <view class="promo-badge {{item.status === 'active' ? 'promo-badge--active' : 'promo-badge--inactive'}}">
+              {{item.status === 'active' ? '进行中' : '已停用'}}
+            </view>
+          </view>
+          <view class="promo-desc">
+            <text>满¥{{(item.min_amount / 100).toFixed(2)}} 减配送费¥{{(item.discount_amount / 100).toFixed(2)}}</text>
+          </view>
+        </view>
+        <view class="promo-actions">
+          <view class="promo-btn promo-btn--toggle" bindtap="onToggle" data-promo="{{item}}">
+            {{item.status === 'active' ? '停用' : '启用'}}
+          </view>
+          <view class="promo-btn promo-btn--edit" bindtap="onEditTap" data-promo="{{item}}">编辑</view>
+          <view class="promo-btn promo-btn--delete" bindtap="onDeleteTap" data-id="{{item._id}}">删除</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view wx:else class="empty-state">
+      <text class="empty-icon">🎁</text>
+      <text class="empty-text">暂无促销活动</text>
+      <text class="empty-hint">创建满减活动，吸引更多顾客下单</text>
+    </view>
+  </block>
+
+  <view wx:elif="{{loading}}" class="loading-center">
+    <text>加载中...</text>
+  </view>
+</view>
+
+<!-- 底部添加按钮 -->
+<view class="add-bar">
+  <view class="add-btn" bindtap="onAddTap">+ 新建满减活动</view>
+</view>
+
+<!-- 编辑弹窗 -->
+<view wx:if="{{showForm}}" class="form-mask" bindtap="onFormCancel">
+  <view class="form-popup" catchtap="">
+    <view class="form-title">{{editingId ? '编辑活动' : '新建满减活动'}}</view>
+
+    <view class="form-item">
+      <text class="form-label">活动名称</text>
+      <input
+        class="form-input"
+        placeholder="例如：满35减5"
+        value="{{formData.name}}"
+        data-field="name"
+        bindinput="onFormInput"
+      />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">起效金额（元）</text>
+      <view class="form-amount-row">
+        <text class="form-currency">¥</text>
+        <input
+          class="form-input form-input--amount"
+          type="digit"
+          placeholder="订单满多少元生效"
+          value="{{formData.min_amount_yuan}}"
+          data-field="min_amount_yuan"
+          bindinput="onFormInput"
+        />
+      </view>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">优惠金额（元）</text>
+      <view class="form-amount-row">
+        <text class="form-currency">¥</text>
+        <input
+          class="form-input form-input--amount"
+          type="digit"
+          placeholder="减免多少元配送费"
+          value="{{formData.discount_amount_yuan}}"
+          data-field="discount_amount_yuan"
+          bindinput="onFormInput"
+        />
+      </view>
+    </view>
+
+    <view class="form-tip">满足条件时自动减免配送费，最多减至 ¥0</view>
+
+    <view class="form-actions">
+      <button class="form-btn form-btn--cancel" bindtap="onFormCancel">取消</button>
+      <button class="form-btn form-btn--confirm" bindtap="onFormConfirm">保存</button>
+    </view>
+  </view>
+</view>

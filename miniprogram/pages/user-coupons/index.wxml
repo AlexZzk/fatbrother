@@ -1,0 +1,99 @@
+<nav-bar title="我的优惠券" left-arrow="{{true}}" />
+
+<view class="page-container">
+  <!-- 领券入口 -->
+  <view class="activity-banner" bindtap="onShowActivities">
+    <text class="activity-banner-icon">🎁</text>
+    <text class="activity-banner-text">领取红包 / 优惠券</text>
+    <text class="activity-banner-arrow">></text>
+  </view>
+
+  <!-- Tab 切换 -->
+  <view class="tabs">
+    <view
+      class="tab-item {{activeTab === index ? 'tab-item--active' : ''}}"
+      wx:for="{{tabs}}"
+      wx:key="index"
+      bindtap="onTabChange"
+      data-index="{{index}}"
+    >
+      {{item}}
+    </view>
+  </view>
+
+  <!-- 券列表 -->
+  <block wx:if="{{!loading}}">
+    <view wx:if="{{coupons.length > 0}}" class="coupon-list">
+      <view
+        class="coupon-item {{item.status !== 'unused' ? 'coupon-item--used' : ''}}"
+        wx:for="{{coupons}}"
+        wx:key="_id"
+      >
+        <view class="coupon-amount-block">
+          <text class="coupon-yuan">¥</text>
+          <text class="coupon-value">{{(item.amount / 100).toFixed(item.amount % 100 === 0 ? 0 : 2)}}</text>
+        </view>
+        <view class="coupon-info">
+          <text class="coupon-name">{{item.name}}</text>
+          <text class="coupon-condition">
+            {{item.min_order_amount > 0 ? ('满¥' + (item.min_order_amount / 100).toFixed(2) + '可用') : '无门槛使用'}}
+          </text>
+          <text class="coupon-expire" wx:if="{{item.expired_at}}">
+            有效期至 {{item.expired_at}}
+          </text>
+        </view>
+        <view class="coupon-status">
+          <text wx:if="{{item.status === 'used'}}" class="status-text status-text--used">已使用</text>
+          <text wx:elif="{{item.status === 'expired' || item.is_expired}}" class="status-text status-text--expired">已过期</text>
+          <text wx:else class="status-text status-text--unused">可使用</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="empty-state">
+      <text class="empty-icon">🎟</text>
+      <text class="empty-text">暂无{{tabs[activeTab]}}的优惠券</text>
+      <text class="empty-hint" wx:if="{{activeTab === 0}}">点击上方领取红包优惠</text>
+    </view>
+  </block>
+
+  <view wx:elif="{{loading}}" class="loading-center">
+    <text>加载中...</text>
+  </view>
+</view>
+
+<!-- 领券活动弹窗 -->
+<view wx:if="{{showActivities}}" class="activity-mask" bindtap="onHideActivities">
+  <view class="activity-popup" catchtap="">
+    <view class="activity-header">
+      <text class="activity-title">红包领取</text>
+      <text class="activity-close" bindtap="onHideActivities">✕</text>
+    </view>
+
+    <view wx:if="{{activities.length > 0}}" class="activity-list">
+      <view class="activity-item" wx:for="{{activities}}" wx:key="_id">
+        <view class="activity-left">
+          <text class="activity-amount">¥{{(item.amount / 100).toFixed(item.amount % 100 === 0 ? 0 : 2)}}</text>
+          <text class="activity-condition">
+            {{item.min_order_amount > 0 ? ('满¥' + (item.min_order_amount / 100).toFixed(2) + '可用') : '无门槛'}}
+          </text>
+        </view>
+        <view class="activity-right">
+          <text class="activity-name">{{item.name}}</text>
+          <text class="activity-desc" wx:if="{{item.description}}">{{item.description}}</text>
+          <view
+            class="claim-btn {{(item.is_claimed || item.is_full) ? 'claim-btn--disabled' : ''}}"
+            bindtap="onClaimCoupon"
+            data-id="{{item._id}}"
+          >
+            {{item.is_claimed ? '已领取' : item.is_full ? '已抢完' : '立即领取'}}
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="activity-empty">
+      <text>暂无进行中的活动</text>
+    </view>
+  </view>
+</view>
