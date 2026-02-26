@@ -1,5 +1,14 @@
 const userService = require('../../services/user')
 
+function fmtAmount(cents) {
+  const val = cents / 100
+  return val % 1 === 0 ? String(val) : val.toFixed(2)
+}
+
+function fmtCondition(minOrderAmount) {
+  return minOrderAmount > 0 ? ('满¥' + (minOrderAmount / 100).toFixed(2) + '可用') : '无门槛使用'
+}
+
 Page({
   data: {
     activeTab: 0, // 0=未使用, 1=已使用, 2=已过期
@@ -24,7 +33,12 @@ Page({
     try {
       const statusMap = ['unused', 'used', 'expired']
       const res = await userService.getUserCoupons(statusMap[this.data.activeTab])
-      this.setData({ coupons: res.coupons || [], loading: false })
+      const coupons = (res.coupons || []).map(c => ({
+        ...c,
+        amountLabel: fmtAmount(c.amount),
+        conditionLabel: fmtCondition(c.min_order_amount)
+      }))
+      this.setData({ coupons, loading: false })
     } catch (err) {
       this.setData({ loading: false })
     }
@@ -33,7 +47,12 @@ Page({
   async _loadActivities() {
     try {
       const res = await userService.getCouponActivities()
-      this.setData({ activities: res.activities || [] })
+      const activities = (res.activities || []).map(a => ({
+        ...a,
+        amountLabel: fmtAmount(a.amount),
+        conditionLabel: a.min_order_amount > 0 ? ('满¥' + (a.min_order_amount / 100).toFixed(2) + '可用') : '无门槛'
+      }))
+      this.setData({ activities })
     } catch (err) {
       this.setData({ activities: [] })
     }

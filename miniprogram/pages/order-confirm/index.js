@@ -51,6 +51,11 @@ function calcDeliveryFee(rules, distanceMeters) {
   return -1
 }
 
+function fmtAmount(cents) {
+  const val = cents / 100
+  return val % 1 === 0 ? String(val) : val.toFixed(2)
+}
+
 Page({
   data: {
     merchantId: '',
@@ -58,21 +63,21 @@ Page({
     cartItems: [],
     totalPrice: 0,
     packingFee: 0,
-    deliveryFee: 0,         // 原始配送费
-    deliveryFeeActual: 0,   // 实际配送费（扣除满减后）
+    deliveryFee: 0,
+    deliveryFeeActual: 0,
     promotionDiscount: 0,
     appliedPromotion: null,
     couponDiscount: 0,
-    selectedCoupon: null,   // 已选优惠券
+    couponDiscountLabel: '0.00',
+    selectedCoupon: null,
+    selectedCouponAmountLabel: '0.00',
     actualPrice: 0,
     remark: '',
     submitting: false,
-    // 距离
     distanceMeters: null,
-    // 起送价相关
     minOrderAmount: 0,
+    minOrderGapLabel: '0.00',
     belowMinOrder: false,
-    // 优惠券弹窗
     showCouponPicker: false,
     availableCoupons: [],
     couponsLoaded: false
@@ -119,15 +124,18 @@ Page({
       } catch (e) { /* 获取位置失败不阻塞 */ }
       deliveryFee = calcDeliveryFee(merchant.delivery_fee_rules || [], distanceMeters)
 
+      const belowMinOrder = minOrderAmount > 0 && totalPrice < minOrderAmount
+      const gap = belowMinOrder ? minOrderAmount - totalPrice : 0
       this.setData({
         merchant,
         cartItems,
         totalPrice,
         packingFee,
         minOrderAmount,
+        minOrderGapLabel: (gap / 100).toFixed(2),
         distanceMeters,
         deliveryFee: deliveryFee < 0 ? 0 : deliveryFee,
-        belowMinOrder: minOrderAmount > 0 && totalPrice < minOrderAmount
+        belowMinOrder
       })
 
       this._calcPromotion()
@@ -174,6 +182,7 @@ Page({
     this.setData({
       deliveryFeeActual,
       couponDiscount,
+      couponDiscountLabel: (couponDiscount / 100).toFixed(2),
       actualPrice
     })
   },
@@ -187,7 +196,12 @@ Page({
     if (!this.data.couponsLoaded) {
       try {
         const res = await orderService.getUserCoupons(this.data.merchantId, this.data.totalPrice)
-        this.setData({ availableCoupons: res.coupons || [], couponsLoaded: true })
+        const availableCoupons = (res.coupons || []).map(c => ({
+          ...c,
+          amountLabel: fmtAmount(c.amount),
+          conditionLabel: c.min_order_amount > 0 ? ('满¥' + (c.min_order_amount / 100).toFixed(2) + '可用') : '无门槛'
+        }))
+        this.setData({ availableCoupons, couponsLoaded: true })
       } catch (err) {
         this.setData({ availableCoupons: [], couponsLoaded: true })
       }
@@ -202,7 +216,11 @@ Page({
   onSelectCoupon(e) {
     const coupon = e.currentTarget.dataset.coupon
     if (!coupon.is_available) return
-    this.setData({ selectedCoupon: coupon, showCouponPicker: false })
+    this.setData({
+      selectedCoupon: coupon,
+      selectedCouponAmountLabel: fmtAmount(coupon.amount),
+      showCouponPicker: false
+    })
     this._calcPromotion()
   },
 

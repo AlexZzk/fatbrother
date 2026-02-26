@@ -13,10 +13,10 @@ Page({
     navBarHeight: 0,
     statusBarHeight: 0,
     merchantInfo: null,
+    feeLabels: { minOrder: '未设置', packing: '未设置', delivery: '未设置' },
     loading: true,
     editingField: '',
     editValue: '',
-    // 是否为数字类字段（金额，以分存储，页面以元显示）
     editingNumeric: false
   },
 
@@ -34,9 +34,25 @@ Page({
   async _loadMerchantInfo() {
     try {
       const data = await merchantService.getMerchantInfo()
-      this.setData({ merchantInfo: data.merchantInfo, loading: false })
+      const m = data.merchantInfo
+      this.setData({
+        merchantInfo: m,
+        feeLabels: this._buildFeeLabels(m),
+        loading: false
+      })
     } catch (err) {
       this.setData({ loading: false })
+    }
+  },
+
+  _buildFeeLabels(m) {
+    if (!m) return { minOrder: '未设置', packing: '未设置', delivery: '未设置' }
+    const fmt = (cents) => cents ? ('¥' + (cents / 100).toFixed(2)) : '未设置'
+    const deliveryRules = m.delivery_fee_rules
+    return {
+      minOrder: fmt(m.min_order_amount),
+      packing: fmt(m.packing_fee),
+      delivery: (deliveryRules && deliveryRules.length) ? (deliveryRules.length + '条规则') : '未设置'
     }
   },
 
@@ -120,8 +136,9 @@ Page({
   async _updateField(field, value) {
     try {
       const data = await merchantService.updateSettings({ [field]: value })
-      this.setData({ merchantInfo: data.merchantInfo })
-      app.globalData.merchantInfo = data.merchantInfo
+      const m = data.merchantInfo
+      this.setData({ merchantInfo: m, feeLabels: this._buildFeeLabels(m) })
+      app.globalData.merchantInfo = m
       this.selectComponent('#toast').showToast({ message: '更新成功', type: 'success' })
     } catch (err) {
       this.selectComponent('#toast').showToast({ message: err.message || '更新失败', type: 'error' })

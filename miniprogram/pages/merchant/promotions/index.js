@@ -22,7 +22,12 @@ Page({
   async _load() {
     try {
       const res = await merchantService.getPromotions()
-      this.setData({ promotions: res.promotions || [], loading: false })
+      const promotions = (res.promotions || []).map(p => ({
+        ...p,
+        minAmountLabel: '¥' + (p.min_amount / 100).toFixed(2),
+        discountLabel: '¥' + (p.discount_amount / 100).toFixed(2)
+      }))
+      this.setData({ promotions, loading: false })
     } catch (err) {
       this.setData({ loading: false })
     }

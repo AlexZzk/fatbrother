@@ -81,21 +81,21 @@
       <view class="section-card">
         <cell
           title="起送价"
-          value="{{merchantInfo.min_order_amount ? ('¥' + (merchantInfo.min_order_amount / 100).toFixed(2)) : '未设置'}}"
+          value="{{feeLabels.minOrder}}"
           arrow
           data-field="min_order_amount"
           bindclick="onEditField"
         />
         <cell
           title="包装费"
-          value="{{merchantInfo.packing_fee ? ('¥' + (merchantInfo.packing_fee / 100).toFixed(2)) : '未设置'}}"
+          value="{{feeLabels.packing}}"
           arrow
           data-field="packing_fee"
           bindclick="onEditField"
         />
         <cell
           title="配送费规则"
-          value="{{merchantInfo.delivery_fee_rules && merchantInfo.delivery_fee_rules.length ? (merchantInfo.delivery_fee_rules.length + '条规则') : '未设置'}}"
+          value="{{feeLabels.delivery}}"
           arrow
           bindclick="onDeliverySettingsTap"
         />

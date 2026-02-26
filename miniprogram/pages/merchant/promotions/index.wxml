@@ -13,7 +13,7 @@
             </view>
           </view>
           <view class="promo-desc">
-            <text>满¥{{(item.min_amount / 100).toFixed(2)}} 减配送费¥{{(item.discount_amount / 100).toFixed(2)}}</text>
+            <text>满{{item.minAmountLabel}} 减配送费{{item.discountLabel}}</text>
           </view>
         </view>
         <view class="promo-actions">
