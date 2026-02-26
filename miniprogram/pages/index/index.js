@@ -138,9 +138,16 @@ Page({
     wx.navigateTo({ url: '/pages/search/index' })
   },
 
+  _navigating: false,
+
   onShopTap(e) {
+    if (this._navigating) return
+    this._navigating = true
     const { shopId } = e.detail
-    wx.navigateTo({ url: `/pages/shop/index?id=${shopId}` })
+    wx.navigateTo({
+      url: `/pages/shop/index?id=${shopId}`,
+      complete: () => { this._navigating = false }
+    })
   },
 
 })
