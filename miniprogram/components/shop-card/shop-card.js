@@ -11,6 +11,13 @@ Component({
     }
   },
 
+  observers: {
+    shop(newShop) {
+      if (!newShop) return
+      this.setData({ distanceText: format.distance(newShop.distance) })
+    }
+  },
+
   lifetimes: {
     attached() {
       const { shop } = this.data
