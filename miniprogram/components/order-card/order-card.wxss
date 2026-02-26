@@ -68,6 +68,31 @@
   margin-top: 4rpx;
 }
 
+/* Pickup code row */
+.pickup-code-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #F0FFF4;
+  border: 2rpx solid #00B578;
+  border-radius: 10rpx;
+  padding: 12rpx 20rpx;
+  margin-bottom: 16rpx;
+}
+
+.pickup-code-label {
+  font-size: 24rpx;
+  color: #00B578;
+}
+
+.pickup-code-value {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #00B578;
+  letter-spacing: 6rpx;
+  font-family: 'Menlo', monospace;
+}
+
 .card-footer {
   display: flex;
   justify-content: space-between;

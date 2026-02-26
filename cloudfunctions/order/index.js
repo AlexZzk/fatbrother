@@ -529,6 +529,13 @@ async function reject(event) {
 }
 
 /**
+ * 生成4位数字取餐码（1000-9999）
+ */
+function generatePickupCode() {
+  return String(Math.floor(Math.random() * 9000) + 1000)
+}
+
+/**
  * S6-4: 商户标记出餐
  */
 async function markReady(event) {
@@ -542,8 +549,9 @@ async function markReady(event) {
   if (order.status !== STATUS.ACCEPTED) throw createError(2002, '当前状态不可标记出餐')
 
   const now = db.serverDate()
+  const pickupCode = generatePickupCode()
   await ordersCol.doc(orderId).update({
-    data: { status: STATUS.READY, ready_at: now, updated_at: now }
+    data: { status: STATUS.READY, ready_at: now, updated_at: now, pickup_code: pickupCode }
   })
 
   // S7-10: 通知用户餐品已出餐
@@ -551,7 +559,7 @@ async function markReady(event) {
     orderId, orderNo: order.order_no, merchantName: order.merchant_name
   })
 
-  return { orderId }
+  return { orderId, pickupCode }
 }
 
 /**

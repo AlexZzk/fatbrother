@@ -6,6 +6,10 @@
     <view class="status-card" style="background: {{statusBg}};">
       <text class="status-title" style="color: {{statusColor}};">{{statusTitle}}</text>
       <text class="status-desc">{{statusDesc}}</text>
+      <view wx:if="{{order.status === 'READY' && order.pickup_code}}" class="pickup-code-block">
+        <text class="pickup-code-hint">取餐码</text>
+        <text class="pickup-code-value">{{order.pickup_code}}</text>
+      </view>
     </view>
 
     <!-- Merchant info -->

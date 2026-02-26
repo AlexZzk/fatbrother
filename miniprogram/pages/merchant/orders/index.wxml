@@ -66,6 +66,12 @@
         </view>
       </view>
 
+      <!-- Pickup code (READY status) -->
+      <view wx:if="{{item.status === 'READY' && item.pickup_code}}" class="pickup-code-bar">
+        <text class="pickup-code-label">取餐码</text>
+        <text class="pickup-code-number">{{item.pickup_code}}</text>
+      </view>
+
       <!-- Card footer -->
       <view class="card-footer">
         <view class="card-price">
