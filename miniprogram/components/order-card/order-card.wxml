@@ -18,6 +18,12 @@
     </view>
   </view>
 
+  <!-- Pickup code (READY status) -->
+  <view wx:if="{{order.status === 'READY' && order.pickup_code}}" class="pickup-code-row">
+    <text class="pickup-code-label">取餐码</text>
+    <text class="pickup-code-value">{{order.pickup_code}}</text>
+  </view>
+
   <view class="card-divider"></view>
 
   <!-- Price + time + buttons -->

@@ -25,6 +25,30 @@
   color: #666666;
 }
 
+.pickup-code-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20rpx;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 16rpx;
+  padding: 20rpx 48rpx;
+}
+
+.pickup-code-hint {
+  font-size: 24rpx;
+  color: #555555;
+  margin-bottom: 8rpx;
+}
+
+.pickup-code-value {
+  font-size: 72rpx;
+  font-weight: 700;
+  color: #00B578;
+  letter-spacing: 12rpx;
+  font-family: 'Menlo', monospace;
+}
+
 /* Section card */
 .section-card {
   margin: 16rpx 24rpx 0;

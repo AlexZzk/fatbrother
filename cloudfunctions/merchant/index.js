@@ -514,10 +514,10 @@ async function getTodayStats(event, openid) {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
-  // Get completed orders today
-  const { data: completedOrders } = await ordersCol.where({
+  // Get all paid orders today (includes in-progress and completed)
+  const { data: paidOrders } = await ordersCol.where({
     merchant_id: merchantId,
-    status: 'COMPLETED',
+    status: _.in(['PENDING_ACCEPT', 'ACCEPTED', 'READY', 'COMPLETED']),
     created_at: _.gte(today)
   }).limit(1000).get()
 
@@ -534,8 +534,8 @@ async function getTodayStats(event, openid) {
     ordersCol.where({ merchant_id: merchantId, status: 'ACCEPTED' }).count()
   ])
 
-  const orderCount = completedOrders.length
-  const revenue = completedOrders.reduce((sum, o) => sum + (o.actual_price || 0), 0)
+  const orderCount = paidOrders.length
+  const revenue = paidOrders.reduce((sum, o) => sum + (o.actual_price || 0), 0)
   const refund = cancelledOrders.reduce((sum, o) => sum + (o.actual_price || 0), 0)
 
   return {

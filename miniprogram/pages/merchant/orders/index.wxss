@@ -195,6 +195,32 @@
   flex-shrink: 0;
 }
 
+/* Pickup code bar */
+.pickup-code-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #F0FFF4;
+  border: 2rpx solid #00B578;
+  border-radius: 12rpx;
+  padding: 16rpx 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.pickup-code-label {
+  font-size: 26rpx;
+  color: #00B578;
+  font-weight: 500;
+}
+
+.pickup-code-number {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #00B578;
+  letter-spacing: 8rpx;
+  font-family: 'Menlo', monospace;
+}
+
 /* Card footer */
 .card-footer {
   display: flex;
