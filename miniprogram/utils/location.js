@@ -83,6 +83,27 @@ const location = {
     })
   },
 
+  /**
+   * 逆地理编码：通过坐标获取地址描述（调用 common 云函数）
+   * 若 API Key 未配置或调用失败，resolve 空字符串
+   * @param {number} latitude
+   * @param {number} longitude
+   * @returns {Promise<string>}
+   */
+  getAddress(latitude, longitude) {
+    return new Promise((resolve) => {
+      wx.cloud.callFunction({
+        name: 'common',
+        data: { action: 'getAddress', latitude, longitude },
+        success: res => {
+          const addr = res.result && res.result.data && res.result.data.address
+          resolve(addr || '')
+        },
+        fail: () => resolve('')
+      })
+    })
+  },
+
   _toRad(deg) {
     return deg * Math.PI / 180
   }

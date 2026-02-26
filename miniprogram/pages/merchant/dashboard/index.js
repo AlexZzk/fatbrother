@@ -64,18 +64,22 @@ Page({
     const newStatus = !this.data.isOpen
 
     if (newStatus) {
-      // 开店需要获取位置
+      // 开店：让商户在地图上确认店铺位置，chooseLocation 自带地址返回
       wx.showModal({
         title: '确认开始营业',
-        content: '将获取当前位置作为店铺定位',
+        content: '请在地图中确认您的店铺位置',
+        confirmText: '去选位置',
         success: async (res) => {
           if (!res.confirm) return
           try {
-            const loc = await location.getLocation(false)
-            await merchantService.toggleStatus(true, loc)
-            this.setData({ isOpen: true })
+            const loc = await location.chooseLocation()
+            const locationName = loc.name || loc.address || ''
+            await merchantService.toggleStatus(true, loc, locationName)
+            await this._loadMerchantInfo()
             this.selectComponent('#toast').showToast({ message: '已开始营业', type: 'success' })
           } catch (err) {
+            // 用户取消地图选点不弹错误
+            if (err.errMsg && err.errMsg.includes('cancel')) return
             this.selectComponent('#toast').showToast({ message: err.message || '操作失败', type: 'error' })
           }
         }
@@ -95,6 +99,29 @@ Page({
           }
         }
       })
+    }
+  },
+
+  async onUpdateLocation() {
+    try {
+      const loc = await location.chooseLocation()
+      const locationName = loc.name || loc.address || ''
+      wx.showModal({
+        title: '确认更新定位',
+        content: `将店铺位置更新为：${locationName || '已选位置'}`,
+        success: async (res) => {
+          if (!res.confirm) return
+          try {
+            await merchantService.toggleStatus(true, loc, locationName)
+            await this._loadMerchantInfo()
+            this.selectComponent('#toast').showToast({ message: '定位已更新', type: 'success' })
+          } catch (err) {
+            this.selectComponent('#toast').showToast({ message: err.message || '更新失败', type: 'error' })
+          }
+        }
+      })
+    } catch (err) {
+      // 用户取消地图选点，不处理
     }
   },
 

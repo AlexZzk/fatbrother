@@ -2,10 +2,17 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
 /**
+ * 腾讯位置服务 Key
+ * TODO_REPLACE: 在微信云函数环境变量或此处填入腾讯位置服务 WebService API Key
+ * 申请地址: https://lbs.qq.com/  → 控制台 → 应用管理 → 创建应用 → 添加 Key（勾选 WebServiceAPI）
+ */
+const TENCENT_MAP_KEY = process.env.TENCENT_MAP_KEY || ''
+
+/**
  * 公共模块云函数
  * 通过 action 字段路由
  */
-const actions = { sendMessage }
+const actions = { sendMessage, getAddress }
 
 exports.main = async (event, context) => {
   const { action } = event
@@ -195,6 +202,47 @@ function getDefaultPage(type, d) {
       return '/pages/merchant/orders/index'
     default:
       return '/pages/index/index'
+  }
+}
+
+/**
+ * 逆地理编码：坐标 → 地址字符串
+ * 调用腾讯位置服务 WebService API
+ * 若 TENCENT_MAP_KEY 未配置则静默返回空字符串
+ */
+async function getAddress(event) {
+  const { latitude, longitude } = event
+  if (!latitude || !longitude) {
+    return { code: 1001, message: '缺少坐标' }
+  }
+  if (!TENCENT_MAP_KEY) {
+    return { code: 0, data: { address: '' } }
+  }
+
+  try {
+    const https = require('https')
+    const url = `https://apis.map.qq.com/ws/geocoder/v1/?location=${latitude},${longitude}&key=${TENCENT_MAP_KEY}&output=json&get_poi=0`
+
+    const result = await new Promise((resolve, reject) => {
+      https.get(url, (res) => {
+        let raw = ''
+        res.on('data', chunk => { raw += chunk })
+        res.on('end', () => {
+          try { resolve(JSON.parse(raw)) } catch (e) { reject(e) }
+        })
+      }).on('error', reject)
+    })
+
+    if (result.status === 0 && result.result) {
+      const comp = result.result.address_component || {}
+      // 优先显示区，其次市，兜底全地址
+      const address = comp.district || comp.city || result.result.address || ''
+      return { code: 0, data: { address } }
+    }
+    return { code: 0, data: { address: '' } }
+  } catch (err) {
+    console.error('[getAddress] 逆地理编码失败:', err.message)
+    return { code: 0, data: { address: '' } }
   }
 }
 
