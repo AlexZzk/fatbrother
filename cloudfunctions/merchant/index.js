@@ -302,7 +302,7 @@ async function updateSettings(event, openid) {
  * 切换营业状态（开店/闭店）
  */
 async function toggleStatus(event, openid) {
-  const { isOpen, location } = event
+  const { isOpen, location, locationName } = event
 
   const { data: users } = await usersCollection
     .where({ _openid: openid })
@@ -325,9 +325,16 @@ async function toggleStatus(event, openid) {
     updated_at: db.serverDate()
   }
 
-  // 开店时更新GPS位置
+  // 开店时更新GPS位置和地址名称
   if (isOpen && location && location.latitude && location.longitude) {
     updateData.location = db.Geo.Point(location.longitude, location.latitude)
+    if (locationName) {
+      updateData.location_name = locationName
+    }
+  }
+  // 关店时清除定位信息
+  if (!isOpen) {
+    updateData.location_name = ''
   }
 
   await merchantsCollection.doc(merchants[0]._id).update({ data: updateData })

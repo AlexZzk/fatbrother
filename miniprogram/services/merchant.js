@@ -26,9 +26,9 @@ const merchantService = {
     return callFunction('merchant', { action: 'updateSettings', ...data })
   },
 
-  // Toggle open/close with GPS location
-  toggleStatus(isOpen, location) {
-    return callFunction('merchant', { action: 'toggleStatus', isOpen, location })
+  // Toggle open/close with GPS location and address name
+  toggleStatus(isOpen, location, locationName) {
+    return callFunction('merchant', { action: 'toggleStatus', isOpen, location, locationName })
   },
 
   // Get nearby merchant list (for C-end)

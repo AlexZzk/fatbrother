@@ -9,6 +9,12 @@
         <text class="status-text">{{isOpen ? '营业中' : '休息中'}}</text>
       </view>
       <text class="status-shop-name">{{merchantInfo.shop_name}}</text>
+      <!-- 营业中显示店铺定位 -->
+      <view wx:if="{{isOpen}}" class="status-location">
+        <text class="status-location-icon">📍</text>
+        <text class="status-location-text">{{merchantInfo.location_name || '位置未设置'}}</text>
+        <text class="status-location-update" bindtap="onUpdateLocation">修改定位</text>
+      </view>
       <button
         class="btn-toggle {{isOpen ? 'btn-toggle--close' : 'btn-toggle--open'}}"
         bindtap="onToggleStatus"

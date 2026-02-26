@@ -51,13 +51,15 @@ Page({
   async _autoLocate() {
     try {
       const loc = await location.getLocation(false)
+      app.globalData.location = loc
+      // 尝试逆地理编码获取可读地址，失败时显示"已定位"
+      const address = await location.getAddress(loc.latitude, loc.longitude)
       this.setData({
         latitude: loc.latitude,
         longitude: loc.longitude,
-        locationName: loc.name || '当前位置',
+        locationName: address || '已定位',
         locationFailed: false
       })
-      app.globalData.location = loc
     } catch (err) {
       // 定位失败仍然加载商户列表，只是不显示距离
       this.setData({
@@ -136,9 +138,16 @@ Page({
     wx.navigateTo({ url: '/pages/search/index' })
   },
 
+  _navigating: false,
+
   onShopTap(e) {
+    if (this._navigating) return
+    this._navigating = true
     const { shopId } = e.detail
-    wx.navigateTo({ url: `/pages/shop/index?id=${shopId}` })
+    wx.navigateTo({
+      url: `/pages/shop/index?id=${shopId}`,
+      complete: () => { this._navigating = false }
+    })
   },
 
 })
