@@ -73,7 +73,7 @@ const PAGE_SIZE = 20
  * 申请地址: https://lbs.qq.com/ → 控制台 → 应用管理 → 创建应用 → 添加 Key（勾选 WebServiceAPI）
  * 填入后还需在微信公众平台 → 开发管理 → 开发设置 → request 合法域名中添加 https://apis.map.qq.com
  */
-const TENCENT_MAP_KEY = ''
+const TENCENT_MAP_KEY = 'LT4BZ-4EXLL-44PPY-MRATI-4OB3Q-VYBFC'
 
 // Storage keys
 const STORAGE_KEYS = {
