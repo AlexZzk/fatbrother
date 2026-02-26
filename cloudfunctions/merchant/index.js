@@ -359,6 +359,9 @@ async function toggleStatus(event, openid) {
   // 开店时更新GPS位置和地址名称
   if (isOpen && location && location.latitude && location.longitude) {
     updateData.location = db.Geo.Point(location.longitude, location.latitude)
+    // 同时存储独立的数字字段，避免 GeoPoint 反序列化格式不确定导致距离计算错误
+    updateData.location_lat = location.latitude
+    updateData.location_lng = location.longitude
     if (locationName) {
       updateData.location_name = locationName
     }
@@ -443,6 +446,70 @@ async function getInviteRecords(event, openid) {
   }
 }
 
+/**
+ * 获取附近营业中的商家列表
+ */
+async function getNearbyList(event, openid) {
+  const { latitude, longitude, page = 1, pageSize = 20 } = event
+
+  // Query active & open merchants
+  const query = { status: 'active', is_open: true }
+
+  const { data: merchants } = await merchantsCollection
+    .where(query)
+    .limit(100)
+    .get()
+
+  // Calculate distance for each merchant and sort
+  let list = merchants.map(m => {
+    let distance = null
+    if (latitude && longitude) {
+      // 优先使用独立的数字字段（开店时写入，格式确定无歧义）
+      let mLat = m.location_lat
+      let mLng = m.location_lng
+      // 兜底：从 GeoPoint 读取（同时兼容 {longitude,latitude} 和 {coordinates:[]} 两种格式）
+      if ((!mLat || !mLng) && m.location) {
+        const loc = m.location
+        mLat = loc.latitude || (loc.coordinates && loc.coordinates[1])
+        mLng = loc.longitude || (loc.coordinates && loc.coordinates[0])
+      }
+      if (mLat && mLng) {
+        distance = calcDistance(latitude, longitude, mLat, mLng)
+      }
+    }
+    return {
+      _id: m._id,
+      shop_name: m.shop_name,
+      shop_avatar: m.shop_avatar || '',
+      announcement: m.announcement || '',
+      rating: m.rating || 5.0,
+      monthly_sales: m.monthly_sales || 0,
+      distance
+    }
+  })
+
+  // Sort by distance (nulls last)
+  list.sort((a, b) => {
+    if (a.distance === null && b.distance === null) return 0
+    if (a.distance === null) return 1
+    if (b.distance === null) return -1
+    return a.distance - b.distance
+  })
+
+  // Paginate
+  const start = (page - 1) * pageSize
+  const paged = list.slice(start, start + pageSize)
+
+  return {
+    code: 0,
+    message: 'success',
+    data: {
+      list: paged,
+      total: list.length,
+      hasMore: start + pageSize < list.length
+    }
+  }
+}
 
 /**
  * Haversine distance calculation (meters)

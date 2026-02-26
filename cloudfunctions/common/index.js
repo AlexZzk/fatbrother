@@ -224,7 +224,7 @@ async function getAddress(event) {
 
   try {
     const https = require('https')
-    const url = `https://apis.map.qq.com/ws/geocoder/v1/?location=${latitude},${longitude}&key=${TENCENT_MAP_KEY}&output=json&get_poi=0`
+    const url = `https://apis.map.qq.com/ws/geocoder/v1/?location=${latitude},${longitude}&key=${TENCENT_MAP_KEY}&output=json&get_poi=1`
 
     const result = await new Promise((resolve, reject) => {
       https.get(url, (res) => {
@@ -239,9 +239,10 @@ async function getAddress(event) {
     if (result.status === 0 && result.result) {
       const r = result.result
       const comp = r.address_component || {}
-      // 优先使用 formatted_addresses.recommend（腾讯地图推荐的最近定位点描述）
-      // 其次精简地址（街道+区），最后兜底区名或城市
+      const pois = r.pois || []
+      // 优先取最近的 POI 名称（如"绿地象屿"），其次推荐地址描述，再次街道/区
       const address =
+        (pois.length > 0 && pois[0].title) ||
         (r.formatted_addresses && r.formatted_addresses.recommend) ||
         comp.street || comp.district || comp.city || r.address || ''
       return { code: 0, data: { address } }

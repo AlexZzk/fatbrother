@@ -84,38 +84,55 @@ const location = {
   },
 
   /**
-   * 逆地理编码：通过坐标获取最近定位点名称
-   * 直接调用腾讯位置服务 WebService API
-   * 需在 constants.js 中配置 TENCENT_MAP_KEY，
-   * 并在微信公众平台将 https://apis.map.qq.com 加入 request 合法域名
+   * 逆地理编码：通过坐标获取最近定位点名称（如"绿地象屿"）
+   *
+   * 优先直接调用腾讯地图 API（需在 constants.js 中配置 TENCENT_MAP_KEY，
+   * 并在微信公众平台将 https://apis.map.qq.com 加入 request 合法域名）；
+   * 若 constants.js 中未配置 Key，则回退到 common 云函数（需云函数环境变量 TENCENT_MAP_KEY）。
+   *
    * @param {number} latitude
    * @param {number} longitude
    * @returns {Promise<string>}
    */
   getAddress(latitude, longitude) {
-    if (!TENCENT_MAP_KEY) return Promise.resolve('')
+    if (TENCENT_MAP_KEY) {
+      // 直接调用腾讯地图 WebService API，get_poi=1 返回附近 POI 列表
+      return new Promise((resolve) => {
+        wx.request({
+          url: 'https://apis.map.qq.com/ws/geocoder/v1/',
+          data: {
+            location: `${latitude},${longitude}`,
+            key: TENCENT_MAP_KEY,
+            output: 'json',
+            get_poi: 1
+          },
+          success: res => {
+            if (res.data && res.data.status === 0 && res.data.result) {
+              const r = res.data.result
+              const comp = r.address_component || {}
+              const pois = r.pois || []
+              // 优先取最近的 POI 名称（如"绿地象屿"），其次推荐地址描述，再次街道/区
+              const address =
+                (pois.length > 0 && pois[0].title) ||
+                (r.formatted_addresses && r.formatted_addresses.recommend) ||
+                comp.street || comp.district || comp.city || r.address || ''
+              resolve(address)
+            } else {
+              resolve('')
+            }
+          },
+          fail: () => resolve('')
+        })
+      })
+    }
+    // 回退：调用 common 云函数（key 配置在云函数环境变量 TENCENT_MAP_KEY）
     return new Promise((resolve) => {
-      wx.request({
-        url: 'https://apis.map.qq.com/ws/geocoder/v1/',
-        data: {
-          location: `${latitude},${longitude}`,
-          key: TENCENT_MAP_KEY,
-          output: 'json',
-          get_poi: 0
-        },
+      wx.cloud.callFunction({
+        name: 'common',
+        data: { action: 'getAddress', latitude, longitude },
         success: res => {
-          if (res.data && res.data.status === 0 && res.data.result) {
-            const r = res.data.result
-            const comp = r.address_component || {}
-            // 优先 formatted_addresses.recommend（最近定位点描述，如"绿地象屿附近"）
-            // 其次街道，再次区，最后城市
-            const address =
-              (r.formatted_addresses && r.formatted_addresses.recommend) ||
-              comp.street || comp.district || comp.city || r.address || ''
-            resolve(address)
-          } else {
-            resolve('')
-          }
+          const addr = res.result && res.result.data && res.result.data.address
+          resolve(addr || '')
         },
         fail: () => resolve('')
       })
