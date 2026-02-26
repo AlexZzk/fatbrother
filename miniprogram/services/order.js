@@ -51,6 +51,11 @@ const orderService = {
     return callFunction('order', { action: 'createPayment', orderId })
   },
 
+  // Actively sync payment status from WeChat Pay (补单机制，回调兜底)
+  syncPaymentStatus(orderId) {
+    return callFunction('order', { action: 'syncPaymentStatus', orderId })
+  },
+
   // Request refund
   createRefund(orderId, reason) {
     return callFunction('order', { action: 'createRefund', orderId, reason })
