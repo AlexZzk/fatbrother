@@ -39,7 +39,7 @@
         <text class="coupon-label">优惠券/红包</text>
         <view class="coupon-right">
           <view wx:if="{{selectedCoupon}}">
-            <text class="coupon-selected">-¥{{(selectedCoupon.amount / 100).toFixed(2)}}</text>
+            <text class="coupon-selected">-¥{{selectedCouponAmountLabel}}</text>
             <text class="coupon-name">{{selectedCoupon.name}}</text>
           </view>
           <text wx:else class="coupon-placeholder">点击选择</text>
@@ -57,7 +57,7 @@
 
       <!-- 未达起送价提示 -->
       <view wx:if="{{belowMinOrder}}" class="min-order-tip">
-        <text>还差¥{{((minOrderAmount - totalPrice) / 100).toFixed(2)}}元起送</text>
+        <text>还差¥{{minOrderGapLabel}}元起送</text>
       </view>
 
       <view class="price-row">
@@ -79,7 +79,7 @@
       <view class="price-row promo-row" wx:if="{{couponDiscount > 0}}">
         <text class="price-label price-label--discount">优惠券/红包</text>
         <view class="price-value price-value--discount">
-          <text>-¥{{(couponDiscount / 100).toFixed(2)}}</text>
+          <text>-¥{{couponDiscountLabel}}</text>
         </view>
       </view>
       <view class="price-divider"></view>
@@ -135,13 +135,11 @@
       >
         <view class="coupon-amount-block">
           <text class="coupon-yuan">¥</text>
-          <text class="coupon-amount">{{(item.amount / 100).toFixed(item.amount % 100 === 0 ? 0 : 2)}}</text>
+          <text class="coupon-amount">{{item.amountLabel}}</text>
         </view>
         <view class="coupon-detail">
           <text class="coupon-detail-name">{{item.name}}</text>
-          <text class="coupon-detail-condition">
-            {{item.min_order_amount > 0 ? ('满¥' + (item.min_order_amount / 100).toFixed(2) + '可用') : '无门槛'}}
-          </text>
+          <text class="coupon-detail-condition">{{item.conditionLabel}}</text>
           <text class="coupon-detail-expire" wx:if="{{item.expired_at}}">
             有效期至{{item.expired_at}}
           </text>

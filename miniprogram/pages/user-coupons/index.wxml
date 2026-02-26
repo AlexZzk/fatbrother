@@ -31,13 +31,11 @@
       >
         <view class="coupon-amount-block">
           <text class="coupon-yuan">¥</text>
-          <text class="coupon-value">{{(item.amount / 100).toFixed(item.amount % 100 === 0 ? 0 : 2)}}</text>
+          <text class="coupon-value">{{item.amountLabel}}</text>
         </view>
         <view class="coupon-info">
           <text class="coupon-name">{{item.name}}</text>
-          <text class="coupon-condition">
-            {{item.min_order_amount > 0 ? ('满¥' + (item.min_order_amount / 100).toFixed(2) + '可用') : '无门槛使用'}}
-          </text>
+          <text class="coupon-condition">{{item.conditionLabel}}</text>
           <text class="coupon-expire" wx:if="{{item.expired_at}}">
             有效期至 {{item.expired_at}}
           </text>
@@ -73,10 +71,8 @@
     <view wx:if="{{activities.length > 0}}" class="activity-list">
       <view class="activity-item" wx:for="{{activities}}" wx:key="_id">
         <view class="activity-left">
-          <text class="activity-amount">¥{{(item.amount / 100).toFixed(item.amount % 100 === 0 ? 0 : 2)}}</text>
-          <text class="activity-condition">
-            {{item.min_order_amount > 0 ? ('满¥' + (item.min_order_amount / 100).toFixed(2) + '可用') : '无门槛'}}
-          </text>
+          <text class="activity-amount">¥{{item.amountLabel}}</text>
+          <text class="activity-condition">{{item.conditionLabel}}</text>
         </view>
         <view class="activity-right">
           <text class="activity-name">{{item.name}}</text>
