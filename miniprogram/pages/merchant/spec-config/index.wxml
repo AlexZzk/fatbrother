@@ -62,7 +62,7 @@
 
   <!-- 保存按钮 -->
   <view class="save-wrap">
-    <button class="save-btn" bindtap="onSave">保存规格设置</button>
+    <button class="save-btn" bindtap="onSave" disabled="{{saving}}">{{saving ? '保存中...' : '保存规格设置'}}</button>
   </view>
 </view>
 

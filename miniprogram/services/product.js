@@ -27,6 +27,10 @@ const productService = {
     return callFunction('product', { action: 'saveProduct', ...data })
   },
 
+  saveSpecs(productId, specGroups) {
+    return callFunction('product', { action: 'saveSpecs', productId, spec_groups: specGroups })
+  },
+
   deleteProduct(productId) {
     return callFunction('product', { action: 'deleteProduct', productId })
   },

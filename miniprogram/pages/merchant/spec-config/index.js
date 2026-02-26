@@ -1,4 +1,5 @@
 const app = getApp()
+const productService = require('../../../services/product')
 
 // Quick templates (price_delta in cents)
 const TEMPLATES = {
@@ -12,15 +13,37 @@ Page({
   data: {
     navBarHeight: 0,
     statusBarHeight: 0,
-    specGroups: []
+    specGroups: [],
+    // Set when launched from merchant menu (saves directly to DB).
+    // Empty when launched from product-edit (uses app.globalData flow).
+    productId: '',
+    saving: false
   },
 
-  onLoad() {
+  onLoad(options) {
     this.setData({
       navBarHeight: app.globalData.navBarHeight,
       statusBarHeight: app.globalData.statusBarHeight,
-      specGroups: this._toDisplay(app.globalData.tempSpecGroups || [])
+      productId: options.productId || ''
     })
+
+    if (options.productId) {
+      // Launched from merchant menu → load existing specs from DB
+      this._loadFromProduct(options.productId)
+    } else {
+      // Launched from product-edit → use in-memory globalData
+      this.setData({ specGroups: this._toDisplay(app.globalData.tempSpecGroups || []) })
+    }
+  },
+
+  async _loadFromProduct(productId) {
+    try {
+      const data = await productService.getProduct(productId)
+      const specs = (data.product && data.product.spec_groups) || []
+      this.setData({ specGroups: this._toDisplay(specs) })
+    } catch (err) {
+      this.selectComponent('#toast').showToast({ message: '加载规格失败，请重试' })
+    }
   },
 
   // Convert cents to yuan display strings
@@ -112,8 +135,10 @@ Page({
     this.setData({ [`specGroups[${gi}].specs`]: specs })
   },
 
-  onSave() {
-    const { specGroups } = this.data
+  async onSave() {
+    if (this.data.saving) return
+    const { specGroups, productId } = this.data
+
     // Validate
     for (let i = 0; i < specGroups.length; i++) {
       const g = specGroups[i]
@@ -133,8 +158,24 @@ Page({
       }
     }
 
-    app.globalData.tempSpecGroups = this._toStorage(specGroups)
-    this.selectComponent('#toast').showToast({ message: '规格已保存', type: 'success' })
-    setTimeout(() => wx.navigateBack(), 500)
+    const storageGroups = this._toStorage(specGroups)
+
+    if (productId) {
+      // Launched from merchant menu → save directly to DB
+      this.setData({ saving: true })
+      try {
+        await productService.saveSpecs(productId, storageGroups)
+        this.selectComponent('#toast').showToast({ message: '规格已保存', type: 'success' })
+        setTimeout(() => wx.navigateBack(), 500)
+      } catch (err) {
+        this.selectComponent('#toast').showToast({ message: err.message || '保存失败，请重试' })
+        this.setData({ saving: false })
+      }
+    } else {
+      // Launched from product-edit → pass back via globalData
+      app.globalData.tempSpecGroups = storageGroups
+      this.selectComponent('#toast').showToast({ message: '规格已保存', type: 'success' })
+      setTimeout(() => wx.navigateBack(), 500)
+    }
   }
 })
