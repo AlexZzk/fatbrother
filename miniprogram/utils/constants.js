@@ -68,6 +68,13 @@ const SETTLEMENT_STATUS = {
 // Pagination defaults
 const PAGE_SIZE = 20
 
+/**
+ * 腾讯位置服务 WebService API Key（用于逆地理编码显示当前位置名称）
+ * 申请地址: https://lbs.qq.com/ → 控制台 → 应用管理 → 创建应用 → 添加 Key（勾选 WebServiceAPI）
+ * 填入后还需在微信公众平台 → 开发管理 → 开发设置 → request 合法域名中添加 https://apis.map.qq.com
+ */
+const TENCENT_MAP_KEY = ''
+
 // Storage keys
 const STORAGE_KEYS = {
   USER_INFO: 'userInfo',
@@ -90,5 +97,6 @@ module.exports = {
   SETTLEMENT_STATUS,
   PAGE_SIZE,
   STORAGE_KEYS,
-  ORDER_AUTO_CANCEL_TIMEOUT
+  ORDER_AUTO_CANCEL_TIMEOUT,
+  TENCENT_MAP_KEY
 }

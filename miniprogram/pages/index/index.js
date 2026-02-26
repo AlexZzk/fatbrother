@@ -52,13 +52,15 @@ Page({
     try {
       const loc = await location.getLocation(false)
       app.globalData.location = loc
-      // 尝试逆地理编码获取可读地址，失败时显示"已定位"
-      const address = await location.getAddress(loc.latitude, loc.longitude)
+      // GPS 成功后立即更新坐标（不等地址，让 _loadShops 可以立刻用新坐标请求距离）
       this.setData({
         latitude: loc.latitude,
         longitude: loc.longitude,
-        locationName: address || `${loc.latitude.toFixed(4)},${loc.longitude.toFixed(4)}`,
         locationFailed: false
+      })
+      // 逆地理编码在后台进行，完成后再更新显示的位置名称
+      location.getAddress(loc.latitude, loc.longitude).then(address => {
+        this.setData({ locationName: address || '已定位' })
       })
     } catch (err) {
       // 定位失败仍然加载商户列表，只是不显示距离

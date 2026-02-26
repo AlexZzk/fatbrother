@@ -431,10 +431,13 @@ async function getNearbyList(event, openid) {
     let distance = null
     if (latitude && longitude && m.location) {
       const loc = m.location
-      // GeoPoint coordinates: [longitude, latitude]
-      const mLng = loc.coordinates ? loc.coordinates[0] : 0
-      const mLat = loc.coordinates ? loc.coordinates[1] : 0
-      distance = calcDistance(latitude, longitude, mLat, mLng)
+      // WeChat CloudBase GeoPoint 读取时返回 { longitude, latitude } 直接属性
+      // 而非 GeoJSON 的 coordinates 数组格式
+      const mLng = loc.longitude
+      const mLat = loc.latitude
+      if (mLat && mLng) {
+        distance = calcDistance(latitude, longitude, mLat, mLng)
+      }
     }
     return {
       _id: m._id,

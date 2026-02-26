@@ -1,7 +1,7 @@
 /**
  * 定位工具函数
  */
-const { STORAGE_KEYS } = require('./constants')
+const { STORAGE_KEYS, TENCENT_MAP_KEY } = require('./constants')
 
 const location = {
   /**
@@ -84,20 +84,38 @@ const location = {
   },
 
   /**
-   * 逆地理编码：通过坐标获取地址描述（调用 common 云函数）
-   * 若 API Key 未配置或调用失败，resolve 空字符串
+   * 逆地理编码：通过坐标获取最近定位点名称
+   * 直接调用腾讯位置服务 WebService API
+   * 需在 constants.js 中配置 TENCENT_MAP_KEY，
+   * 并在微信公众平台将 https://apis.map.qq.com 加入 request 合法域名
    * @param {number} latitude
    * @param {number} longitude
    * @returns {Promise<string>}
    */
   getAddress(latitude, longitude) {
+    if (!TENCENT_MAP_KEY) return Promise.resolve('')
     return new Promise((resolve) => {
-      wx.cloud.callFunction({
-        name: 'common',
-        data: { action: 'getAddress', latitude, longitude },
+      wx.request({
+        url: 'https://apis.map.qq.com/ws/geocoder/v1/',
+        data: {
+          location: `${latitude},${longitude}`,
+          key: TENCENT_MAP_KEY,
+          output: 'json',
+          get_poi: 0
+        },
         success: res => {
-          const addr = res.result && res.result.data && res.result.data.address
-          resolve(addr || '')
+          if (res.data && res.data.status === 0 && res.data.result) {
+            const r = res.data.result
+            const comp = r.address_component || {}
+            // 优先 formatted_addresses.recommend（最近定位点描述，如"绿地象屿附近"）
+            // 其次街道，再次区，最后城市
+            const address =
+              (r.formatted_addresses && r.formatted_addresses.recommend) ||
+              comp.street || comp.district || comp.city || r.address || ''
+            resolve(address)
+          } else {
+            resolve('')
+          }
         },
         fail: () => resolve('')
       })
