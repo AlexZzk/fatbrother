@@ -22,7 +22,10 @@
     "pages/merchant/category/index",
     "pages/merchant/statistics/index",
     "pages/merchant/settings/index",
-    "pages/merchant/invite/index"
+    "pages/merchant/invite/index",
+    "pages/merchant/promotions/index",
+    "pages/merchant/delivery-settings/index",
+    "pages/user-coupons/index"
   ],
   "window": {
     "navigationBarBackgroundColor": "#FFFFFF",

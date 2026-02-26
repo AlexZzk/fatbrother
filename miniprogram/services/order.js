@@ -64,6 +64,11 @@ const orderService = {
   // Request refund
   createRefund(orderId, reason) {
     return callFunction('order', { action: 'createRefund', orderId, reason })
+  },
+
+  // Get user's available coupons for an order (pass totalPrice in cents for availability filter)
+  getUserCoupons(merchantId, totalPrice) {
+    return callFunction('order', { action: 'getUserCoupons', merchantId, totalPrice })
   }
 }
 

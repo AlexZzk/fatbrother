@@ -116,6 +116,17 @@ Page({
   },
 
   /**
+   * 导航到优惠券/红包
+   */
+  onCouponsTap() {
+    if (!this.data.isLoggedIn) {
+      this.setData({ showLoginPopup: true })
+      return
+    }
+    wx.navigateTo({ url: '/pages/user-coupons/index' })
+  },
+
+  /**
    * 导航到账单统计
    */
   onBillTap() {

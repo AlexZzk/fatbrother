@@ -21,7 +21,8 @@ const merchantService = {
     return callFunction('merchant', { action: 'getMerchantInfo', merchantId })
   },
 
-  // Update shop settings
+  // Update shop settings (supports: shop_name, shop_avatar, shop_banner, announcement,
+  //   contact_phone, min_order_amount, packing_fee, delivery_fee_rules)
   updateSettings(data) {
     return callFunction('merchant', { action: 'updateSettings', ...data })
   },
@@ -49,6 +50,21 @@ const merchantService = {
   // Search merchants by keyword (name + product name fuzzy match)
   search(params) {
     return callFunction('merchant', { action: 'search', ...params })
+  },
+
+  // Get merchant's promotions list
+  getPromotions() {
+    return callFunction('merchant', { action: 'getPromotions' })
+  },
+
+  // Create or update a promotion (promotionId optional for update)
+  savePromotion(data) {
+    return callFunction('merchant', { action: 'savePromotion', ...data })
+  },
+
+  // Delete a promotion
+  deletePromotion(promotionId) {
+    return callFunction('merchant', { action: 'deletePromotion', promotionId })
   }
 }
 

@@ -75,13 +75,44 @@
       </view>
     </view>
 
-    <!-- 预留功能 -->
+    <!-- 费用设置 -->
     <view class="section">
-      <view class="section-title">更多设置</view>
+      <view class="section-title">费用设置</view>
       <view class="section-card">
-        <cell title="起送价" value="敬请期待" disabled bindclick="onComingSoon" />
-        <cell title="包装费" value="敬请期待" disabled bindclick="onComingSoon" />
-        <cell title="配送费" value="敬请期待" disabled bindclick="onComingSoon" />
+        <cell
+          title="起送价"
+          value="{{merchantInfo.min_order_amount ? ('¥' + (merchantInfo.min_order_amount / 100).toFixed(2)) : '未设置'}}"
+          arrow
+          data-field="min_order_amount"
+          bindclick="onEditField"
+        />
+        <cell
+          title="包装费"
+          value="{{merchantInfo.packing_fee ? ('¥' + (merchantInfo.packing_fee / 100).toFixed(2)) : '未设置'}}"
+          arrow
+          data-field="packing_fee"
+          bindclick="onEditField"
+        />
+        <cell
+          title="配送费规则"
+          value="{{merchantInfo.delivery_fee_rules && merchantInfo.delivery_fee_rules.length ? (merchantInfo.delivery_fee_rules.length + '条规则') : '未设置'}}"
+          arrow
+          bindclick="onDeliverySettingsTap"
+        />
+      </view>
+    </view>
+
+    <!-- 营销 -->
+    <view class="section">
+      <view class="section-title">营销活动</view>
+      <view class="section-card">
+        <cell
+          icon="🎁"
+          title="满减促销"
+          value="管理满减活动"
+          arrow
+          bindclick="onPromotionsTap"
+        />
       </view>
     </view>
   </block>
@@ -95,10 +126,22 @@
 <view wx:if="{{editingField}}" class="edit-mask" bindtap="onEditCancel">
   <view class="edit-popup" catchtap="">
     <view class="edit-header">
-      <text class="edit-title">编辑{{editingField === 'shop_name' ? '店铺名称' : editingField === 'announcement' ? '店铺公告' : '联系电话'}}</text>
+      <text class="edit-title">编辑{{editingField === 'shop_name' ? '店铺名称' : editingField === 'announcement' ? '店铺公告' : editingField === 'min_order_amount' ? '起送价' : editingField === 'packing_fee' ? '包装费' : '联系电话'}}</text>
+    </view>
+    <view wx:if="{{editingNumeric}}" class="edit-amount-row">
+      <text class="edit-currency">¥</text>
+      <input
+        class="edit-input edit-input--amount"
+        type="digit"
+        value="{{editValue}}"
+        placeholder="输入金额（元）"
+        focus="{{true}}"
+        bindinput="onEditInput"
+        bindconfirm="onEditConfirm"
+      />
     </view>
     <input
-      wx:if="{{editingField !== 'announcement'}}"
+      wx:elif="{{editingField !== 'announcement'}}"
       class="edit-input"
       value="{{editValue}}"
       focus="{{true}}"
@@ -114,6 +157,9 @@
       maxlength="100"
       auto-height
     />
+    <view class="edit-hint" wx:if="{{editingField === 'min_order_amount'}}">
+      <text>设为0表示无起送限制</text>
+    </view>
     <view class="edit-actions">
       <button class="edit-btn edit-btn--cancel" bindtap="onEditCancel">取消</button>
       <button class="edit-btn edit-btn--confirm" bindtap="onEditConfirm">确定</button>

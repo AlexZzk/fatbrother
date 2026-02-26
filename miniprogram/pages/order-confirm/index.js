@@ -3,6 +3,7 @@ const cart = require('../../utils/cart')
 const format = require('../../utils/format')
 const orderService = require('../../services/order')
 const merchantService = require('../../services/merchant')
+const userService = require('../../services/user')
 
 /**
  * 【TODO_REPLACE: 订阅消息模板ID】
@@ -15,6 +16,41 @@ const SUBSCRIBE_TEMPLATE_IDS = [
   'TEMPLATE_ID_FOOD_READY'          // 餐品出餐通知
 ]
 
+/**
+ * Haversine 公式计算两点距离（米）
+ */
+function calcDistance(lat1, lng1, lat2, lng2) {
+  const R = 6371000
+  const dLat = (lat2 - lat1) * Math.PI / 180
+  const dLng = (lng2 - lng1) * Math.PI / 180
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLng / 2) * Math.sin(dLng / 2)
+  return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)))
+}
+
+/**
+ * 根据配送规则和距离计算配送费
+ * 返回 -1 表示超出配送范围
+ */
+function calcDeliveryFee(rules, distanceMeters) {
+  if (!rules || rules.length === 0) return 0
+  if (distanceMeters === null || distanceMeters === undefined) return 0
+
+  const sorted = [...rules].sort((a, b) => {
+    if (a.max_distance === 0) return 1
+    if (b.max_distance === 0) return -1
+    return a.max_distance - b.max_distance
+  })
+
+  for (const rule of sorted) {
+    if (rule.max_distance === 0 || distanceMeters <= rule.max_distance) {
+      return rule.fee
+    }
+  }
+  return -1
+}
+
 Page({
   data: {
     merchantId: '',
@@ -22,10 +58,24 @@ Page({
     cartItems: [],
     totalPrice: 0,
     packingFee: 0,
-    deliveryFee: 0,
+    deliveryFee: 0,         // 原始配送费
+    deliveryFeeActual: 0,   // 实际配送费（扣除满减后）
+    promotionDiscount: 0,
+    appliedPromotion: null,
+    couponDiscount: 0,
+    selectedCoupon: null,   // 已选优惠券
     actualPrice: 0,
     remark: '',
-    submitting: false
+    submitting: false,
+    // 距离
+    distanceMeters: null,
+    // 起送价相关
+    minOrderAmount: 0,
+    belowMinOrder: false,
+    // 优惠券弹窗
+    showCouponPicker: false,
+    availableCoupons: [],
+    couponsLoaded: false
   },
 
   onLoad(options) {
@@ -58,34 +108,116 @@ Page({
       }))
 
       const totalPrice = cartItems.reduce((sum, i) => sum + i.subtotal, 0)
-      const packingFee = 0
-      const deliveryFee = 0
-      const actualPrice = totalPrice + packingFee + deliveryFee
+      const packingFee = merchant.packing_fee || 0
+      const minOrderAmount = merchant.min_order_amount || 0
+
+      // 获取距离并计算配送费
+      let distanceMeters = null
+      let deliveryFee = 0
+      try {
+        distanceMeters = await this._getDistanceToMerchant(merchant)
+      } catch (e) { /* 获取位置失败不阻塞 */ }
+      deliveryFee = calcDeliveryFee(merchant.delivery_fee_rules || [], distanceMeters)
 
       this.setData({
         merchant,
         cartItems,
         totalPrice,
         packingFee,
-        deliveryFee,
-        actualPrice
+        minOrderAmount,
+        distanceMeters,
+        deliveryFee: deliveryFee < 0 ? 0 : deliveryFee,
+        belowMinOrder: minOrderAmount > 0 && totalPrice < minOrderAmount
       })
+
+      this._calcPromotion()
     } catch (err) {
       wx.showToast({ title: '加载失败', icon: 'none' })
     }
+  },
+
+  /**
+   * 获取用户到商户的距离
+   */
+  async _getDistanceToMerchant(merchant) {
+    if (!merchant.location) return null
+    return new Promise((resolve) => {
+      wx.getLocation({
+        type: 'wgs84',
+        success: (res) => {
+          const d = calcDistance(
+            res.latitude, res.longitude,
+            merchant.location.latitude, merchant.location.longitude
+          )
+          resolve(d)
+        },
+        fail: () => resolve(null)
+      })
+    })
+  },
+
+  /**
+   * 计算促销折扣（满减配送费）
+   */
+  _calcPromotion() {
+    const { merchant, totalPrice, deliveryFee, selectedCoupon } = this.data
+    if (!merchant) return
+
+    // 模拟满减规则检查（后端会再次验证，此处仅用于前端展示）
+    // 实际促销从后端 getPromotions 获取，前端无法预知，这里展示简单逻辑
+    // 后端在 create 订单时会真正应用促销
+    // 前端只展示订单金额，促销由后端计算
+    const couponDiscount = selectedCoupon ? selectedCoupon.amount : 0
+    const deliveryFeeActual = deliveryFee
+    const actualPrice = Math.max(1, totalPrice + this.data.packingFee + deliveryFeeActual - couponDiscount)
+
+    this.setData({
+      deliveryFeeActual,
+      couponDiscount,
+      actualPrice
+    })
   },
 
   onRemarkInput(e) {
     this.setData({ remark: e.detail.value })
   },
 
+  // ==================== 优惠券 ====================
+  async onCouponTap() {
+    if (!this.data.couponsLoaded) {
+      try {
+        const res = await orderService.getUserCoupons(this.data.merchantId, this.data.totalPrice)
+        this.setData({ availableCoupons: res.coupons || [], couponsLoaded: true })
+      } catch (err) {
+        this.setData({ availableCoupons: [], couponsLoaded: true })
+      }
+    }
+    this.setData({ showCouponPicker: true })
+  },
+
+  onCloseCouponPicker() {
+    this.setData({ showCouponPicker: false })
+  },
+
+  onSelectCoupon(e) {
+    const coupon = e.currentTarget.dataset.coupon
+    if (!coupon.is_available) return
+    this.setData({ selectedCoupon: coupon, showCouponPicker: false })
+    this._calcPromotion()
+  },
+
+  onClearCoupon() {
+    this.setData({ selectedCoupon: null })
+    this._calcPromotion()
+  },
+
+  // ==================== 提交订单 ====================
   /**
    * S7-9: 下单前请求订阅消息授权
    * 静默请求，用户拒绝不影响下单流程
    */
   _requestSubscribeMessage() {
     return new Promise((resolve) => {
-      // 过滤掉未配置的模板ID
       const tmplIds = SUBSCRIBE_TEMPLATE_IDS.filter(id => !id.startsWith('TEMPLATE_ID_'))
       if (tmplIds.length === 0) {
         resolve()
@@ -94,7 +226,7 @@ Page({
       wx.requestSubscribeMessage({
         tmplIds,
         success: () => resolve(),
-        fail: () => resolve() // 用户拒绝也继续下单
+        fail: () => resolve()
       })
     })
   },
@@ -102,8 +234,15 @@ Page({
   async onSubmit() {
     if (this.data.submitting) return
     if (!this.data.cartItems.length) return
+    if (this.data.belowMinOrder) {
+      wx.showToast({ title: '未达到起送金额', icon: 'none' })
+      return
+    }
+    if (this.data.deliveryFee < 0) {
+      wx.showToast({ title: '您的位置超出配送范围', icon: 'none' })
+      return
+    }
 
-    // 先请求订阅消息授权（不阻塞下单）
     await this._requestSubscribeMessage()
 
     this.setData({ submitting: true })
@@ -119,32 +258,28 @@ Page({
           quantity: item.quantity,
           unitPrice: item.unitPrice
         })),
-        remark: this.data.remark
+        remark: this.data.remark,
+        distanceMeters: this.data.distanceMeters,
+        couponId: this.data.selectedCoupon ? this.data.selectedCoupon._id : undefined
       })
 
-      // 订单已创建，清空购物车
       cart.clear(this.data.merchantId)
 
-      // 如果有支付参数，发起微信支付（成功/失败/取消都跳转到订单详情）
       if (res.payParams) {
         try {
           await this._requestPayment(res.payParams)
-          // 支付成功：主动查询微信支付侧状态并同步到订单（补单机制，不依赖回调）
           wx.showLoading({ title: '确认中...' })
           await orderService.syncPaymentStatus(res.orderId).catch(() => {})
           wx.hideLoading()
         } catch (err) {
           wx.hideLoading()
-          // 支付失败/取消：订单保持待支付状态，用户可在订单详情页重新发起支付
         }
       }
 
-      // 无论支付结果如何，一律跳转到订单详情页
       wx.redirectTo({
         url: `/pages/order-detail/index?orderId=${res.orderId}`
       })
     } catch (err) {
-      // 订单创建本身失败 — 允许用户重试
       const msg = (err && err.message) || '提交失败，请重试'
       wx.showToast({ title: msg, icon: 'none' })
       this.setData({ submitting: false })
@@ -153,9 +288,6 @@ Page({
 
   /**
    * S7-8: 调起微信支付
-   *
-   * @param {Object} payParams - 后端返回的支付参数
-   *   { timeStamp, nonceStr, package, signType, paySign }
    */
   _requestPayment(payParams) {
     return new Promise((resolve, reject) => {
@@ -168,7 +300,6 @@ Page({
         success: () => resolve(),
         fail: (err) => {
           if (err.errMsg === 'requestPayment:fail cancel') {
-            // 用户取消支付
             reject(new Error('支付已取消'))
           } else {
             reject(new Error('支付失败，请重试'))
