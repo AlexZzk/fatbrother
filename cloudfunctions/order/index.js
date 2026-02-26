@@ -69,6 +69,12 @@ const actions = {
 }
 
 exports.main = async (event, context) => {
+  // WeChat Pay v3 sends payment notifications via HTTP POST (URL化).
+  // In that case event.httpMethod is set and there is no `action` field.
+  if (event.httpMethod) {
+    return _handleHttpCallback(event)
+  }
+
   const { action } = event
   const handler = actions[action]
   if (!handler) {
@@ -83,6 +89,34 @@ exports.main = async (event, context) => {
     if (err.code) return err
     console.error(`[order/${action}] error:`, err)
     return { code: 5000, message: '系统繁忙，请稍后重试' }
+  }
+}
+
+/**
+ * Handle HTTP callbacks from WeChat Pay (URL化).
+ * WeChat Pay v3 requires a JSON response: { "code": "SUCCESS" } on success.
+ */
+async function _handleHttpCallback(event) {
+  const respond = (ok, msg) => ({
+    statusCode: 200,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code: ok ? 'SUCCESS' : 'FAIL', message: msg || (ok ? '成功' : '处理失败') })
+  })
+
+  try {
+    const qs = event.queryStringParameters || {}
+    const body = typeof event.body === 'string' ? JSON.parse(event.body) : (event.body || {})
+    const outTradeNo = qs.out_trade_no || ''
+
+    await paymentNotify({ ...body, out_trade_no: outTradeNo, _openid: '' })
+    return respond(true)
+  } catch (err) {
+    console.error('[httpCallback] error:', err.message || err)
+    // Return SUCCESS for "already handled" to stop WeChat Pay retrying
+    if (err.message === '订单已处理' || err.message === '非成功状态，忽略') {
+      return respond(true, err.message)
+    }
+    return respond(false, err.message || '处理失败')
   }
 }
 

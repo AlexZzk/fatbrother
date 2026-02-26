@@ -1,4 +1,4 @@
-<view class="product-item {{product.image ? '' : 'product-item--noimg'}}">
+<view class="product-item {{product.image ? '' : 'product-item--noimg'}}" bindtap="onTap">
   <image wx:if="{{product.image}}" class="product-img" src="{{product.image}}" mode="aspectFill" />
   <view class="product-info">
     <view class="product-top">
@@ -9,10 +9,10 @@
       <price value="{{product.base_price}}" size="medium" />
       <view class="product-actions">
         <block wx:if="{{count && !(product.spec_groups && product.spec_groups.length)}}">
-          <view class="action-btn action-btn--minus" bindtap="onMinus">-</view>
+          <view class="action-btn action-btn--minus" catchtap="onMinus">-</view>
           <text class="action-count">{{count}}</text>
         </block>
-        <view class="action-btn action-btn--add" bindtap="onAdd">+</view>
+        <view class="action-btn action-btn--add" catchtap="onAdd">+</view>
       </view>
     </view>
   </view>
