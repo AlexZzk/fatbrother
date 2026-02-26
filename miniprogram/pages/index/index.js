@@ -57,7 +57,7 @@ Page({
       this.setData({
         latitude: loc.latitude,
         longitude: loc.longitude,
-        locationName: address || `${loc.latitude.toFixed(4)},${loc.longitude.toFixed(4)}`,
+        locationName: address || '已定位',
         locationFailed: false
       })
     } catch (err) {

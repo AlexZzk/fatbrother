@@ -2,9 +2,12 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
 /**
- * 腾讯位置服务 Key
- * TODO_REPLACE: 在微信云函数环境变量或此处填入腾讯位置服务 WebService API Key
- * 申请地址: https://lbs.qq.com/  → 控制台 → 应用管理 → 创建应用 → 添加 Key（勾选 WebServiceAPI）
+ * 腾讯位置服务 WebService API Key
+ * 申请地址: https://lbs.qq.com/ → 控制台 → 应用管理 → 创建应用 → 添加 Key（勾选 WebServiceAPI）
+ *
+ * 配置方式（二选一）：
+ *   1. 推荐：微信云开发控制台 → 云函数 → common → 函数配置 → 环境变量，添加 TENCENT_MAP_KEY
+ *   2. 开发调试：直接在下方引号内填入 Key
  */
 const TENCENT_MAP_KEY = process.env.TENCENT_MAP_KEY || ''
 
@@ -234,9 +237,13 @@ async function getAddress(event) {
     })
 
     if (result.status === 0 && result.result) {
-      const comp = result.result.address_component || {}
-      // 优先显示区，其次市，兜底全地址
-      const address = comp.district || comp.city || result.result.address || ''
+      const r = result.result
+      const comp = r.address_component || {}
+      // 优先使用 formatted_addresses.recommend（腾讯地图推荐的最近定位点描述）
+      // 其次精简地址（街道+区），最后兜底区名或城市
+      const address =
+        (r.formatted_addresses && r.formatted_addresses.recommend) ||
+        comp.street || comp.district || comp.city || r.address || ''
       return { code: 0, data: { address } }
     }
     return { code: 0, data: { address: '' } }
