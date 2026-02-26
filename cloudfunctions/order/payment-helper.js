@@ -30,7 +30,7 @@ const APP_ID = 'wx711600359fd02988'
 // ======== TODO_REPLACE: 支付回调地址 ========
 // 格式: https://<云环境ID>.service.tcloudbase.com/order?action=paymentNotify
 // 需要在微信云开发控制台开启 HTTP 访问服务
-const NOTIFY_URL = 'http://cloudbase-2g53go7z650ca946-1392989365.ap-shanghai.app.tcloudbase.com/order'
+const NOTIFY_URL = 'https://cloudbase-2g53go7z650ca946-1392989365.ap-shanghai.app.tcloudbase.com/order'
 
 // 微信支付 API 基础地址
 const API_BASE = 'api.mch.weixin.qq.com'
@@ -210,6 +210,19 @@ class WechatPayHelper {
     ])
 
     return JSON.parse(decrypted.toString('utf8'))
+  }
+
+  /**
+   * 主动查询订单支付状态（补单机制）
+   *
+   * 当支付回调未到达时，可主动调用此接口确认支付结果。
+   * GET /v3/pay/transactions/out-trade-no/{out_trade_no}?mchid={mchid}
+   *
+   * @param {string} outTradeNo - 商户订单号
+   * @returns {Object} 微信支付订单信息，关键字段: trade_state ('SUCCESS'/'NOTPAY'/...)
+   */
+  async queryOrder(outTradeNo) {
+    return this._request('GET', `/v3/pay/transactions/out-trade-no/${outTradeNo}?mchid=${this.mchId}`, null)
   }
 
   /**

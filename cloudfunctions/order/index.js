@@ -63,6 +63,7 @@ const actions = {
   autoCancel,
   // S7: 支付相关
   createPayment,
+  syncPaymentStatus,
   paymentNotify,
   createRefund,
   settlement
@@ -657,6 +658,88 @@ async function createPayment(event) {
   })
 
   return { orderId, payParams }
+}
+
+/**
+ * S7-1b: 主动查询并同步支付状态（补单机制）
+ *
+ * 场景：wx.requestPayment 成功但回调未及时到达时，前端主动调用此接口
+ * 查询微信支付侧的真实状态，若已支付则立即更新订单状态。
+ *
+ * 入参:
+ *   orderId - 订单ID
+ *
+ * 返回: { orderId, status, synced }
+ *   synced=true 表示本次调用完成了状态更新
+ */
+async function syncPaymentStatus(event) {
+  const { _openid, orderId } = event
+  if (!orderId) throw createError(1001, '缺少订单ID')
+
+  const { data: order } = await ordersCol.doc(orderId).get().catch(() => ({ data: null }))
+  if (!order) throw createError(2001, '订单不存在')
+  if (order.user_id !== _openid) throw createError(2001, '无权操作此订单')
+
+  // 仅待支付订单需要主动查询
+  if (order.status !== STATUS.PENDING_PAY) {
+    return { orderId, status: order.status, synced: false }
+  }
+
+  if (!USE_REAL_PAYMENT) {
+    return { orderId, status: order.status, synced: false }
+  }
+
+  const { data: merchant } = await merchantsCol.doc(order.merchant_id).get().catch(() => ({ data: null }))
+  if (!merchant) throw createError(2001, '商户不存在')
+
+  const payHelper = getMerchantPayHelper(merchant)
+  let tradeInfo
+  try {
+    tradeInfo = await payHelper.queryOrder(order.order_no)
+  } catch (err) {
+    // 查单失败（如订单未生成）不影响流程
+    console.warn('[syncPaymentStatus] queryOrder failed:', err.message || err)
+    return { orderId, status: order.status, synced: false }
+  }
+
+  if (tradeInfo.trade_state !== 'SUCCESS') {
+    return { orderId, status: order.status, synced: false, tradeState: tradeInfo.trade_state }
+  }
+
+  // 校验金额
+  if (tradeInfo.amount && tradeInfo.amount.total !== order.actual_price) {
+    console.error('[syncPaymentStatus] 金额不匹配', tradeInfo.amount.total, order.actual_price)
+    throw createError(4002, '支付金额不匹配')
+  }
+
+  // 防止并发重复更新
+  const { data: freshOrder } = await ordersCol.doc(orderId).get().catch(() => ({ data: null }))
+  if (!freshOrder || freshOrder.status !== STATUS.PENDING_PAY) {
+    return { orderId, status: freshOrder ? freshOrder.status : order.status, synced: false }
+  }
+
+  const now = db.serverDate()
+  await ordersCol.doc(orderId).update({
+    data: {
+      status: STATUS.PENDING_ACCEPT,
+      payment_id: tradeInfo.transaction_id || '',
+      paid_at: now,
+      updated_at: now
+    }
+  })
+
+  // 通知商户有新订单、通知用户下单成功
+  const itemNames = (order.items || []).map(i => `${i.name}x${i.quantity}`).join(' ')
+  const notifyData = {
+    orderId: order._id, orderNo: order.order_no,
+    merchantName: order.merchant_name, actualPrice: order.actual_price,
+    createTime: order.created_at
+  }
+  const { data: merchantOwner } = await usersCol.doc(merchant.user_id).get().catch(() => ({ data: null }))
+  sendNotify('NEW_ORDER', merchantOwner ? merchantOwner._openid : '', { ...notifyData, itemSummary: itemNames })
+  sendNotify('ORDER_SUBMITTED', order.user_id, notifyData)
+
+  return { orderId, status: STATUS.PENDING_ACCEPT, synced: true }
 }
 
 /**

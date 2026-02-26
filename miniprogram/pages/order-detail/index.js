@@ -199,9 +199,11 @@ Page({
       const res = await orderService.createPayment(this.data.orderId)
       wx.hideLoading()
       await this._requestPayment(res.payParams)
-      // 支付成功，刷新详情（等待回调更新状态）
-      wx.showToast({ title: '支付成功', icon: 'success' })
-      setTimeout(() => this._loadDetail(), 1500)
+      // 支付成功：主动查询微信支付侧状态并同步到订单（补单机制，不依赖回调）
+      wx.showLoading({ title: '确认中...' })
+      await orderService.syncPaymentStatus(this.data.orderId).catch(() => {})
+      wx.hideLoading()
+      this._loadDetail()
     } catch (err) {
       wx.hideLoading()
       if (err.message !== '支付已取消') {

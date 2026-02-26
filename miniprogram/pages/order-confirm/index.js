@@ -129,7 +129,12 @@ Page({
       if (res.payParams) {
         try {
           await this._requestPayment(res.payParams)
+          // 支付成功：主动查询微信支付侧状态并同步到订单（补单机制，不依赖回调）
+          wx.showLoading({ title: '确认中...' })
+          await orderService.syncPaymentStatus(res.orderId).catch(() => {})
+          wx.hideLoading()
         } catch (err) {
+          wx.hideLoading()
           // 支付失败/取消：订单保持待支付状态，用户可在订单详情页重新发起支付
         }
       }
