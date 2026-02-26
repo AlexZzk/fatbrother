@@ -10,6 +10,8 @@ const merchantsCol = db.collection('merchants')
 const productsCol = db.collection('products')
 const settlementsCol = db.collection('settlements')
 const usersCol = db.collection('users')
+const promotionsCol = db.collection('promotions')
+const userCouponsCol = db.collection('user_coupons')
 
 // ======== TODO_REPLACE: 设为 true 启用真实微信支付，false 使用模拟支付 ========
 const USE_REAL_PAYMENT = true
@@ -62,6 +64,7 @@ const actions = {
   complete,
   userComplete,
   autoCancel,
+  getUserCoupons,
   // S7: 支付相关
   createPayment,
   syncPaymentStatus,
@@ -145,21 +148,52 @@ function generateOrderNo() {
 }
 
 /**
+ * 计算配送费（根据商户配送费规则和用户距离）
+ * @param {Array} rules - delivery_fee_rules: [{max_distance, fee}], 按max_distance升序排列
+ *   max_distance: 单位米，0表示兜底规则（无距离上限）
+ *   fee: 单位分，-1表示不配送
+ * @param {number|null} distanceMeters - 用户到商户距离（米），null表示未知
+ * @returns {number} 配送费（分），-1表示不在配送范围内
+ */
+function calcDeliveryFee(rules, distanceMeters) {
+  if (!rules || rules.length === 0) return 0
+  if (distanceMeters === null || distanceMeters === undefined) return 0
+
+  // 按 max_distance 升序排列，0排最后（兜底）
+  const sorted = [...rules].sort((a, b) => {
+    if (a.max_distance === 0) return 1
+    if (b.max_distance === 0) return -1
+    return a.max_distance - b.max_distance
+  })
+
+  for (const rule of sorted) {
+    if (rule.max_distance === 0 || distanceMeters <= rule.max_distance) {
+      return rule.fee
+    }
+  }
+  return -1 // 超出所有规则范围，不配送
+}
+
+/**
  * S5-1: 创建订单
  *
  * 入参:
  *   merchantId - 商家ID
  *   items - 购物车商品列表 [{ productId, productName, productImage, specs, quantity, unitPrice }]
  *   remark - 备注（可选）
+ *   distanceMeters - 用户到商户距离（米，可选）
+ *   couponId - 用户选择的优惠券ID（可选）
  *
  * 流程:
  *   1. 校验商家状态
  *   2. 校验商品存在且在售，重新计算价格（防篡改）
- *   3. 生成订单快照
- *   4. 模拟支付 → 直接设为 PENDING_ACCEPT
+ *   3. 计算配送费（根据距离和商户规则）
+ *   4. 应用促销活动（满减配送费）
+ *   5. 应用优惠券/红包抵扣
+ *   6. 生成订单快照
  */
 async function create(event) {
-  const { _openid, merchantId, items, remark = '' } = event
+  const { _openid, merchantId, items, remark = '', distanceMeters, couponId } = event
 
   if (!merchantId || !items || !items.length) {
     throw createError(1001, '参数不完整')
@@ -237,12 +271,70 @@ async function create(event) {
     }
   })
 
-  // Fees (reserved, 0 for now)
-  const packingFee = 0
-  const deliveryFee = 0
-  const actualPrice = totalPrice + packingFee + deliveryFee
+  // 检查起送价
+  const minOrderAmount = merchant.min_order_amount || 0
+  if (minOrderAmount > 0 && totalPrice < minOrderAmount) {
+    throw createError(2003, `未达到起送金额，还差${((minOrderAmount - totalPrice) / 100).toFixed(2)}元`)
+  }
 
-  const now = db.serverDate()
+  // 计算包装费
+  const packingFee = merchant.packing_fee || 0
+
+  // 计算配送费
+  const distance = typeof distanceMeters === 'number' ? distanceMeters : null
+  let deliveryFee = calcDeliveryFee(merchant.delivery_fee_rules || [], distance)
+  if (deliveryFee === -1) {
+    throw createError(2003, '您的位置超出配送范围')
+  }
+
+  // 加载商户有效促销活动（满减配送费）
+  const now = new Date()
+  const { data: activePromotions } = await promotionsCol.where({
+    merchant_id: merchantId,
+    status: 'active'
+  }).limit(20).get()
+
+  let promotionDiscount = 0
+  let appliedPromotion = null
+  for (const promo of activePromotions) {
+    if (promo.type !== 'delivery_discount') continue
+    // 检查时间有效性
+    if (promo.start_time && new Date(promo.start_time) > now) continue
+    if (promo.end_time && new Date(promo.end_time) < now) continue
+    // 检查满足条件
+    if (totalPrice >= promo.min_amount) {
+      const discount = Math.min(promo.discount_amount, deliveryFee)
+      if (discount > promotionDiscount) {
+        promotionDiscount = discount
+        appliedPromotion = { _id: promo._id, name: promo.name, discount_amount: discount }
+      }
+    }
+  }
+  deliveryFee = Math.max(0, deliveryFee - promotionDiscount)
+
+  // 应用优惠券/红包
+  let couponDiscount = 0
+  let appliedCoupon = null
+  if (couponId) {
+    const { data: coupon } = await userCouponsCol.doc(couponId).get().catch(() => ({ data: null }))
+    if (!coupon) throw createError(2004, '优惠券不存在')
+    if (coupon.user_id !== _openid) throw createError(2004, '无权使用该优惠券')
+    if (coupon.status !== 'unused') throw createError(2004, '该优惠券已使用或已过期')
+    if (coupon.expired_at && new Date(coupon.expired_at) < now) {
+      throw createError(2004, '该优惠券已过期')
+    }
+    const minAmount = coupon.min_order_amount || 0
+    if (totalPrice < minAmount) {
+      throw createError(2004, `使用该优惠券需订单满${(minAmount / 100).toFixed(2)}元`)
+    }
+    couponDiscount = coupon.amount
+    appliedCoupon = { _id: coupon._id, name: coupon.name, amount: coupon.amount }
+  }
+
+  const totalDiscount = promotionDiscount + couponDiscount
+  const actualPrice = Math.max(1, totalPrice + packingFee + deliveryFee - couponDiscount)
+
+  const dbNow = db.serverDate()
   const orderNo = generateOrderNo()
 
   const orderData = {
@@ -254,8 +346,15 @@ async function create(event) {
     items: orderItems,
     total_price: totalPrice,
     packing_fee: packingFee,
-    delivery_fee: deliveryFee,
+    delivery_fee: deliveryFee + promotionDiscount, // 原始配送费（促销折扣前）
+    delivery_fee_actual: deliveryFee,              // 实际收取配送费
+    promotion_discount: promotionDiscount,
+    coupon_discount: couponDiscount,
+    total_discount: totalDiscount,
+    applied_promotion: appliedPromotion,
+    applied_coupon: appliedCoupon,
     actual_price: actualPrice,
+    distance_meters: distance,
     status: USE_REAL_PAYMENT ? STATUS.PENDING_PAY : STATUS.PENDING_ACCEPT,
     remark: remark.substring(0, 200),
     cancel_reason: '',
@@ -267,11 +366,22 @@ async function create(event) {
     cancelled_at: null,
     is_reviewed: false,
     is_settled: false,
-    created_at: now,
-    updated_at: now
+    created_at: dbNow,
+    updated_at: dbNow
   }
 
   const { _id } = await ordersCol.add({ data: orderData })
+
+  // 标记优惠券为已使用（预锁定，支付失败后可解锁）
+  if (couponId && appliedCoupon) {
+    await userCouponsCol.doc(couponId).update({
+      data: {
+        status: 'used',
+        order_id: _id,
+        used_at: dbNow
+      }
+    })
+  }
 
   const notifyData = { orderId: _id, orderNo, merchantName: merchant.shop_name, actualPrice, createTime: new Date() }
 
@@ -306,6 +416,37 @@ async function create(event) {
     orderNo,
     actualPrice
   }
+}
+
+/**
+ * 获取当前用户可用于某商户订单的优惠券列表
+ * 入参: merchantId (可选，用于过滤指定商户的券), totalPrice (商品总金额，用于筛选可用券)
+ */
+async function getUserCoupons(event) {
+  const { _openid, totalPrice = 0 } = event
+  const now = new Date()
+
+  const { data: coupons } = await userCouponsCol.where({
+    user_id: _openid,
+    status: 'unused'
+  }).orderBy('amount', 'desc').limit(50).get()
+
+  // 过滤过期的，并标记是否可用
+  const result = coupons.map(c => {
+    const expired = c.expired_at && new Date(c.expired_at) < now
+    const meetMinAmount = totalPrice >= (c.min_order_amount || 0)
+    return {
+      _id: c._id,
+      name: c.name,
+      amount: c.amount,
+      min_order_amount: c.min_order_amount || 0,
+      expired_at: c.expired_at,
+      is_available: !expired && meetMinAmount,
+      is_expired: expired
+    }
+  }).filter(c => !c.is_expired)
+
+  return { coupons: result }
 }
 
 /**
@@ -396,15 +537,22 @@ async function cancel(event) {
     throw createError(2002, '当前状态不可取消')
   }
 
-  const now = db.serverDate()
+  const dbNow = db.serverDate()
   await ordersCol.doc(orderId).update({
     data: {
       status: STATUS.CANCELLED,
       cancel_reason: reason.substring(0, 200),
-      cancelled_at: now,
-      updated_at: now
+      cancelled_at: dbNow,
+      updated_at: dbNow
     }
   })
+
+  // 释放已锁定的优惠券
+  if (order.applied_coupon && order.applied_coupon._id) {
+    await userCouponsCol.doc(order.applied_coupon._id).update({
+      data: { status: 'unused', order_id: null, used_at: null }
+    }).catch(() => {})
+  }
 
   return { orderId }
 }
@@ -510,15 +658,22 @@ async function reject(event) {
   if (order.status !== STATUS.PENDING_ACCEPT) throw createError(2002, '当前状态不可拒单')
 
   const cancelReason = `商家拒单：${reason}`.substring(0, 200)
-  const now = db.serverDate()
+  const dbNow = db.serverDate()
   await ordersCol.doc(orderId).update({
     data: {
       status: STATUS.CANCELLED,
       cancel_reason: cancelReason,
-      cancelled_at: now,
-      updated_at: now
+      cancelled_at: dbNow,
+      updated_at: dbNow
     }
   })
+
+  // 释放已锁定的优惠券
+  if (order.applied_coupon && order.applied_coupon._id) {
+    await userCouponsCol.doc(order.applied_coupon._id).update({
+      data: { status: 'unused', order_id: null, used_at: null }
+    }).catch(() => {})
+  }
 
   // S7-10: 通知用户订单已取消
   sendNotify('ORDER_CANCELLED', order.user_id, {
@@ -642,6 +797,12 @@ async function autoCancel() {
         updated_at: now
       }
     })
+    // 释放已锁定的优惠券
+    if (order.applied_coupon && order.applied_coupon._id) {
+      await userCouponsCol.doc(order.applied_coupon._id).update({
+        data: { status: 'unused', order_id: null, used_at: null }
+      }).catch(() => {})
+    }
     cancelledCount++
   }
 

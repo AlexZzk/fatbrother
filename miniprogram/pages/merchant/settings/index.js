@@ -2,6 +2,12 @@ const app = getApp()
 const merchantService = require('../../../services/merchant')
 const uploadService = require('../../../services/upload')
 
+// 数字类字段标题映射
+const NUMERIC_FIELD_LABELS = {
+  min_order_amount: '起送价',
+  packing_fee: '包装费'
+}
+
 Page({
   data: {
     navBarHeight: 0,
@@ -9,7 +15,9 @@ Page({
     merchantInfo: null,
     loading: true,
     editingField: '',
-    editValue: ''
+    editValue: '',
+    // 是否为数字类字段（金额，以分存储，页面以元显示）
+    editingNumeric: false
   },
 
   onLoad() {
@@ -68,8 +76,19 @@ Page({
 
   onEditField(e) {
     const field = e.currentTarget.dataset.field
-    const currentValue = this.data.merchantInfo[field] || ''
-    this.setData({ editingField: field, editValue: currentValue })
+    const isNumeric = !!NUMERIC_FIELD_LABELS[field]
+    let currentValue = this.data.merchantInfo[field]
+    if (isNumeric) {
+      // 以元显示
+      currentValue = currentValue != null ? (currentValue / 100).toString() : '0'
+    } else {
+      currentValue = currentValue || ''
+    }
+    this.setData({
+      editingField: field,
+      editValue: currentValue,
+      editingNumeric: isNumeric
+    })
   },
 
   onEditInput(e) {
@@ -77,9 +96,20 @@ Page({
   },
 
   onEditConfirm() {
-    const { editingField, editValue } = this.data
+    const { editingField, editValue, editingNumeric } = this.data
     if (!editingField) return
-    this._updateField(editingField, editValue.trim())
+
+    let value = editValue.trim()
+    if (editingNumeric) {
+      const yuan = parseFloat(value)
+      if (isNaN(yuan) || yuan < 0) {
+        this.selectComponent('#toast').showToast({ message: '请输入有效金额', type: 'error' })
+        return
+      }
+      // 转换为分，取整
+      value = Math.round(yuan * 100)
+    }
+    this._updateField(editingField, value)
     this.setData({ editingField: '' })
   },
 
@@ -94,7 +124,7 @@ Page({
       app.globalData.merchantInfo = data.merchantInfo
       this.selectComponent('#toast').showToast({ message: '更新成功', type: 'success' })
     } catch (err) {
-      this.selectComponent('#toast').showToast({ message: '更新失败', type: 'error' })
+      this.selectComponent('#toast').showToast({ message: err.message || '更新失败', type: 'error' })
     }
   },
 
@@ -102,7 +132,17 @@ Page({
     wx.navigateTo({ url: '/pages/merchant/invite/index' })
   },
 
-  onComingSoon() {
-    this.selectComponent('#toast').showToast({ message: '该功能即将上线', type: 'info' })
+  onDeliverySettingsTap() {
+    wx.navigateTo({ url: '/pages/merchant/delivery-settings/index' })
+  },
+
+  onPromotionsTap() {
+    wx.navigateTo({ url: '/pages/merchant/promotions/index' })
+  },
+
+  // 格式化金额展示（分 → 元）
+  _formatFee(cents) {
+    if (!cents) return '未设置'
+    return '¥' + (cents / 100).toFixed(2)
   }
 })
