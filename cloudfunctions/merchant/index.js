@@ -328,6 +328,9 @@ async function toggleStatus(event, openid) {
   // 开店时更新GPS位置和地址名称
   if (isOpen && location && location.latitude && location.longitude) {
     updateData.location = db.Geo.Point(location.longitude, location.latitude)
+    // 同时存储独立的数字字段，避免 GeoPoint 反序列化格式不确定导致距离计算错误
+    updateData.location_lat = location.latitude
+    updateData.location_lng = location.longitude
     if (locationName) {
       updateData.location_name = locationName
     }
@@ -429,12 +432,16 @@ async function getNearbyList(event, openid) {
   // Calculate distance for each merchant and sort
   let list = merchants.map(m => {
     let distance = null
-    if (latitude && longitude && m.location) {
-      const loc = m.location
-      // WeChat CloudBase GeoPoint 读取时返回 { longitude, latitude } 直接属性
-      // 而非 GeoJSON 的 coordinates 数组格式
-      const mLng = loc.longitude
-      const mLat = loc.latitude
+    if (latitude && longitude) {
+      // 优先使用独立的数字字段（开店时写入，格式确定无歧义）
+      let mLat = m.location_lat
+      let mLng = m.location_lng
+      // 兜底：从 GeoPoint 读取（同时兼容 {longitude,latitude} 和 {coordinates:[]} 两种格式）
+      if ((!mLat || !mLng) && m.location) {
+        const loc = m.location
+        mLat = loc.latitude || (loc.coordinates && loc.coordinates[1])
+        mLng = loc.longitude || (loc.coordinates && loc.coordinates[0])
+      }
       if (mLat && mLng) {
         distance = calcDistance(latitude, longitude, mLat, mLng)
       }
