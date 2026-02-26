@@ -4,6 +4,7 @@ const { ORDER_STATUS, PAGE_SIZE } = require('../../utils/constants')
 
 const TABS = [
   { key: '', label: '全部' },
+  { key: ORDER_STATUS.PENDING_PAY, label: '待支付' },
   { key: ORDER_STATUS.PENDING_ACCEPT, label: '待接单' },
   { key: ORDER_STATUS.ACCEPTED, label: '制作中' },
   { key: ORDER_STATUS.READY, label: '待取餐' },
@@ -82,6 +83,10 @@ Page({
 
     switch (type) {
       case 'detail':
+        wx.navigateTo({ url: `/pages/order-detail/index?orderId=${orderId}` })
+        break
+
+      case 'pay':
         wx.navigateTo({ url: `/pages/order-detail/index?orderId=${orderId}` })
         break
 

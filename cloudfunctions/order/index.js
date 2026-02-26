@@ -254,7 +254,7 @@ async function create(event) {
     remark: remark.substring(0, 200),
     cancel_reason: '',
     payment_id: '',
-    paid_at: now,
+    paid_at: null,
     accepted_at: null,
     ready_at: null,
     completed_at: null,
@@ -271,15 +271,22 @@ async function create(event) {
 
   // 真实支付模式：调用微信支付
   if (USE_REAL_PAYMENT) {
-    const payHelper = getMerchantPayHelper(merchant)
-    const { payParams } = await payHelper.createJSAPIOrder({
-      outTradeNo: orderNo,
-      description: `胖兄弟外卖-${merchant.shop_name}`,
-      totalAmount: actualPrice,
-      payerOpenid: _openid,
-      profitSharing: true
-    })
-    return { orderId: _id, orderNo, actualPrice, payParams }
+    try {
+      const payHelper = getMerchantPayHelper(merchant)
+      const { payParams } = await payHelper.createJSAPIOrder({
+        outTradeNo: orderNo,
+        description: `胖兄弟外卖-${merchant.shop_name}`,
+        totalAmount: actualPrice,
+        payerOpenid: _openid,
+        profitSharing: true
+      })
+      return { orderId: _id, orderNo, actualPrice, payParams }
+    } catch (err) {
+      // 支付初始化失败，但订单已创建（PENDING_PAY）
+      // 返回 orderId 让前端跳转到订单详情，用户可在详情页重新发起支付
+      console.error('[create] 支付初始化失败，订单已创建:', err.message)
+      return { orderId: _id, orderNo, actualPrice, payInitError: err.message || '支付初始化失败，请在订单详情中重试' }
+    }
   }
 
   // 模拟支付模式：直接通知商户有新订单、通知用户下单成功
@@ -379,7 +386,7 @@ async function cancel(event) {
     throw createError(2001, '无权操作此订单')
   }
 
-  if (order.status !== STATUS.PENDING_ACCEPT) {
+  if (order.status !== STATUS.PENDING_ACCEPT && order.status !== STATUS.PENDING_PAY) {
     throw createError(2002, '当前状态不可取消')
   }
 
@@ -578,9 +585,9 @@ async function autoCancel() {
   const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000)
   const now = db.serverDate()
 
-  // 查找超时的待接单订单
+  // 查找超时的待接单和待支付订单
   const { data: expiredOrders } = await ordersCol.where({
-    status: STATUS.PENDING_ACCEPT,
+    status: _.in([STATUS.PENDING_ACCEPT, STATUS.PENDING_PAY]),
     created_at: _.lt(thirtyMinutesAgo)
   }).limit(100).get()
 
