@@ -60,6 +60,7 @@ const actions = {
   reject,
   markReady,
   complete,
+  userComplete,
   autoCancel,
   // S7: 支付相关
   createPayment,
@@ -585,6 +586,33 @@ async function complete(event) {
     await settlement({ orderId })
   } catch (err) {
     console.warn('[complete] 自动结算失败:', err.message)
+  }
+
+  return { orderId }
+}
+
+/**
+ * S6-5b: 用户确认取餐 → 订单直接进入完成状态
+ */
+async function userComplete(event) {
+  const { _openid, orderId } = event
+  if (!orderId) throw createError(1001, '缺少订单ID')
+
+  const { data: order } = await ordersCol.doc(orderId).get().catch(() => ({ data: null }))
+  if (!order) throw createError(2001, '订单不存在')
+  if (order.user_id !== _openid) throw createError(2001, '无权操作此订单')
+  if (order.status !== STATUS.READY) throw createError(2002, '当前状态不可确认取餐')
+
+  const now = db.serverDate()
+  await ordersCol.doc(orderId).update({
+    data: { status: STATUS.COMPLETED, completed_at: now, updated_at: now }
+  })
+
+  // 订单完成后自动触发分账结算
+  try {
+    await settlement({ orderId })
+  } catch (err) {
+    console.warn('[userComplete] 自动结算失败:', err.message)
   }
 
   return { orderId }
