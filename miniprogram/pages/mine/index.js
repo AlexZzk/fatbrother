@@ -1,6 +1,7 @@
 const app = getApp()
 const userService = require('../../services/user')
 const merchantService = require('../../services/merchant')
+const riderService = require('../../services/rider')
 
 Page({
   data: {
@@ -9,6 +10,7 @@ Page({
     isLoggedIn: false,
     userInfo: null,
     merchantInfo: null,
+    riderInfo: null,
     showLoginPopup: false,
     loginLoading: false
   },
@@ -51,6 +53,16 @@ Page({
       this.setData({ merchantInfo })
     } catch (err) {
       console.error('[mine] _refreshUserState getApplyStatus failed:', err)
+    }
+
+    // 刷新骑手状态
+    try {
+      const riderData = await riderService.getRiderInfo()
+      const riderInfo = riderData.hasApplied ? riderData.riderInfo : null
+      app.globalData.riderInfo = riderInfo
+      this.setData({ riderInfo })
+    } catch (err) {
+      console.error('[mine] _refreshUserState getRiderInfo failed:', err)
     }
   },
 
@@ -137,13 +149,30 @@ Page({
   },
 
   /**
-   * 收货地址（暂未开放）
+   * 收货地址
    */
   onAddressTap() {
-    this.selectComponent('#toast').showToast({
-      message: '该功能即将上线',
-      type: 'info'
-    })
+    if (!this.data.isLoggedIn) {
+      this.setData({ showLoginPopup: true })
+      return
+    }
+    wx.navigateTo({ url: '/pages/address/list/index' })
+  },
+
+  /**
+   * 骑手中心入口
+   */
+  onRiderTap() {
+    if (!this.data.isLoggedIn) {
+      this.setData({ showLoginPopup: true })
+      return
+    }
+    const { riderInfo } = this.data
+    if (!riderInfo) {
+      wx.navigateTo({ url: '/pages/rider/apply/index' })
+    } else {
+      wx.navigateTo({ url: '/pages/rider/status/index' })
+    }
   },
 
   /**

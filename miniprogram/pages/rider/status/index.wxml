@@ -1,0 +1,84 @@
+<nav-bar title="骑手中心" left-arrow="{{true}}" />
+
+<view class="page-container" wx:if="{{!loading && riderInfo}}">
+  <!-- 状态卡片 -->
+  <view class="status-card status-card--{{riderInfo.status}}">
+    <view class="status-icon">
+      <text>{{riderInfo.status === 'active' ? '✅' : riderInfo.status === 'suspended' ? '⛔' : '⏳'}}</text>
+    </view>
+    <view class="status-info">
+      <text class="status-title">{{statusText}}</text>
+      <text class="status-desc">{{statusDesc}}</text>
+    </view>
+  </view>
+
+  <!-- 在线开关（仅认证骑手显示） -->
+  <view wx:if="{{riderInfo.status === 'active'}}" class="online-card" bindtap="onToggleOnline">
+    <view class="online-left">
+      <text class="online-icon">{{riderInfo.is_online ? '🟢' : '⚪'}}</text>
+      <view>
+        <text class="online-label">{{riderInfo.is_online ? '在线接单中' : '当前已离线'}}</text>
+        <text class="online-hint">{{riderInfo.is_online ? '点击切换为离线' : '点击切换为在线'}}</text>
+      </view>
+    </view>
+    <view class="switch {{riderInfo.is_online ? 'switch--on' : ''}}">
+      <view class="switch-ball" />
+    </view>
+  </view>
+
+  <!-- 数据统计（仅认证骑手显示） -->
+  <view wx:if="{{riderInfo.status === 'active'}}" class="stats-card">
+    <view class="stat-item">
+      <text class="stat-value">{{riderInfo.total_orders || 0}}</text>
+      <text class="stat-label">累计单数</text>
+    </view>
+    <view class="stat-divider" />
+    <view class="stat-item">
+      <text class="stat-value">¥{{earningsYuan}}</text>
+      <text class="stat-label">累计记账收益</text>
+    </view>
+  </view>
+
+  <!-- 骑手信息 -->
+  <view class="info-card">
+    <view class="info-title">申请信息</view>
+    <view class="info-row">
+      <text class="info-label">真实姓名</text>
+      <text class="info-value">{{riderInfo.real_name}}</text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">联系电话</text>
+      <text class="info-value">{{riderInfo.phone}}</text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">车辆类型</text>
+      <text class="info-value">{{vehicleTypeText}}</text>
+    </view>
+    <view class="info-row" wx:if="{{riderInfo.vehicle_desc}}">
+      <text class="info-label">车辆描述</text>
+      <text class="info-value">{{riderInfo.vehicle_desc}}</text>
+    </view>
+    <view class="info-row" wx:if="{{riderInfo.service_area}}">
+      <text class="info-label">配送区域</text>
+      <text class="info-value">{{riderInfo.service_area}}</text>
+    </view>
+  </view>
+
+  <!-- 拒绝原因 & 重新提交（pending + 有拒绝原因时显示） -->
+  <view wx:if="{{riderInfo.status === 'pending' && riderInfo.reject_reason}}" class="reject-card">
+    <text class="reject-title">审核未通过原因</text>
+    <text class="reject-reason">{{riderInfo.reject_reason}}</text>
+    <view class="reapply-btn" bindtap="onReApply">修改信息，重新提交</view>
+  </view>
+
+  <!-- 提示信息（pending 且无拒绝原因时） -->
+  <view wx:if="{{riderInfo.status === 'pending' && !riderInfo.reject_reason}}" class="pending-tip">
+    <text>预计 1-3 个工作日内完成审核，请耐心等待</text>
+  </view>
+</view>
+
+<view class="loading-center" wx:elif="{{loading}}">
+  <text>加载中...</text>
+</view>
+
+<toast id="toast" />

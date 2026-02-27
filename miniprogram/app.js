@@ -4,6 +4,7 @@ App({
   globalData: {
     userInfo: null,
     merchantInfo: null,
+    riderInfo: null,
     openid: '',
     isLoggedIn: false,
     systemInfo: null,

@@ -46,7 +46,7 @@
 
 <!-- 编辑弹窗 -->
 <view wx:if="{{showForm}}" class="form-mask" bindtap="onFormCancel">
-  <view class="form-popup" catchtap="">
+  <view class="form-popup" catchtap="" catchtouchmove="noop" style="margin-bottom: {{keyboardHeight}}px">
     <view class="form-title">{{editingId ? '编辑活动' : '新建满减活动'}}</view>
 
     <view class="form-item">
@@ -56,7 +56,10 @@
         placeholder="例如：满35减5"
         value="{{formData.name}}"
         data-field="name"
+        adjust-position="{{false}}"
         bindinput="onFormInput"
+        bindfocus="onInputFocus"
+        bindblur="onInputBlur"
       />
     </view>
 
@@ -70,7 +73,10 @@
           placeholder="订单满多少元生效"
           value="{{formData.min_amount_yuan}}"
           data-field="min_amount_yuan"
+          adjust-position="{{false}}"
           bindinput="onFormInput"
+          bindfocus="onInputFocus"
+          bindblur="onInputBlur"
         />
       </view>
     </view>
@@ -85,7 +91,10 @@
           placeholder="减免多少元配送费"
           value="{{formData.discount_amount_yuan}}"
           data-field="discount_amount_yuan"
+          adjust-position="{{false}}"
           bindinput="onFormInput"
+          bindfocus="onInputFocus"
+          bindblur="onInputBlur"
         />
       </view>
     </view>

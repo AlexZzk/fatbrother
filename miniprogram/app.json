@@ -25,7 +25,11 @@
     "pages/merchant/invite/index",
     "pages/merchant/promotions/index",
     "pages/merchant/delivery-settings/index",
-    "pages/user-coupons/index"
+    "pages/user-coupons/index",
+    "pages/address/list/index",
+    "pages/address/edit/index",
+    "pages/rider/apply/index",
+    "pages/rider/status/index"
   ],
   "window": {
     "navigationBarBackgroundColor": "#FFFFFF",

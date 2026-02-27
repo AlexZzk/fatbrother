@@ -39,9 +39,9 @@
 
 <!-- 新增/编辑弹窗 -->
 <view wx:if="{{showModal}}" class="modal-mask" bindtap="onModalCancel">
-  <view class="modal-content" catchtap="">
+  <view class="modal-content" catchtap="" catchtouchmove="noop">
     <view class="modal-title">{{modalTitle}}</view>
-    <input class="modal-input" placeholder="请输入分类名称" value="{{editName}}" bindinput="onNameInput" focus="{{showModal}}" />
+    <input class="modal-input" placeholder="请输入分类名称" value="{{editName}}" bindinput="onNameInput" focus="{{showModal}}" adjust-position="{{false}}" />
     <view class="modal-footer">
       <view class="modal-btn modal-btn--cancel" bindtap="onModalCancel">取消</view>
       <view class="modal-btn modal-btn--confirm" bindtap="onModalConfirm">确定</view>

@@ -7,6 +7,7 @@ const usersCollection = db.collection('users')
 const merchantsCollection = db.collection('merchants')
 const couponActivitiesCollection = db.collection('coupon_activities')
 const userCouponsCollection = db.collection('user_coupons')
+const userAddressesCollection = db.collection('user_addresses')
 
 /**
  * 用户模块云函数
@@ -23,7 +24,12 @@ exports.main = async (event, context) => {
     getCouponActivities,
     claimCoupon,
     getUserCoupons,
-    createCouponActivity
+    createCouponActivity,
+    getAddresses,
+    addAddress,
+    updateAddress,
+    deleteAddress,
+    setDefaultAddress
   }
 
   if (!actions[action]) {
@@ -399,4 +405,155 @@ async function createCouponActivity(event, openid) {
   })
 
   return { code: 0, message: 'success', data: { activityId: _id } }
+}
+
+// ============================================================
+// 收货地址管理
+//
+// user_addresses 集合:
+//   _openid          - 用户 openid
+//   name             - 收件人姓名
+//   phone            - 联系电话
+//   address          - 详细地址（省市区+街道门牌）
+//   address_detail   - 补充信息（楼栋/单元等）
+//   lat              - 纬度
+//   lng              - 经度
+//   is_default       - 是否默认地址
+//   created_at / updated_at
+// ============================================================
+
+/**
+ * 获取用户地址列表（默认地址排第一）
+ */
+async function getAddresses(event, openid) {
+  const { data: addresses } = await userAddressesCollection
+    .where({ _openid: openid })
+    .orderBy('is_default', 'desc')
+    .orderBy('created_at', 'desc')
+    .limit(20)
+    .get()
+
+  return { code: 0, message: 'success', data: { addresses } }
+}
+
+/**
+ * 新增收货地址
+ * 入参: name, phone, address, address_detail, lat, lng, is_default
+ */
+async function addAddress(event, openid) {
+  const { name, phone, address, address_detail = '', lat, lng, is_default = false } = event
+
+  if (!name || !phone || !address) {
+    return { code: 1001, message: '姓名、电话、地址为必填项' }
+  }
+
+  const now = db.serverDate()
+
+  // 如果设为默认，先清除其他默认地址
+  if (is_default) {
+    await userAddressesCollection
+      .where({ _openid: openid, is_default: true })
+      .update({ data: { is_default: false, updated_at: now } })
+  }
+
+  const { _id } = await userAddressesCollection.add({
+    data: {
+      _openid: openid,
+      name: name.trim(),
+      phone: phone.trim(),
+      address: address.trim(),
+      address_detail: address_detail.trim(),
+      lat: lat || 0,
+      lng: lng || 0,
+      is_default,
+      created_at: now,
+      updated_at: now
+    }
+  })
+
+  return { code: 0, message: 'success', data: { addressId: _id } }
+}
+
+/**
+ * 修改收货地址
+ * 入参: addressId, name, phone, address, address_detail, lat, lng, is_default
+ */
+async function updateAddress(event, openid) {
+  const { addressId, name, phone, address, address_detail, lat, lng, is_default } = event
+
+  if (!addressId) return { code: 1001, message: '缺少地址ID' }
+
+  // 验证归属
+  const { data: existing } = await userAddressesCollection.doc(addressId).get().catch(() => ({ data: null }))
+  if (!existing || existing._openid !== openid) {
+    return { code: 2001, message: '地址不存在' }
+  }
+
+  const now = db.serverDate()
+  const updateData = { updated_at: now }
+
+  if (name !== undefined) updateData.name = name.trim()
+  if (phone !== undefined) updateData.phone = phone.trim()
+  if (address !== undefined) updateData.address = address.trim()
+  if (address_detail !== undefined) updateData.address_detail = address_detail.trim()
+  if (lat !== undefined) updateData.lat = lat
+  if (lng !== undefined) updateData.lng = lng
+  if (is_default !== undefined) updateData.is_default = is_default
+
+  // 如果设为默认，先清除其他默认地址
+  if (is_default) {
+    await userAddressesCollection
+      .where({ _openid: openid, is_default: true })
+      .update({ data: { is_default: false, updated_at: now } })
+  }
+
+  await userAddressesCollection.doc(addressId).update({ data: updateData })
+
+  return { code: 0, message: 'success', data: { addressId } }
+}
+
+/**
+ * 删除收货地址
+ * 入参: addressId
+ */
+async function deleteAddress(event, openid) {
+  const { addressId } = event
+  if (!addressId) return { code: 1001, message: '缺少地址ID' }
+
+  const { data: existing } = await userAddressesCollection.doc(addressId).get().catch(() => ({ data: null }))
+  if (!existing || existing._openid !== openid) {
+    return { code: 2001, message: '地址不存在' }
+  }
+
+  await userAddressesCollection.doc(addressId).remove()
+
+  return { code: 0, message: 'success', data: {} }
+}
+
+/**
+ * 设为默认地址
+ * 入参: addressId
+ */
+async function setDefaultAddress(event, openid) {
+  const { addressId } = event
+  if (!addressId) return { code: 1001, message: '缺少地址ID' }
+
+  const { data: existing } = await userAddressesCollection.doc(addressId).get().catch(() => ({ data: null }))
+  if (!existing || existing._openid !== openid) {
+    return { code: 2001, message: '地址不存在' }
+  }
+
+  const now = db.serverDate()
+
+  // 清除旧默认
+  await userAddressesCollection
+    .where({ _openid: openid, is_default: true })
+    .update({ data: { is_default: false, updated_at: now } })
+
+  // 设置新默认
+  await userAddressesCollection.doc(addressId).update({
+    data: { is_default: true, updated_at: now }
+  })
+
+  return { code: 0, message: 'success', data: { addressId } }
 }

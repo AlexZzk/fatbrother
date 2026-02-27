@@ -106,3 +106,24 @@
     {{item.text}}
   </view>
 </view>
+
+<!-- 退款原因弹窗 -->
+<view wx:if="{{showRefundModal}}" class="refund-mask" bindtap="onRefundCancel">
+  <view class="refund-popup" catchtap="" catchtouchmove="noop">
+    <view class="refund-title">申请退款</view>
+    <view class="refund-hint">出餐后将无法退款，请确认</view>
+    <textarea
+      class="refund-textarea"
+      placeholder="请填写退款原因（必填）"
+      value="{{refundReason}}"
+      adjust-position="{{false}}"
+      bindinput="onRefundReasonInput"
+      maxlength="200"
+      auto-height
+    />
+    <view class="refund-actions">
+      <button class="refund-btn refund-btn--cancel" bindtap="onRefundCancel">取消</button>
+      <button class="refund-btn refund-btn--confirm" bindtap="onRefundConfirm">确认退款</button>
+    </view>
+  </view>
+</view>

@@ -55,7 +55,29 @@ const MERCHANT_STATUS_TEXT = {
 const USER_ROLE = {
   USER: 'user',
   MERCHANT: 'merchant',
+  RIDER: 'rider',
   ADMIN: 'admin'
+}
+
+// Rider status
+const RIDER_STATUS = {
+  PENDING: 'pending',
+  ACTIVE: 'active',
+  SUSPENDED: 'suspended'
+}
+
+const RIDER_STATUS_TEXT = {
+  pending: '审核中',
+  active: '已认证',
+  suspended: '已暂停'
+}
+
+// Rider vehicle types
+const RIDER_VEHICLE_TYPE = {
+  bicycle: '自行车',
+  electric: '电动车',
+  motorcycle: '摩托车',
+  car: '汽车'
 }
 
 // Settlement status
@@ -94,6 +116,9 @@ module.exports = {
   MERCHANT_STATUS,
   MERCHANT_STATUS_TEXT,
   USER_ROLE,
+  RIDER_STATUS,
+  RIDER_STATUS_TEXT,
+  RIDER_VEHICLE_TYPE,
   SETTLEMENT_STATUS,
   PAGE_SIZE,
   STORAGE_KEYS,

@@ -1,0 +1,47 @@
+<nav-bar title="收货地址" left-arrow="{{true}}" rightText="+ 新增" bind:right="onAddTap" />
+
+<view class="page-container">
+  <block wx:if="{{!loading}}">
+    <view wx:if="{{addresses.length > 0}}" class="address-list">
+      <view
+        wx:for="{{addresses}}"
+        wx:key="_id"
+        class="address-item {{item.is_default ? 'address-item--default' : ''}}"
+        bindtap="onSelectAddress"
+        data-id="{{item._id}}"
+      >
+        <view class="address-main">
+          <view class="address-header">
+            <text class="address-name">{{item.name}}</text>
+            <text class="address-phone">{{item.phone}}</text>
+            <view wx:if="{{item.is_default}}" class="default-badge">默认</view>
+          </view>
+          <text class="address-text">{{item.address}}{{item.address_detail ? ' ' + item.address_detail : ''}}</text>
+        </view>
+        <view class="address-actions" catchtap="">
+          <view
+            wx:if="{{!item.is_default}}"
+            class="action-btn"
+            bindtap="onSetDefault"
+            data-id="{{item._id}}"
+          >设为默认</view>
+          <view class="action-btn action-btn--edit" bindtap="onEditTap" data-item="{{item}}">编辑</view>
+          <view class="action-btn action-btn--delete" bindtap="onDeleteTap" data-id="{{item._id}}">删除</view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="empty-state">
+      <text class="empty-icon">📍</text>
+      <text class="empty-text">暂无收货地址</text>
+      <text class="empty-hint">添加地址，享受便捷外卖配送</text>
+      <view class="empty-add-btn" bindtap="onAddTap">+ 添加地址</view>
+    </view>
+  </block>
+
+  <view wx:elif="{{loading}}" class="loading-center">
+    <text>加载中...</text>
+  </view>
+</view>
+
+<toast id="toast" />

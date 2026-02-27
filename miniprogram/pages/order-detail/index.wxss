@@ -248,3 +248,82 @@
   color: #FFFFFF;
   font-weight: 600;
 }
+
+.action-btn--danger {
+  background-color: #FFEBEE;
+  border-color: #FF4D4F;
+  color: #FF4D4F;
+  font-weight: 600;
+}
+
+/* 退款弹窗 */
+.refund-mask {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+}
+
+.refund-popup {
+  width: 100%;
+  background-color: #FFFFFF;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 40rpx 32rpx calc(40rpx + env(safe-area-inset-bottom));
+}
+
+.refund-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #222222;
+  text-align: center;
+  margin-bottom: 12rpx;
+}
+
+.refund-hint {
+  font-size: 24rpx;
+  color: #FF4D4F;
+  text-align: center;
+  margin-bottom: 24rpx;
+}
+
+.refund-textarea {
+  width: 100%;
+  min-height: 160rpx;
+  background-color: #F5F5F5;
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+  margin-bottom: 28rpx;
+}
+
+.refund-actions {
+  display: flex;
+  gap: 24rpx;
+}
+
+.refund-btn {
+  flex: 1;
+  height: 88rpx;
+  line-height: 88rpx;
+  border-radius: 999rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  border: none;
+  padding: 0;
+  text-align: center;
+}
+
+.refund-btn::after { border: none; }
+
+.refund-btn--cancel {
+  background-color: #F5F5F5;
+  color: #666666;
+}
+
+.refund-btn--confirm {
+  background-color: #FF4D4F;
+  color: #FFFFFF;
+}

@@ -1,0 +1,111 @@
+<nav-bar title="申请成为骑手" left-arrow="{{true}}" />
+
+<view class="page-container">
+  <!-- 说明卡片 -->
+  <view class="tip-card">
+    <text class="tip-title">🛵 骑手配送，灵活赚钱</text>
+    <text class="tip-text">注册成为平台骑手，接受商家配送订单，配送费由商家直接支付。</text>
+    <text class="tip-text">审核通过后即可上线接单，工作时间灵活自由。</text>
+  </view>
+
+  <view class="form-card">
+    <!-- 真实姓名 -->
+    <view class="form-item">
+      <text class="form-label required">真实姓名</text>
+      <input
+        class="form-input"
+        placeholder="请输入真实姓名"
+        value="{{form.real_name}}"
+        adjust-position="{{false}}"
+        bindinput="onInput"
+        data-field="real_name"
+      />
+    </view>
+    <view class="divider" />
+
+    <!-- 手机号 -->
+    <view class="form-item">
+      <text class="form-label required">联系电话</text>
+      <input
+        class="form-input"
+        type="number"
+        placeholder="请输入手机号"
+        value="{{form.phone}}"
+        adjust-position="{{false}}"
+        bindinput="onInput"
+        data-field="phone"
+      />
+    </view>
+    <view class="divider" />
+
+    <!-- 身份证号 -->
+    <view class="form-item">
+      <text class="form-label">身份证号</text>
+      <input
+        class="form-input"
+        placeholder="选填，用于身份核验"
+        value="{{form.id_card_no}}"
+        adjust-position="{{false}}"
+        bindinput="onInput"
+        data-field="id_card_no"
+      />
+    </view>
+    <view class="divider" />
+
+    <!-- 车辆类型 -->
+    <view class="form-item form-item--select" bindtap="onChooseVehicle">
+      <text class="form-label required">车辆类型</text>
+      <view class="select-right">
+        <text class="{{form.vehicle_type ? 'select-value' : 'select-placeholder'}}">
+          {{vehicleTypeText || '请选择车辆类型'}}
+        </text>
+        <text class="arrow">></text>
+      </view>
+    </view>
+    <view class="divider" />
+
+    <!-- 车辆描述 -->
+    <view class="form-item">
+      <text class="form-label">车辆描述</text>
+      <input
+        class="form-input"
+        placeholder="如：红色电动车（选填）"
+        value="{{form.vehicle_desc}}"
+        adjust-position="{{false}}"
+        bindinput="onInput"
+        data-field="vehicle_desc"
+      />
+    </view>
+    <view class="divider" />
+
+    <!-- 配送区域 -->
+    <view class="form-item">
+      <text class="form-label">配送区域</text>
+      <input
+        class="form-input"
+        placeholder="如：朝阳区望京街道（选填）"
+        value="{{form.service_area}}"
+        adjust-position="{{false}}"
+        bindinput="onInput"
+        data-field="service_area"
+      />
+    </view>
+  </view>
+
+  <!-- 承诺声明 -->
+  <view class="agreement-row" bindtap="onToggleAgree">
+    <view class="checkbox {{agreed ? 'checkbox--checked' : ''}}">
+      <text wx:if="{{agreed}}">✓</text>
+    </view>
+    <text class="agreement-text">我已阅读并同意平台骑手服务协议，承诺合法合规从事配送服务</text>
+  </view>
+
+  <!-- 提交按钮 -->
+  <view class="submit-bar">
+    <button class="submit-btn" bindtap="onSubmit" loading="{{submitting}}">
+      {{submitting ? '提交中...' : '提交申请'}}
+    </button>
+  </view>
+</view>
+
+<toast id="toast" />

@@ -43,7 +43,7 @@
 
 <!-- 编辑弹窗 -->
 <view wx:if="{{showForm}}" class="form-mask" bindtap="onFormCancel">
-  <view class="form-popup" catchtap="">
+  <view class="form-popup" catchtap="" catchtouchmove="noop" style="margin-bottom: {{keyboardHeight}}px">
     <view class="form-title">{{editingIndex >= 0 ? '编辑规则' : '添加规则'}}</view>
 
     <view class="form-item">
@@ -55,7 +55,10 @@
           placeholder="例如：5"
           value="{{editForm.max_distance_km}}"
           data-field="max_distance_km"
+          adjust-position="{{false}}"
           bindinput="onFormInput"
+          bindfocus="onInputFocus"
+          bindblur="onInputBlur"
         />
         <text class="form-unit">km</text>
       </view>
@@ -72,7 +75,10 @@
           placeholder="例如：5（填-1表示不配送）"
           value="{{editForm.fee_yuan}}"
           data-field="fee_yuan"
+          adjust-position="{{false}}"
           bindinput="onFormInput"
+          bindfocus="onInputFocus"
+          bindblur="onInputBlur"
         />
       </view>
     </view>

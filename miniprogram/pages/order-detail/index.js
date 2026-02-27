@@ -18,7 +18,7 @@ const STATUS_CONFIG = {
   [ORDER_STATUS.ACCEPTED]: {
     bg: 'linear-gradient(135deg, #E3F2FD, #BBDEFB)',
     title: '制作中',
-    desc: '商家已接单，正在准备您的餐品'
+    desc: '商家已接单，正在准备您的餐品。出餐前仍可申请退款'
   },
   [ORDER_STATUS.READY]: {
     bg: 'linear-gradient(135deg, #E8F5E9, #C8E6C9)',
@@ -49,7 +49,10 @@ Page({
     statusColor: '',
     orderItems: [],
     createTimeStr: '',
-    buttons: []
+    buttons: [],
+    // Refund modal
+    showRefundModal: false,
+    refundReason: ''
   },
 
   onLoad(options) {
@@ -111,7 +114,9 @@ Page({
           { type: 'cancel', text: '取消订单', style: 'default' }
         ]
       case ORDER_STATUS.ACCEPTED:
-        return []
+        return [
+          { type: 'refund', text: '申请退款', style: 'danger' }
+        ]
       case ORDER_STATUS.READY:
         return [
           { type: 'confirm', text: '确认取餐', style: 'primary' }
@@ -177,6 +182,10 @@ Page({
         })
         break
 
+      case 'refund':
+        this._showRefundModal()
+        break
+
       case 'confirm':
         wx.showModal({
           title: '确认取餐',
@@ -205,6 +214,37 @@ Page({
           wx.navigateTo({ url: `/pages/shop/index?id=${order.merchant_id}` })
         }
         break
+    }
+  },
+
+  _showRefundModal() {
+    this.setData({ showRefundModal: true, refundReason: '' })
+  },
+
+  onRefundReasonInput(e) {
+    this.setData({ refundReason: e.detail.value })
+  },
+
+  onRefundCancel() {
+    this.setData({ showRefundModal: false })
+  },
+
+  async onRefundConfirm() {
+    const { orderId, refundReason } = this.data
+    if (!refundReason.trim()) {
+      wx.showToast({ title: '请填写退款原因', icon: 'none' })
+      return
+    }
+    try {
+      wx.showLoading({ title: '申请中...' })
+      await orderService.cancel(orderId, refundReason.trim())
+      wx.hideLoading()
+      this.setData({ showRefundModal: false })
+      wx.showToast({ title: '退款申请已提交', icon: 'success' })
+      this._loadDetail()
+    } catch (err) {
+      wx.hideLoading()
+      wx.showToast({ title: err.message || '申请失败', icon: 'none' })
     }
   },
 
