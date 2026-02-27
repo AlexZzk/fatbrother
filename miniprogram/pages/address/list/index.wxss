@@ -1,0 +1,125 @@
+.page-container {
+  min-height: 100vh;
+  background-color: #F5F5F5;
+  padding: 16rpx 24rpx 40rpx;
+}
+
+.address-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.address-item {
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 28rpx 28rpx 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  border: 2rpx solid transparent;
+}
+
+.address-item--default {
+  border-color: #FF6B35;
+}
+
+.address-header {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 10rpx;
+}
+
+.address-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #222222;
+}
+
+.address-phone {
+  font-size: 28rpx;
+  color: #666666;
+}
+
+.default-badge {
+  font-size: 22rpx;
+  color: #FF6B35;
+  background-color: #FFF0EB;
+  padding: 2rpx 12rpx;
+  border-radius: 999rpx;
+  border: 1rpx solid #FF6B35;
+}
+
+.address-text {
+  font-size: 28rpx;
+  color: #444444;
+  line-height: 1.5;
+  display: block;
+  margin-bottom: 16rpx;
+}
+
+.address-actions {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #F5F5F5;
+  justify-content: flex-end;
+}
+
+.action-btn {
+  font-size: 26rpx;
+  color: #1677FF;
+  padding: 8rpx 0;
+}
+
+.action-btn--edit {
+  color: #E65100;
+}
+
+.action-btn--delete {
+  color: #FF4D4F;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx 0 60rpx;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 24rpx;
+}
+
+.empty-text {
+  font-size: 30rpx;
+  color: #333333;
+  font-weight: 500;
+  margin-bottom: 12rpx;
+}
+
+.empty-hint {
+  font-size: 26rpx;
+  color: #999999;
+  margin-bottom: 48rpx;
+}
+
+.empty-add-btn {
+  height: 80rpx;
+  line-height: 80rpx;
+  padding: 0 60rpx;
+  background: linear-gradient(135deg, #FF6B35, #FF9A57);
+  color: #FFFFFF;
+  font-size: 28rpx;
+  font-weight: 600;
+  border-radius: 999rpx;
+}
+
+.loading-center {
+  display: flex;
+  justify-content: center;
+  padding-top: 200rpx;
+  color: #999999;
+  font-size: 28rpx;
+}

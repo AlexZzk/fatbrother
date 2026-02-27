@@ -1,0 +1,145 @@
+.page-container {
+  min-height: 100vh;
+  background-color: #F5F5F5;
+  padding: 16rpx 24rpx 160rpx;
+}
+
+.form-card {
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 0 28rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  margin-bottom: 16rpx;
+}
+
+.form-item {
+  display: flex;
+  align-items: center;
+  min-height: 100rpx;
+  padding: 20rpx 0;
+}
+
+.form-item--arrow {
+  cursor: pointer;
+}
+
+.form-label {
+  font-size: 28rpx;
+  color: #333333;
+  font-weight: 500;
+  width: 140rpx;
+  flex-shrink: 0;
+}
+
+.form-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: #222222;
+  text-align: right;
+}
+
+.location-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8rpx;
+}
+
+.location-text {
+  font-size: 28rpx;
+  color: #222222;
+  text-align: right;
+  flex: 1;
+}
+
+.location-placeholder {
+  font-size: 28rpx;
+  color: #CCCCCC;
+  text-align: right;
+  flex: 1;
+}
+
+.arrow {
+  font-size: 24rpx;
+  color: #CCCCCC;
+  flex-shrink: 0;
+}
+
+.divider {
+  height: 1rpx;
+  background-color: #F5F5F5;
+}
+
+.default-row {
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  margin-bottom: 16rpx;
+}
+
+.default-label {
+  font-size: 28rpx;
+  color: #333333;
+}
+
+.switch {
+  width: 96rpx;
+  height: 52rpx;
+  border-radius: 999rpx;
+  background-color: #E0E0E0;
+  position: relative;
+  transition: background-color 0.2s;
+}
+
+.switch--on {
+  background-color: #FF6B35;
+}
+
+.switch-ball {
+  position: absolute;
+  top: 6rpx;
+  left: 6rpx;
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.15);
+  transition: left 0.2s;
+}
+
+.switch--on .switch-ball {
+  left: 50rpx;
+}
+
+.save-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16rpx 24rpx;
+  padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
+  background-color: #FFFFFF;
+  border-top: 1rpx solid #F0F0F0;
+}
+
+.save-btn {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  background: linear-gradient(135deg, #FF6B35, #FF9A57);
+  color: #FFFFFF;
+  font-size: 30rpx;
+  font-weight: 600;
+  border-radius: 999rpx;
+  border: none;
+  text-align: center;
+}
+
+.save-btn::after {
+  border: none;
+}

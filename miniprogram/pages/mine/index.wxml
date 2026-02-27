@@ -37,7 +37,21 @@
       <cell icon="📋" title="我的订单" arrow bindclick="onOrdersTap" />
       <cell icon="🎟" title="优惠券/红包" arrow bindclick="onCouponsTap" />
       <cell icon="📊" title="账单统计" value="即将上线" arrow disabled bindclick="onBillTap" />
-      <cell icon="📍" title="收货地址" value="即将上线" arrow disabled bindclick="onAddressTap" />
+      <cell icon="📍" title="收货地址" arrow bindclick="onAddressTap" />
+    </view>
+  </view>
+
+  <!-- 骑手中心 -->
+  <view class="section">
+    <view class="section-title">骑手中心</view>
+    <view class="section-card">
+      <cell
+        icon="🛵"
+        title="{{riderInfo ? (riderInfo.status === 'active' ? '骑手中心' : '申请审核中') : '成为骑手'}}"
+        value="{{riderInfo && riderInfo.status === 'active' ? '接单配送，增加收入' : (riderInfo ? '预计3个工作日内审核' : '注册骑手，接单配送')}}"
+        arrow
+        bindclick="onRiderTap"
+      />
     </view>
   </view>
 

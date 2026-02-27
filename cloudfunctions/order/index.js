@@ -509,13 +509,16 @@ async function getDetail(event) {
 }
 
 /**
- * S5-4: 用户取消订单
+ * S5-4: 用户取消订单 / 申请退款
  *
  * 入参:
  *   orderId - 订单ID
- *   reason - 取消原因（可选）
+ *   reason  - 取消/退款原因（ACCEPTED 状态时必填）
  *
- * 仅 PENDING_ACCEPT 状态可取消
+ * 支持状态：
+ *   PENDING_PAY    → 直接取消（无需退款，未付款）
+ *   PENDING_ACCEPT → 取消并退款
+ *   ACCEPTED       → 申请退款（出餐前仍可退）
  */
 async function cancel(event) {
   const { _openid, orderId, reason = '' } = event
@@ -533,8 +536,14 @@ async function cancel(event) {
     throw createError(2001, '无权操作此订单')
   }
 
-  if (order.status !== STATUS.PENDING_ACCEPT && order.status !== STATUS.PENDING_PAY) {
-    throw createError(2002, '当前状态不可取消')
+  const cancellableStatuses = [STATUS.PENDING_PAY, STATUS.PENDING_ACCEPT, STATUS.ACCEPTED]
+  if (!cancellableStatuses.includes(order.status)) {
+    throw createError(2002, '当前状态不可申请退款，餐品已备好或订单已完成')
+  }
+
+  // ACCEPTED 状态退款时要求填写原因
+  if (order.status === STATUS.ACCEPTED && !reason.trim()) {
+    throw createError(1001, '请填写退款原因')
   }
 
   const dbNow = db.serverDate()
@@ -552,6 +561,21 @@ async function cancel(event) {
     await userCouponsCol.doc(order.applied_coupon._id).update({
       data: { status: 'unused', order_id: null, used_at: null }
     }).catch(() => {})
+  }
+
+  // 已付款订单（PENDING_ACCEPT / ACCEPTED）自动发起退款
+  if (order.status !== STATUS.PENDING_PAY && order.payment_id) {
+    await createRefund({ _openid, orderId, reason: reason || '用户申请退款' }).catch(err => {
+      console.warn(`[cancel] auto createRefund failed for ${orderId}:`, err.message)
+    })
+  }
+
+  // 通知商家（静默，不影响主流程）
+  if (order.merchant_id) {
+    const { data: merchants } = await merchantsCol.doc(order.merchant_id).get().catch(() => ({ data: null }))
+    if (merchants && merchants._openid) {
+      sendNotify('ORDER_CANCELLED', merchants._openid, order).catch(() => {})
+    }
   }
 
   return { orderId }
