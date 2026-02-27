@@ -9,7 +9,8 @@ Page({
     // 是否正在编辑某条规则
     editingIndex: -1,
     editForm: { max_distance_km: '', fee_yuan: '' },
-    showForm: false
+    showForm: false,
+    keyboardHeight: 0
   },
 
   onShow() {
@@ -69,8 +70,16 @@ Page({
     this.setData({ [`editForm.${field}`]: e.detail.value })
   },
 
+  onInputFocus(e) {
+    this.setData({ keyboardHeight: e.detail.height || 0 })
+  },
+
+  onInputBlur() {
+    this.setData({ keyboardHeight: 0 })
+  },
+
   onFormCancel() {
-    this.setData({ showForm: false })
+    this.setData({ showForm: false, keyboardHeight: 0 })
   },
 
   onFormConfirm() {

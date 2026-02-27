@@ -12,7 +12,8 @@ Page({
       name: '',
       min_amount_yuan: '',
       discount_amount_yuan: ''
-    }
+    },
+    keyboardHeight: 0
   },
 
   onShow() {
@@ -60,8 +61,16 @@ Page({
     this.setData({ [`formData.${field}`]: e.detail.value })
   },
 
+  onInputFocus(e) {
+    this.setData({ keyboardHeight: e.detail.height || 0 })
+  },
+
+  onInputBlur() {
+    this.setData({ keyboardHeight: 0 })
+  },
+
   onFormCancel() {
-    this.setData({ showForm: false })
+    this.setData({ showForm: false, keyboardHeight: 0 })
   },
 
   async onFormConfirm() {

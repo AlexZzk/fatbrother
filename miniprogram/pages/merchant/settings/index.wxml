@@ -124,7 +124,7 @@
 
 <!-- 编辑弹窗 -->
 <view wx:if="{{editingField}}" class="edit-mask" bindtap="onEditCancel">
-  <view class="edit-popup" catchtap="">
+  <view class="edit-popup" catchtap="" catchtouchmove="noop">
     <view class="edit-header">
       <text class="edit-title">编辑{{editingField === 'shop_name' ? '店铺名称' : editingField === 'announcement' ? '店铺公告' : editingField === 'min_order_amount' ? '起送价' : editingField === 'packing_fee' ? '包装费' : '联系电话'}}</text>
     </view>
@@ -136,6 +136,7 @@
         value="{{editValue}}"
         placeholder="输入金额（元）"
         focus="{{true}}"
+        adjust-position="{{false}}"
         bindinput="onEditInput"
         bindconfirm="onEditConfirm"
       />
@@ -145,6 +146,7 @@
       class="edit-input"
       value="{{editValue}}"
       focus="{{true}}"
+      adjust-position="{{false}}"
       bindinput="onEditInput"
       bindconfirm="onEditConfirm"
     />
@@ -153,6 +155,7 @@
       class="edit-textarea"
       value="{{editValue}}"
       focus="{{true}}"
+      adjust-position="{{false}}"
       bindinput="onEditInput"
       maxlength="100"
       auto-height
