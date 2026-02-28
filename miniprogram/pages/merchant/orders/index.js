@@ -22,6 +22,7 @@ const TABS = [
   { key: ORDER_STATUS.PENDING_ACCEPT, label: '待接单' },
   { key: ORDER_STATUS.ACCEPTED, label: '制作中' },
   { key: ORDER_STATUS.READY, label: '待取餐' },
+  { key: ORDER_STATUS.DISPATCHING, label: '待配送' },
   { key: '', label: '全部' }
 ]
 

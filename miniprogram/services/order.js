@@ -69,6 +69,21 @@ const orderService = {
   // Get user's available coupons for an order (pass totalPrice in cents for availability filter)
   getUserCoupons(merchantId, totalPrice) {
     return callFunction('order', { action: 'getUserCoupons', merchantId, totalPrice })
+  },
+
+  // Rider: get dispatching orders (抢单大厅)
+  getDispatchingOrders(params) {
+    return callFunction('order', { action: 'getDispatchingOrders', ...params })
+  },
+
+  // Rider: accept a dispatching order
+  riderAccept(orderId) {
+    return callFunction('order', { action: 'riderAccept', orderId })
+  },
+
+  // User/rider: confirm delivery completed → COMPLETED
+  riderComplete(orderId) {
+    return callFunction('order', { action: 'riderComplete', orderId })
   }
 }
 

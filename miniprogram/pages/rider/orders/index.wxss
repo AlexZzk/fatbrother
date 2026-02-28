@@ -1,0 +1,210 @@
+/* 骑手接单页 */
+.page-container {
+  min-height: 100vh;
+  background-color: #F5F5F5;
+  padding-bottom: 32rpx;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  background-color: #FFFFFF;
+  border-bottom: 1rpx solid #EEEEEE;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 28rpx 0;
+  font-size: 28rpx;
+  color: #666666;
+}
+
+.tab--active {
+  color: #FF6B35;
+  border-bottom: 4rpx solid #FF6B35;
+  font-weight: 600;
+}
+
+/* 离线提示 */
+.offline-banner {
+  margin: 24rpx;
+  padding: 24rpx;
+  background-color: #FFF3E0;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.offline-text {
+  font-size: 26rpx;
+  color: #FF6B35;
+}
+
+.offline-go {
+  font-size: 26rpx;
+  color: #FFFFFF;
+  background-color: #FF6B35;
+  padding: 8rpx 24rpx;
+  border-radius: 32rpx;
+}
+
+/* Order card */
+.order-card {
+  margin: 24rpx 24rpx 0;
+  padding: 24rpx;
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.merchant-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #222222;
+}
+
+.order-fee {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+}
+
+.fee-label {
+  font-size: 24rpx;
+  color: #666666;
+}
+
+.order-items {
+  margin-bottom: 12rpx;
+}
+
+.items-text {
+  font-size: 26rpx;
+  color: #666666;
+  line-height: 1.5;
+}
+
+.order-addr-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8rpx;
+  margin-bottom: 16rpx;
+}
+
+.addr-icon {
+  font-size: 24rpx;
+  margin-top: 2rpx;
+}
+
+.addr-text {
+  font-size: 26rpx;
+  color: #333333;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.order-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-time {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+.accept-btn {
+  background-color: #FF6B35;
+  color: #FFFFFF;
+  font-size: 28rpx;
+  font-weight: 500;
+  padding: 16rpx 48rpx;
+  border-radius: 48rpx;
+}
+
+.accept-btn--disabled {
+  background-color: #CCCCCC;
+}
+
+.order-fee-small {
+  display: flex;
+  align-items: center;
+  font-size: 24rpx;
+  color: #666666;
+}
+
+/* 状态标签 */
+.status-tag {
+  font-size: 22rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+.status-tag--DELIVERING {
+  background-color: #E3F2FD;
+  color: #1677FF;
+}
+
+.status-tag--COMPLETED {
+  background-color: #F5F5F5;
+  color: #999999;
+}
+
+/* 取餐码 */
+.pickup-row {
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx dashed #EEEEEE;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pickup-label {
+  font-size: 24rpx;
+  color: #666666;
+}
+
+.pickup-code {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #FF6B35;
+  letter-spacing: 8rpx;
+  font-family: 'Menlo', monospace;
+}
+
+/* Empty & loading */
+.loading-center {
+  text-align: center;
+  padding: 80rpx 0;
+  color: #999999;
+  font-size: 28rpx;
+}
+
+.empty-wrap {
+  text-align: center;
+  padding: 120rpx 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.empty-text {
+  font-size: 30rpx;
+  color: #999999;
+}
+
+.empty-sub {
+  font-size: 26rpx;
+  color: #CCCCCC;
+}

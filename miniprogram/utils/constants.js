@@ -7,11 +7,19 @@ const ORDER_STATUS = {
   PENDING_PAY: 'PENDING_PAY',           // 待支付
   PENDING_ACCEPT: 'PENDING_ACCEPT',     // 待接单
   ACCEPTED: 'ACCEPTED',                 // 已接单（制作中）
-  READY: 'READY',                       // 待取餐
+  READY: 'READY',                       // 待取餐（到店自取）
+  DISPATCHING: 'DISPATCHING',           // 待接单（骑手抢单中）
+  DELIVERING: 'DELIVERING',             // 配送中
   COMPLETED: 'COMPLETED',               // 已完成
   CANCELLED: 'CANCELLED',               // 已取消
   REFUNDING: 'REFUNDING',               // 退款中
   REFUNDED: 'REFUNDED'                  // 已退款
+}
+
+// Order delivery type
+const DELIVERY_TYPE = {
+  PICKUP: 'pickup',       // 到店自取
+  DELIVERY: 'delivery'    // 外卖配送
 }
 
 // Order status display text
@@ -20,6 +28,8 @@ const ORDER_STATUS_TEXT = {
   [ORDER_STATUS.PENDING_ACCEPT]: '待接单',
   [ORDER_STATUS.ACCEPTED]: '制作中',
   [ORDER_STATUS.READY]: '待取餐',
+  [ORDER_STATUS.DISPATCHING]: '待骑手接单',
+  [ORDER_STATUS.DELIVERING]: '配送中',
   [ORDER_STATUS.COMPLETED]: '已完成',
   [ORDER_STATUS.CANCELLED]: '已取消',
   [ORDER_STATUS.REFUNDING]: '退款中',
@@ -32,6 +42,8 @@ const ORDER_STATUS_COLOR = {
   [ORDER_STATUS.PENDING_ACCEPT]: '#FF9500',
   [ORDER_STATUS.ACCEPTED]: '#1677FF',
   [ORDER_STATUS.READY]: '#00B578',
+  [ORDER_STATUS.DISPATCHING]: '#FF9500',
+  [ORDER_STATUS.DELIVERING]: '#1677FF',
   [ORDER_STATUS.COMPLETED]: '#999999',
   [ORDER_STATUS.CANCELLED]: '#FF3B30',
   [ORDER_STATUS.REFUNDING]: '#FF9500',
@@ -113,6 +125,7 @@ module.exports = {
   ORDER_STATUS,
   ORDER_STATUS_TEXT,
   ORDER_STATUS_COLOR,
+  DELIVERY_TYPE,
   MERCHANT_STATUS,
   MERCHANT_STATUS_TEXT,
   USER_ROLE,

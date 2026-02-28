@@ -5,13 +5,43 @@
     <!-- 取餐方式 -->
     <view class="section-card">
       <view class="section-title">取餐方式</view>
-      <view class="pickup-row">
-        <text class="pickup-icon">🏪</text>
-        <text class="pickup-text">到店自取</text>
+      <view class="delivery-type-tabs">
+        <view
+          class="delivery-tab {{deliveryType === 'pickup' ? 'delivery-tab--active' : ''}}"
+          data-type="pickup"
+          bindtap="onDeliveryTypeTap"
+        >
+          <text>🏪 到店自取</text>
+        </view>
+        <view
+          class="delivery-tab {{deliveryType === 'delivery' ? 'delivery-tab--active' : ''}}"
+          data-type="delivery"
+          bindtap="onDeliveryTypeTap"
+        >
+          <text>🛵 外卖配送</text>
+        </view>
       </view>
-      <view class="pickup-address" wx:if="{{merchant.address}}">
+
+      <!-- 自取：显示商家地址 -->
+      <view wx:if="{{deliveryType === 'pickup' && merchant.address}}" class="pickup-address">
         <text class="pickup-icon">📍</text>
         <text class="address-text">{{merchant.address}}</text>
+      </view>
+
+      <!-- 配送：显示收货地址选择 -->
+      <view wx:if="{{deliveryType === 'delivery'}}" class="address-selector" bindtap="onSelectAddress">
+        <view wx:if="{{selectedAddress}}" class="address-selected">
+          <view class="address-contact">
+            <text class="address-name">{{selectedAddress.name}}</text>
+            <text class="address-phone">{{selectedAddress.phone}}</text>
+          </view>
+          <text class="address-detail">{{selectedAddress.address}}{{selectedAddress.detail ? ' ' + selectedAddress.detail : ''}}</text>
+        </view>
+        <view wx:else class="address-empty">
+          <text class="address-empty-icon">📍</text>
+          <text class="address-empty-text">请选择收货地址</text>
+        </view>
+        <text class="address-arrow">></text>
       </view>
     </view>
 
@@ -68,7 +98,7 @@
         <text class="price-label">包装费</text>
         <view class="price-value"><price value="{{packingFee}}" /></view>
       </view>
-      <view class="price-row">
+      <view class="price-row" wx:if="{{deliveryType === 'delivery'}}">
         <text class="price-label">配送费</text>
         <view class="price-value">
           <text wx:if="{{deliveryFee < 0}}" class="no-delivery">超出配送范围</text>
@@ -110,7 +140,7 @@
     <view class="submit-price"><price value="{{actualPrice}}" /></view>
   </view>
   <view
-    class="submit-btn {{(submitting || belowMinOrder || deliveryFee < 0) ? 'submit-btn--disabled' : ''}}"
+    class="submit-btn {{(submitting || belowMinOrder || (deliveryType === 'delivery' && deliveryFee < 0)) ? 'submit-btn--disabled' : ''}}"
     bindtap="onSubmit"
   >
     {{submitting ? '提交中...' : belowMinOrder ? '未达起送价' : '提交订单'}}

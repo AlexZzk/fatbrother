@@ -47,8 +47,15 @@ const STATUS = {
   PENDING_ACCEPT: 'PENDING_ACCEPT',
   ACCEPTED: 'ACCEPTED',
   READY: 'READY',
+  DISPATCHING: 'DISPATCHING',
+  DELIVERING: 'DELIVERING',
   COMPLETED: 'COMPLETED',
   CANCELLED: 'CANCELLED'
+}
+
+const DELIVERY_TYPE = {
+  PICKUP: 'pickup',
+  DELIVERY: 'delivery'
 }
 
 // Action routing
@@ -65,6 +72,10 @@ const actions = {
   userComplete,
   autoCancel,
   getUserCoupons,
+  // 骑手配送相关
+  getDispatchingOrders,
+  riderAccept,
+  riderComplete,
   // S7: 支付相关
   createPayment,
   syncPaymentStatus,
@@ -193,10 +204,13 @@ function calcDeliveryFee(rules, distanceMeters) {
  *   6. 生成订单快照
  */
 async function create(event) {
-  const { _openid, merchantId, items, remark = '', distanceMeters, couponId } = event
+  const { _openid, merchantId, items, remark = '', distanceMeters, couponId, delivery_type = DELIVERY_TYPE.PICKUP, delivery_address } = event
 
   if (!merchantId || !items || !items.length) {
     throw createError(1001, '参数不完整')
+  }
+  if (delivery_type === DELIVERY_TYPE.DELIVERY && !delivery_address) {
+    throw createError(1001, '外卖配送需要填写收货地址')
   }
 
   // Validate merchant
@@ -280,11 +294,14 @@ async function create(event) {
   // 计算包装费
   const packingFee = merchant.packing_fee || 0
 
-  // 计算配送费
-  const distance = typeof distanceMeters === 'number' ? distanceMeters : null
-  let deliveryFee = calcDeliveryFee(merchant.delivery_fee_rules || [], distance)
-  if (deliveryFee === -1) {
-    throw createError(2003, '您的位置超出配送范围')
+  // 计算配送费（到店自取不收配送费）
+  let deliveryFee = 0
+  if (delivery_type === DELIVERY_TYPE.DELIVERY) {
+    const distance = typeof distanceMeters === 'number' ? distanceMeters : null
+    deliveryFee = calcDeliveryFee(merchant.delivery_fee_rules || [], distance)
+    if (deliveryFee === -1) {
+      throw createError(2003, '您的位置超出配送范围')
+    }
   }
 
   // 加载商户有效促销活动（满减配送费）
@@ -337,6 +354,8 @@ async function create(event) {
   const dbNow = db.serverDate()
   const orderNo = generateOrderNo()
 
+  const distance = delivery_type === DELIVERY_TYPE.DELIVERY ? (typeof distanceMeters === 'number' ? distanceMeters : null) : null
+
   const orderData = {
     order_no: orderNo,
     user_id: _openid,
@@ -355,6 +374,8 @@ async function create(event) {
     applied_coupon: appliedCoupon,
     actual_price: actualPrice,
     distance_meters: distance,
+    delivery_type,
+    delivery_address: delivery_type === DELIVERY_TYPE.DELIVERY ? delivery_address : null,
     status: USE_REAL_PAYMENT ? STATUS.PENDING_PAY : STATUS.PENDING_ACCEPT,
     remark: remark.substring(0, 200),
     cancel_reason: '',
@@ -362,6 +383,10 @@ async function create(event) {
     paid_at: null,
     accepted_at: null,
     ready_at: null,
+    dispatching_at: null,
+    rider_id: null,
+    rider_name: null,
+    delivering_at: null,
     completed_at: null,
     cancelled_at: null,
     is_reviewed: false,
@@ -453,7 +478,7 @@ async function getUserCoupons(event) {
  * S5-2: 获取订单列表
  *
  * 入参:
- *   status - 筛选状态（可选，空=全部）
+ *   status - 筛选状态（可选，空=全部；支持数组形式查询多状态）
  *   page - 页码（默认1）
  *   pageSize - 每页条数（默认20）
  */
@@ -461,7 +486,9 @@ async function getList(event) {
   const { _openid, status, page = 1, pageSize = 20 } = event
 
   const query = { user_id: _openid }
-  if (status) {
+  if (Array.isArray(status) && status.length > 0) {
+    query.status = _.in(status)
+  } else if (status) {
     query.status = status
   }
 
@@ -623,10 +650,11 @@ async function getMerchantOrders(event) {
     .get()
 
   // Also return counts per status for tab badges
-  const [pendingCount, acceptedCount, readyCount] = await Promise.all([
+  const [pendingCount, acceptedCount, readyCount, dispatchingCount] = await Promise.all([
     ordersCol.where({ merchant_id: merchant._id, status: STATUS.PENDING_ACCEPT }).count(),
     ordersCol.where({ merchant_id: merchant._id, status: STATUS.ACCEPTED }).count(),
-    ordersCol.where({ merchant_id: merchant._id, status: STATUS.READY }).count()
+    ordersCol.where({ merchant_id: merchant._id, status: STATUS.READY }).count(),
+    ordersCol.where({ merchant_id: merchant._id, status: STATUS.DISPATCHING }).count()
   ])
 
   return {
@@ -636,7 +664,8 @@ async function getMerchantOrders(event) {
     counts: {
       pendingAccept: pendingCount.total,
       accepted: acceptedCount.total,
-      ready: readyCount.total
+      ready: readyCount.total,
+      dispatching: dispatchingCount.total
     }
   }
 }
@@ -717,6 +746,8 @@ function generatePickupCode() {
 
 /**
  * S6-4: 商户标记出餐
+ * - 到店自取订单 → READY，取餐码给用户看
+ * - 外卖配送订单 → DISPATCHING，取餐码给骑手取货用
  */
 async function markReady(event) {
   const { _openid, orderId } = event
@@ -730,16 +761,127 @@ async function markReady(event) {
 
   const now = db.serverDate()
   const pickupCode = generatePickupCode()
+  const isDelivery = order.delivery_type === DELIVERY_TYPE.DELIVERY
+
+  if (isDelivery) {
+    // 配送订单：进入骑手抢单大厅
+    await ordersCol.doc(orderId).update({
+      data: { status: STATUS.DISPATCHING, dispatching_at: now, updated_at: now, pickup_code: pickupCode }
+    })
+    // 无需通知用户，等骑手接单后通知
+  } else {
+    // 自取订单：通知用户取餐
+    await ordersCol.doc(orderId).update({
+      data: { status: STATUS.READY, ready_at: now, updated_at: now, pickup_code: pickupCode }
+    })
+    sendNotify('FOOD_READY', order.user_id, {
+      orderId, orderNo: order.order_no, merchantName: order.merchant_name
+    })
+  }
+
+  return { orderId, pickupCode, isDelivery }
+}
+
+/**
+ * 获取骑手抢单大厅（DISPATCHING状态订单）
+ * 骑手可查看当前所有待接配送订单
+ */
+async function getDispatchingOrders(event) {
+  const { _openid, page = 1, pageSize = 20 } = event
+
+  // 验证骑手身份
+  const { data: user } = await usersCol.doc(_openid).get().catch(() => ({ data: null }))
+  if (!user || user.role !== 'rider') throw createError(2001, '仅骑手可查看抢单大厅')
+
+  const ridersCol = db.collection('riders')
+  const { data: riderProfile } = await ridersCol.where({ _openid }).limit(1).get().catch(() => ({ data: [] }))
+  if (!riderProfile.length || riderProfile[0].status !== 'active') throw createError(2001, '骑手未激活，无法接单')
+  if (!riderProfile[0].is_online) throw createError(2001, '请先上线后再接单')
+
+  const skip = (page - 1) * pageSize
+  const { data: list } = await ordersCol.where({
+    status: STATUS.DISPATCHING
+  }).orderBy('dispatching_at', 'asc').skip(skip).limit(pageSize).get()
+
+  return { list, hasMore: list.length === pageSize }
+}
+
+/**
+ * 骑手接单: DISPATCHING → DELIVERING
+ */
+async function riderAccept(event) {
+  const { _openid, orderId } = event
+  if (!orderId) throw createError(1001, '缺少订单ID')
+
+  // 验证骑手身份
+  const { data: user } = await usersCol.doc(_openid).get().catch(() => ({ data: null }))
+  if (!user || user.role !== 'rider') throw createError(2001, '仅骑手可接单')
+
+  const ridersCol = db.collection('riders')
+  const { data: riderProfiles } = await ridersCol.where({ _openid }).limit(1).get().catch(() => ({ data: [] }))
+  if (!riderProfiles.length || riderProfiles[0].status !== 'active') throw createError(2001, '骑手未激活')
+  const riderProfile = riderProfiles[0]
+
+  const { data: order } = await ordersCol.doc(orderId).get().catch(() => ({ data: null }))
+  if (!order) throw createError(2001, '订单不存在')
+  if (order.status !== STATUS.DISPATCHING) throw createError(2002, '订单已被他人接走或状态有误')
+
+  const now = db.serverDate()
   await ordersCol.doc(orderId).update({
-    data: { status: STATUS.READY, ready_at: now, updated_at: now, pickup_code: pickupCode }
+    data: {
+      status: STATUS.DELIVERING,
+      rider_id: _openid,
+      rider_name: riderProfile.real_name,
+      delivering_at: now,
+      updated_at: now
+    }
   })
 
-  // S7-10: 通知用户餐品已出餐
-  sendNotify('FOOD_READY', order.user_id, {
-    orderId, orderNo: order.order_no, merchantName: order.merchant_name
+  // 通知用户骑手已接单
+  sendNotify('RIDER_ACCEPTED', order.user_id, {
+    orderId, orderNo: order.order_no, merchantName: order.merchant_name, riderName: riderProfile.real_name
   })
 
-  return { orderId, pickupCode }
+  return { orderId }
+}
+
+/**
+ * 骑手完成配送（用户确认收货）: DELIVERING → COMPLETED
+ */
+async function riderComplete(event) {
+  const { _openid, orderId } = event
+  if (!orderId) throw createError(1001, '缺少订单ID')
+
+  const { data: order } = await ordersCol.doc(orderId).get().catch(() => ({ data: null }))
+  if (!order) throw createError(2001, '订单不存在')
+  // 用户或骑手均可触发完成
+  if (order.user_id !== _openid && order.rider_id !== _openid) throw createError(2001, '无权操作此订单')
+  if (order.status !== STATUS.DELIVERING) throw createError(2002, '当前状态不可确认收货')
+
+  const now = db.serverDate()
+  await ordersCol.doc(orderId).update({
+    data: { status: STATUS.COMPLETED, completed_at: now, updated_at: now }
+  })
+
+  // 记录骑手配送收益（仅记账）
+  if (order.rider_id) {
+    const ridersCol = db.collection('riders')
+    await ridersCol.where({ _openid: order.rider_id }).update({
+      data: {
+        total_orders: _.inc(1),
+        total_earnings_cents: _.inc(order.delivery_fee_actual || 0)
+      }
+    }).catch(() => {})
+  }
+
+  // 触发分账结算
+  try {
+    await settlement({ orderId })
+  } catch (err) {
+    console.warn('[riderComplete] 自动结算失败:', err.message)
+  }
+
+  return { orderId }
 }
 
 /**

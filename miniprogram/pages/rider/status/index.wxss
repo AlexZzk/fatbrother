@@ -7,6 +7,23 @@
   gap: 16rpx;
 }
 
+.go-orders-btn {
+  background-color: #FF6B35;
+  color: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 28rpx 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.go-orders-arrow {
+  font-size: 28rpx;
+  opacity: 0.8;
+}
+
 .status-card {
   border-radius: 20rpx;
   padding: 36rpx 28rpx;
