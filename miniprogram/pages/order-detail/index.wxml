@@ -6,9 +6,27 @@
     <view class="status-card" style="background: {{statusBg}};">
       <text class="status-title" style="color: {{statusColor}};">{{statusTitle}}</text>
       <text class="status-desc">{{statusDesc}}</text>
-      <view wx:if="{{order.status === 'READY' && order.pickup_code}}" class="pickup-code-block">
+      <!-- 自取订单：READY时给用户看取餐码 -->
+      <view wx:if="{{order.status === 'READY' && order.pickup_code && order.delivery_type !== 'delivery'}}" class="pickup-code-block">
         <text class="pickup-code-hint">取餐码</text>
         <text class="pickup-code-value">{{order.pickup_code}}</text>
+      </view>
+      <!-- 配送订单：显示骑手信息 -->
+      <view wx:if="{{order.delivery_type === 'delivery' && order.status === 'DELIVERING' && order.rider_name}}" class="rider-info-block">
+        <text class="rider-info-hint">配送骑手</text>
+        <text class="rider-info-value">{{order.rider_name}}</text>
+      </view>
+    </view>
+
+    <!-- 配送地址（配送订单） -->
+    <view wx:if="{{order.delivery_type === 'delivery' && order.delivery_address}}" class="section-card">
+      <view class="section-title">配送地址</view>
+      <view class="delivery-address-row">
+        <view class="delivery-addr-contact">
+          <text class="delivery-addr-name">{{order.delivery_address.name}}</text>
+          <text class="delivery-addr-phone">{{order.delivery_address.phone}}</text>
+        </view>
+        <text class="delivery-addr-detail">{{order.delivery_address.address}}{{order.delivery_address.detail ? ' ' + order.delivery_address.detail : ''}}</text>
       </view>
     </view>
 

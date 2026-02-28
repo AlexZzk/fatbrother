@@ -29,7 +29,8 @@
     "pages/address/list/index",
     "pages/address/edit/index",
     "pages/rider/apply/index",
-    "pages/rider/status/index"
+    "pages/rider/status/index",
+    "pages/rider/orders/index"
   ],
   "window": {
     "navigationBarBackgroundColor": "#FFFFFF",

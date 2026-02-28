@@ -2,12 +2,14 @@ const app = getApp()
 const orderService = require('../../services/order')
 const { ORDER_STATUS, PAGE_SIZE } = require('../../utils/constants')
 
+// 配送中包含两个状态，用数组表示多状态查询
 const TABS = [
   { key: '', label: '全部' },
   { key: ORDER_STATUS.PENDING_PAY, label: '待支付' },
   { key: ORDER_STATUS.PENDING_ACCEPT, label: '待接单' },
   { key: ORDER_STATUS.ACCEPTED, label: '制作中' },
   { key: ORDER_STATUS.READY, label: '待取餐' },
+  { key: 'DELIVERING_GROUP', label: '配送中' },
   { key: ORDER_STATUS.COMPLETED, label: '已完成' }
 ]
 
@@ -49,7 +51,11 @@ Page({
 
   async _loadOrders(reset = false) {
     const page = reset ? 1 : this.data.page
-    const status = TABS[this.data.activeTab].key
+    const tabKey = TABS[this.data.activeTab].key
+    // 配送中分组：同时查询 DISPATCHING 和 DELIVERING
+    const status = tabKey === 'DELIVERING_GROUP'
+      ? [ORDER_STATUS.DISPATCHING, ORDER_STATUS.DELIVERING]
+      : tabKey
 
     try {
       const res = await orderService.getList({ status, page, pageSize: PAGE_SIZE })

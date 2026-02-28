@@ -23,7 +23,17 @@ const STATUS_CONFIG = {
   [ORDER_STATUS.READY]: {
     bg: 'linear-gradient(135deg, #E8F5E9, #C8E6C9)',
     title: '待取餐',
-    desc: '餐品已备好，请前往商家取餐'
+    desc: '餐品已备好，请前往商家取餐，请出示取餐码'
+  },
+  [ORDER_STATUS.DISPATCHING]: {
+    bg: 'linear-gradient(135deg, #FFF3E0, #FFE0B2)',
+    title: '等待骑手接单',
+    desc: '餐品已备好，正在为您匹配骑手，请稍候'
+  },
+  [ORDER_STATUS.DELIVERING]: {
+    bg: 'linear-gradient(135deg, #E3F2FD, #BBDEFB)',
+    title: '配送中',
+    desc: '骑手正在为您配送，请保持手机畅通'
   },
   [ORDER_STATUS.COMPLETED]: {
     bg: 'linear-gradient(135deg, #F5F5F5, #EEEEEE)',
@@ -121,6 +131,12 @@ Page({
         return [
           { type: 'confirm', text: '确认取餐', style: 'primary' }
         ]
+      case ORDER_STATUS.DISPATCHING:
+        return []
+      case ORDER_STATUS.DELIVERING:
+        return [
+          { type: 'confirmDelivery', text: '确认收货', style: 'primary' }
+        ]
       case ORDER_STATUS.COMPLETED:
         if (!isReviewed) {
           return [
@@ -196,6 +212,25 @@ Page({
               try {
                 await orderService.userComplete(orderId)
                 wx.showToast({ title: '取餐成功', icon: 'success' })
+                this._loadDetail()
+              } catch (err) {
+                wx.showToast({ title: err.message || '操作失败', icon: 'none' })
+              }
+            }
+          }
+        })
+        break
+
+      case 'confirmDelivery':
+        wx.showModal({
+          title: '确认收货',
+          content: '请确认已收到餐品',
+          confirmText: '已收到',
+          success: async (res) => {
+            if (res.confirm) {
+              try {
+                await orderService.riderComplete(orderId)
+                wx.showToast({ title: '收货成功', icon: 'success' })
                 this._loadDetail()
               } catch (err) {
                 wx.showToast({ title: err.message || '操作失败', icon: 'none' })

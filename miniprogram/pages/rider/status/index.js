@@ -54,6 +54,8 @@ Page({
     const newStatus = !riderInfo.is_online
     try {
       await riderService.updateOnlineStatus(newStatus)
+      const app = getApp()
+      if (app.globalData.riderInfo) app.globalData.riderInfo.is_online = newStatus
       this.setData({ 'riderInfo.is_online': newStatus })
       wx.showToast({
         title: newStatus ? '已切换为在线' : '已切换为离线',
@@ -62,5 +64,9 @@ Page({
     } catch (err) {
       this.selectComponent('#toast').showToast({ message: err.message || '操作失败', type: 'error' })
     }
+  },
+
+  onGoOrders() {
+    wx.navigateTo({ url: '/pages/rider/orders/index' })
   }
 })

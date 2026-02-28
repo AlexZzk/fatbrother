@@ -1,0 +1,108 @@
+<nav-bar title="骑手接单" left-arrow="{{true}}" />
+
+<view class="page-container">
+  <!-- Tabs -->
+  <view class="tabs">
+    <view
+      class="tab {{activeTab === 0 ? 'tab--active' : ''}}"
+      data-index="0"
+      bindtap="onTabTap"
+    >抢单大厅</view>
+    <view
+      class="tab {{activeTab === 1 ? 'tab--active' : ''}}"
+      data-index="1"
+      bindtap="onTabTap"
+    >我的配送</view>
+  </view>
+
+  <!-- 抢单大厅 -->
+  <block wx:if="{{activeTab === 0}}">
+    <!-- 上线状态提示 -->
+    <view wx:if="{{!isOnline}}" class="offline-banner">
+      <text class="offline-text">您当前处于离线状态，无法接单</text>
+      <text class="offline-go" bindtap="onGoStatus">去上线</text>
+    </view>
+
+    <view wx:if="{{loading}}" class="loading-center"><text>加载中...</text></view>
+    <view wx:elif="{{dispatchingOrders.length === 0}}" class="empty-wrap">
+      <text class="empty-text">暂无待配送订单</text>
+      <text class="empty-sub">下拉刷新重试</text>
+    </view>
+    <view wx:else>
+      <view
+        class="order-card"
+        wx:for="{{dispatchingOrders}}"
+        wx:key="_id"
+      >
+        <view class="order-header">
+          <text class="merchant-name">{{item.merchant_name}}</text>
+          <view class="order-fee">
+            <text class="fee-label">配送费</text>
+            <price value="{{item.delivery_fee_actual}}" />
+          </view>
+        </view>
+
+        <view class="order-items">
+          <text class="items-text">{{item._itemSummary}}</text>
+        </view>
+
+        <view class="order-addr-row" wx:if="{{item.delivery_address}}">
+          <text class="addr-icon">📍</text>
+          <text class="addr-text">{{item.delivery_address.address}}{{item.delivery_address.detail ? ' ' + item.delivery_address.detail : ''}}</text>
+        </view>
+
+        <view class="order-footer">
+          <text class="order-time">{{item._createTime}}</text>
+          <view
+            class="accept-btn {{!isOnline ? 'accept-btn--disabled' : ''}}"
+            data-id="{{item._id}}"
+            bindtap="onAccept"
+          >立即接单</view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 我的配送 -->
+  <block wx:if="{{activeTab === 1}}">
+    <view wx:if="{{myLoading}}" class="loading-center"><text>加载中...</text></view>
+    <view wx:elif="{{myOrders.length === 0}}" class="empty-wrap">
+      <text class="empty-text">暂无配送记录</text>
+    </view>
+    <view wx:else>
+      <view
+        class="order-card"
+        wx:for="{{myOrders}}"
+        wx:key="_id"
+        data-id="{{item._id}}"
+        bindtap="onOrderTap"
+      >
+        <view class="order-header">
+          <text class="merchant-name">{{item.merchant_name}}</text>
+          <view class="status-tag status-tag--{{item.status}}">
+            <text>{{item._statusText}}</text>
+          </view>
+        </view>
+
+        <view class="order-addr-row" wx:if="{{item.delivery_address}}">
+          <text class="addr-icon">📍</text>
+          <text class="addr-text">{{item.delivery_address.address}}{{item.delivery_address.detail ? ' ' + item.delivery_address.detail : ''}}</text>
+        </view>
+
+        <view class="order-footer">
+          <text class="order-time">{{item._createTime}}</text>
+          <view class="order-fee-small">
+            <text>配送费 </text>
+            <price value="{{item.delivery_fee_actual}}" />
+          </view>
+        </view>
+
+        <!-- 配送中：显示取餐码 -->
+        <view wx:if="{{item.status === 'DELIVERING' && item.pickup_code}}" class="pickup-row">
+          <text class="pickup-label">取餐码（出示给商家）</text>
+          <text class="pickup-code">{{item.pickup_code}}</text>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

@@ -26,6 +26,12 @@
     </view>
   </view>
 
+  <!-- 去接单按钮（认证骑手显示） -->
+  <view wx:if="{{riderInfo.status === 'active'}}" class="go-orders-btn" bindtap="onGoOrders">
+    <text>进入抢单大厅</text>
+    <text class="go-orders-arrow">></text>
+  </view>
+
   <!-- 数据统计（仅认证骑手显示） -->
   <view wx:if="{{riderInfo.status === 'active'}}" class="stats-card">
     <view class="stat-item">

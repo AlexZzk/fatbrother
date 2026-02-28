@@ -49,6 +49,57 @@
   font-family: 'Menlo', monospace;
 }
 
+.rider-info-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20rpx;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 16rpx;
+  padding: 16rpx 48rpx;
+}
+
+.rider-info-hint {
+  font-size: 24rpx;
+  color: #555555;
+  margin-bottom: 4rpx;
+}
+
+.rider-info-value {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1677FF;
+}
+
+/* 配送地址 */
+.delivery-address-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.delivery-addr-contact {
+  display: flex;
+  gap: 16rpx;
+}
+
+.delivery-addr-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #222222;
+}
+
+.delivery-addr-phone {
+  font-size: 26rpx;
+  color: #666666;
+}
+
+.delivery-addr-detail {
+  font-size: 26rpx;
+  color: #666666;
+  line-height: 1.5;
+}
+
 /* Section card */
 .section-card {
   margin: 16rpx 24rpx 0;

@@ -20,7 +20,89 @@
   margin-bottom: 20rpx;
 }
 
-/* 取餐方式 */
+/* 配送方式选择 */
+.delivery-type-tabs {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.delivery-tab {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 0;
+  border-radius: 12rpx;
+  border: 2rpx solid #EEEEEE;
+  font-size: 28rpx;
+  color: #666666;
+  background-color: #F9F9F9;
+}
+
+.delivery-tab--active {
+  border-color: #FF6B35;
+  color: #FF6B35;
+  background-color: #FFF3EE;
+  font-weight: 500;
+}
+
+/* 地址选择器 */
+.address-selector {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 0;
+  margin-top: 4rpx;
+}
+
+.address-selected {
+  flex: 1;
+}
+
+.address-contact {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 8rpx;
+}
+
+.address-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #222222;
+}
+
+.address-phone {
+  font-size: 26rpx;
+  color: #666666;
+}
+
+.address-detail {
+  font-size: 24rpx;
+  color: #666666;
+  line-height: 1.5;
+}
+
+.address-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.address-empty-icon {
+  font-size: 28rpx;
+}
+
+.address-empty-text {
+  font-size: 28rpx;
+  color: #999999;
+}
+
+.address-arrow {
+  font-size: 24rpx;
+  color: #CCCCCC;
+  padding-left: 12rpx;
+}
+
+/* 取餐方式（自取地址） */
 .pickup-row {
   display: flex;
   align-items: center;

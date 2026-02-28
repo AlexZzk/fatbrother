@@ -4,6 +4,7 @@ const format = require('../../utils/format')
 const orderService = require('../../services/order')
 const merchantService = require('../../services/merchant')
 const userService = require('../../services/user')
+const addressService = require('../../services/address')
 
 /**
  * 【TODO_REPLACE: 订阅消息模板ID】
@@ -80,7 +81,10 @@ Page({
     belowMinOrder: false,
     showCouponPicker: false,
     availableCoupons: [],
-    couponsLoaded: false
+    couponsLoaded: false,
+    // 配送方式
+    deliveryType: 'pickup',   // 'pickup' | 'delivery'
+    selectedAddress: null     // 选中的收货地址
   },
 
   onLoad(options) {
@@ -103,8 +107,11 @@ Page({
     }
 
     try {
-      const res = await merchantService.getMerchantInfo(merchantId)
-      const merchant = res.merchantInfo
+      const [merchantRes, addressRes] = await Promise.all([
+        merchantService.getMerchantInfo(merchantId),
+        addressService.getAddresses().catch(() => ({ list: [] }))
+      ])
+      const merchant = merchantRes.merchantInfo
 
       const cartItems = items.map(item => ({
         ...item,
@@ -124,6 +131,10 @@ Page({
       } catch (e) { /* 获取位置失败不阻塞 */ }
       deliveryFee = calcDeliveryFee(merchant.delivery_fee_rules || [], distanceMeters)
 
+      // 预选默认地址
+      const addresses = addressRes.list || []
+      const defaultAddress = addresses.find(a => a.is_default) || addresses[0] || null
+
       const belowMinOrder = minOrderAmount > 0 && totalPrice < minOrderAmount
       const gap = belowMinOrder ? minOrderAmount - totalPrice : 0
       this.setData({
@@ -135,7 +146,8 @@ Page({
         minOrderGapLabel: (gap / 100).toFixed(2),
         distanceMeters,
         deliveryFee: deliveryFee < 0 ? 0 : deliveryFee,
-        belowMinOrder
+        belowMinOrder,
+        selectedAddress: defaultAddress
       })
 
       this._calcPromotion()
@@ -168,15 +180,12 @@ Page({
    * 计算促销折扣（满减配送费）
    */
   _calcPromotion() {
-    const { merchant, totalPrice, deliveryFee, selectedCoupon } = this.data
+    const { merchant, totalPrice, deliveryFee, selectedCoupon, deliveryType } = this.data
     if (!merchant) return
 
-    // 模拟满减规则检查（后端会再次验证，此处仅用于前端展示）
-    // 实际促销从后端 getPromotions 获取，前端无法预知，这里展示简单逻辑
-    // 后端在 create 订单时会真正应用促销
-    // 前端只展示订单金额，促销由后端计算
     const couponDiscount = selectedCoupon ? selectedCoupon.amount : 0
-    const deliveryFeeActual = deliveryFee
+    // 到店自取不计配送费
+    const deliveryFeeActual = deliveryType === 'delivery' ? deliveryFee : 0
     const actualPrice = Math.max(1, totalPrice + this.data.packingFee + deliveryFeeActual - couponDiscount)
 
     this.setData({
@@ -189,6 +198,27 @@ Page({
 
   onRemarkInput(e) {
     this.setData({ remark: e.detail.value })
+  },
+
+  // ==================== 配送方式 ====================
+  onDeliveryTypeTap(e) {
+    const { type } = e.currentTarget.dataset
+    if (type === this.data.deliveryType) return
+    this.setData({ deliveryType: type })
+    this._calcPromotion()
+  },
+
+  onSelectAddress() {
+    const pages = getCurrentPages()
+    const currentPage = pages[pages.length - 1]
+    wx.navigateTo({
+      url: '/pages/address/list/index?mode=select',
+      events: {
+        onAddressSelected: (address) => {
+          this.setData({ selectedAddress: address })
+        }
+      }
+    })
   },
 
   // ==================== 优惠券 ====================
@@ -256,9 +286,15 @@ Page({
       wx.showToast({ title: '未达到起送金额', icon: 'none' })
       return
     }
-    if (this.data.deliveryFee < 0) {
-      wx.showToast({ title: '您的位置超出配送范围', icon: 'none' })
-      return
+    if (this.data.deliveryType === 'delivery') {
+      if (!this.data.selectedAddress) {
+        wx.showToast({ title: '请选择收货地址', icon: 'none' })
+        return
+      }
+      if (this.data.deliveryFee < 0) {
+        wx.showToast({ title: '您的位置超出配送范围', icon: 'none' })
+        return
+      }
     }
 
     await this._requestSubscribeMessage()
@@ -266,7 +302,7 @@ Page({
     this.setData({ submitting: true })
 
     try {
-      const res = await orderService.create({
+      const createParams = {
         merchantId: this.data.merchantId,
         items: this.data.cartItems.map(item => ({
           productId: item.productId,
@@ -277,9 +313,16 @@ Page({
           unitPrice: item.unitPrice
         })),
         remark: this.data.remark,
-        distanceMeters: this.data.distanceMeters,
+        delivery_type: this.data.deliveryType,
         couponId: this.data.selectedCoupon ? this.data.selectedCoupon._id : undefined
-      })
+      }
+
+      if (this.data.deliveryType === 'delivery') {
+        createParams.distanceMeters = this.data.distanceMeters
+        createParams.delivery_address = this.data.selectedAddress
+      }
+
+      const res = await orderService.create(createParams)
 
       cart.clear(this.data.merchantId)
 
